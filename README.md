@@ -85,6 +85,40 @@ This setup ensures consistency, simplifies scaling, and reduces configuration er
 - 🧩 Clean, modular architecture – easy to scale and maintain
 
 ---
+## 📁 Project Structure
+  mobile-vehicle-rental-app/
+  │
+  ├── backend/                        # Backend built with Node.js + Express
+  │   ├── controllers/               # Business logic handlers
+  │   ├── models/                    # Mongoose schemas for MongoDB
+  │   ├── routes/                    # API endpoint definitions
+  │   ├── middlewares/               # Middlewares (auth, error handling, etc.)
+  │   ├── utils/                     # Common utility functions
+  │   ├── config/                    # Configuration files (DB, Firebase, env variables)
+  │   ├── services/                  # Third-party integrations (Firebase, payment)
+  │   ├── app.js                     # Express app initialization
+  │   └── server.js                  # Backend entry point
+  │
+  ├── frontend/                      # Flutter mobile application
+  │   ├── lib/
+  │   │   ├── models/                # Data models
+  │   │   ├── views/                 # UI screens and widgets
+  │   │   ├── viewmodels/            # Logic and state management
+  │   │   ├── services/              # API, Firebase, and Maps communication
+  │   │   ├── utils/                 # Utility functions and constants
+  │   │   ├── routes/                # Navigation between screens
+  │   │   └── main.dart              # App entry point
+  │   └── pubspec.yaml               # Flutter dependencies configuration
+  │
+  ├── docker/                        # Docker configuration files
+  │   ├── backend.Dockerfile
+  │   ├── frontend.Dockerfile
+  │   └── docker-compose.yml
+  │
+  ├── mongodb/                       # MongoDB data (volume or initialization script)
+  │   └── init-db.js
+  │
+  └── README.md                     # Project overview and introduction
 
 ## 📄 License
 
