@@ -86,31 +86,32 @@ This setup ensures consistency, simplifies scaling, and reduces configuration er
 
 ---
 ## 📁 Project Structure
+```plaintext
   mobile-vehicle-rental-app/
   │
-  ├── backend/                        # Backend built with Node.js + Express
-  │   ├── controllers/               # Business logic handlers
-  │   ├── models/                    # Mongoose schemas for MongoDB
-  │   ├── routes/                    # API endpoint definitions
-  │   ├── middlewares/               # Middlewares (auth, error handling, etc.)
-  │   ├── utils/                     # Common utility functions
-  │   ├── config/                    # Configuration files (DB, Firebase, env variables)
-  │   ├── services/                  # Third-party integrations (Firebase, payment)
-  │   ├── app.js                     # Express app initialization
-  │   └── server.js                  # Backend entry point
+  ├── backend/                      
+  │   ├── controllers/            
+  │   ├── models/              
+  │   ├── routes/                
+  │   ├── middlewares/          
+  │   ├── utils/                   
+  │   ├── config/                   
+  │   ├── services/                  
+  │   ├── app.js                     
+  │   └── server.js                  
   │
-  ├── frontend/                      # Flutter mobile application
+  ├── frontend/                     
   │   ├── lib/
-  │   │   ├── models/                # Data models
-  │   │   ├── views/                 # UI screens and widgets
-  │   │   ├── viewmodels/            # Logic and state management
-  │   │   ├── services/              # API, Firebase, and Maps communication
-  │   │   ├── utils/                 # Utility functions and constants
-  │   │   ├── routes/                # Navigation between screens
-  │   │   └── main.dart              # App entry point
-  │   └── pubspec.yaml               # Flutter dependencies configuration
+  │   │   ├── models/            
+  │   │   ├── views/            
+  │   │   ├── viewmodels/            
+  │   │   ├── services/            
+  │   │   ├── utils/               
+  │   │   ├── routes/            
+  │   │   └── main.dart        
+  │   └── pubspec.yaml             
   │
-  ├── docker/                        # Docker configuration files
+  ├── docker/                       
   │   ├── backend.Dockerfile
   │   ├── frontend.Dockerfile
   │   └── docker-compose.yml
