@@ -116,10 +116,10 @@ This setup ensures consistency, simplifies scaling, and reduces configuration er
   │   ├── frontend.Dockerfile
   │   └── docker-compose.yml
   │
-  ├── mongodb/                       # MongoDB data (volume or initialization script)
+  ├── mongodb/                       
   │   └── init-db.js
   │
-  └── README.md                     # Project overview and introduction
+  └── README.md                   
 
 ## 📄 License
 
