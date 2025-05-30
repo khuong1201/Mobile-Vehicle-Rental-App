@@ -1,0 +1,5 @@
+node_modules
+config/serviceAccountKey.json
+.env
+google-service.json
+package-lock.json
