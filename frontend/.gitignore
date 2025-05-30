@@ -46,3 +46,4 @@ app.*.map.json
 # Android Studio will place build artifacts here
 android
 test
+.gitignore
