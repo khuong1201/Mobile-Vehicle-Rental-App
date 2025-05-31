@@ -5,6 +5,8 @@ import 'login/signIn_screen.dart';
 import 'login/signUp_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
+  const WelcomeScreen({super.key});
+
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
