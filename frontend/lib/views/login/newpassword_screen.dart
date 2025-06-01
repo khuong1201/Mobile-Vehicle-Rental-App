@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
 import 'widgets/custom_text_form_field.dart';
-import 'otp_screen.dart';
-
-class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({super.key});
+import 'signIn_screen.dart';
+class NewPasswordScreen extends StatefulWidget {
+  const NewPasswordScreen({super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  State<NewPasswordScreen> createState() => _NewPasswordScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final TextEditingController _emailController = TextEditingController();
-
+class _NewPasswordScreenState extends State<NewPasswordScreen> {
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -37,15 +36,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     },
                     icon: Container(
                       decoration: BoxDecoration(
-                        color: Color(0xffD1E4F6),
+                        color: Colors.white,
                         shape: BoxShape.circle,
                       ),
                       padding: EdgeInsets.all(4),
-                      child: Icon(Icons.arrow_back, color: Color(0xff1976D2)),
+                      child: Icon(Icons.arrow_back, color: Colors.black),
                     ),
                   ),
                   title: Text(
-                    'Forgot Password',
+                    'Create New Password',
                     style: TextStyle(
                       color: Color(0xff212121),
                       fontSize: 28,
@@ -55,55 +54,63 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                   backgroundColor: Colors.transparent,
                   elevation: 0,
-                  centerTitle:true,
                 ),
                 SizedBox(height: 40),
-                Image.asset('assets/images/login/Forgot password-amico 1.png',
+                Image.asset('assets/images/login/creatnewpassword.png',
                   width: 300,
                   height: 300
                 ),
-                SizedBox(height: 40,),
-                Text('Please write your email to receive a confirmation code to set a new password',
+                SizedBox(height: 20),
+                Text('Your New Password Must Be Different from Previously Used Password.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: const Color(0xFF555658),
-                    fontSize: 14,
+                    color: Color(0xff555658),
+                    fontSize: 16,
                     fontFamily: 'Inter',
-                    fontWeight: FontWeight.w400,
-                    height: 1.29,
+                    fontWeight: FontWeight.w600,
+                    height: 1.25,
                   ),
                 ),
-                SizedBox(height: 40,),
+                SizedBox(height: 20,),
                 Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Email Address",
-                        style: TextStyle(
-                          color: Color(0xFF2B2B2C),
-                          fontSize: 16,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w600,
-                          height: 1.25,
-                        ),
-                      ),
+                      _buildTitle("Password"),
                       SizedBox(height: 8),
                       CustomTextField(
-                        controller: _emailController,
+                        controller: _passwordController,
+                        isPassword: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
+                            return 'Please enter your Password';
                           }
                           return null;
                         },
-                        hintText: "Enter your email",
+                        hintText: "Enter your Password",
+                      ),
+                      SizedBox(height: 16),
+                      _buildTitle("Confirm new password"),
+                      SizedBox(height: 8),
+                      CustomTextField(
+                        controller: _confirmPasswordController,
+                        isPassword: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your confirm new password';
+                          }
+                          if (value != _passwordController.text) {
+                            return 'Passwords do not match';
+                          }
+                          return null;
+                        },
+                        hintText: "Confirm Password", 
                       ),
                     ],
                   )
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 30),
                 Container(
                   width: double.infinity,
                   decoration: ShapeDecoration(
@@ -113,9 +120,26 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child: TextButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        Navigator.push(
-                          context, 
-                          MaterialPageRoute(builder: (context) => OtpScreen())
+                        //
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Succes'),
+                              content: Text('Password has been updated'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => SignInScreen())
+                                    );
+                                  },
+                                  child: Text('Go to sign in'),
+                                ),
+                              ],
+                            );
+                          },
                         );
                       } else {
                         showDialog(
@@ -138,7 +162,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       }
                     },
                     child: Text(
-                      'Reset Password',
+                      'Save',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Color(0xFFF7F7F8),
@@ -158,4 +182,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 }
-
+Widget _buildTitle(String title) {
+  return Text(
+    title,
+    style: TextStyle(
+      color: Color(0xFF2B2B2C),
+      fontSize: 16,
+      fontFamily: 'Inter',
+      fontWeight: FontWeight.w600,
+      height: 1.25,
+    ),
+  );
+}

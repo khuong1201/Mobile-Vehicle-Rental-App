@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'signIn_screen.dart';
-import 'widgets/custom_text_field.dart';
+import 'widgets/custom_text_form_field.dart';
 
 class SignUpScreen extends StatefulWidget {
 const SignUpScreen({super.key});
@@ -27,7 +27,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: Container(
         height: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: 12),
-        color: Color(0xffFCFCFC),
+        color: Color(0xffF2F2F2),
         child: SafeArea(
           child: SingleChildScrollView(
             child: Column(   
@@ -105,7 +105,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       SizedBox(height: 12),
                       _buildTitle('Confirm password'),
                       SizedBox(height: 8),
-                       CustomTextField(
+                      CustomTextField(
                         controller: _confirmPasswordController,
                         isPassword: true,
                         validator: (value) {
@@ -244,12 +244,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       SizedBox(height: 28),
                       Container(
-                        width: double.infinity,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          spacing: 8,
                           children: [
                             Container(
                               width: 40,
@@ -284,10 +281,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             width: 60,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: Color(0xffEAEBED),
+                              color: Color(0xffF7F7F8),
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
-                                color: Color(0xFFD1D1D9),
+                                color: Color(0xFFDDDFE2),
                                 width: 1,
                               ),
                             ),
@@ -302,10 +299,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             width: 60,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: Color(0xffEAEBED),
+                              color: Color(0xffF7F7F8),
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
-                                color: Color(0xFFD1D1D9),
+                                color: Color(0xFFDDDFE2),
                                 width: 1,
                               ),
                             ),

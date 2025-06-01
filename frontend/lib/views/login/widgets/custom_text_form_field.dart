@@ -5,6 +5,7 @@ class CustomTextField extends StatefulWidget {
   final String? Function(String?)? validator;
   final String? hintText;
   final bool isPassword;
+  final Widget? prefixIcon;
 
   const CustomTextField({
     Key? key,
@@ -12,6 +13,8 @@ class CustomTextField extends StatefulWidget {
     this.validator,
     this.hintText,
     this.isPassword = false,
+    this.prefixIcon,
+    
   }) : super(key: key);
 
   @override
@@ -35,6 +38,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           fontWeight: FontWeight.w400,
           height: 1.29,
         ),
+        prefixIcon: widget.prefixIcon,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
         ),
@@ -49,7 +53,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ? IconButton(
             icon: Icon(
               _obscurePassword ? Icons.visibility_off : Icons.visibility,
-              color: Color(0xFFEAEBED),
+              color: Color(0xFF808183),
             ),
             onPressed: () {
               setState(() {

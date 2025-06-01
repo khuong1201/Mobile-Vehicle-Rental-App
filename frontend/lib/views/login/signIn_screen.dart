@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'widgets/custom_text_field.dart';
-import '/views/home/homePage_screen.dart';
+import 'widgets/custom_text_form_field.dart';
+import '../home/homePage.dart';
 import 'signUp_screen.dart';
 import 'forgotPassword_screen.dart';
 
@@ -161,7 +161,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             if (_formKey.currentState!.validate()) {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => HomepageScreen())
+                                MaterialPageRoute(builder: (context) => HomePage())
                               );
                             } else {
                               showDialog(
