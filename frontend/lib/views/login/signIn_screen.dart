@@ -146,7 +146,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   )
                 ),
                 SizedBox(height: 24),
-                Container(
+                SizedBox(
                   width: double.infinity,
                   child: Column(
                     children: [
@@ -291,13 +291,13 @@ class _SignInScreenState extends State<SignInScreen> {
                             child: Text(
                             'Sign Up',
                               style: TextStyle(
-                                color: Color(0xFFF1976D2),
+                                color: Color(0xfff1976d2),
                                 fontSize: 18,
                                 fontFamily: 'Inter',
                                 fontWeight: FontWeight.w700,
                                 height: 1.22,
                                 decoration: TextDecoration.underline,
-                                decorationColor: Color(0xFFF1976D2),
+                                decorationColor: Color(0xfff1976d2),
                               ),
                             )
                           )

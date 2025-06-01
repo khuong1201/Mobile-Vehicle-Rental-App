@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:frontend/viewmodels/auth_viewmodel.dart';
+import 'package:frontend/views/login/otp_screen.dart';
 
 import 'signIn_screen.dart';
 import 'widgets/custom_text_form_field.dart';
 
 class SignUpScreen extends StatefulWidget {
-const SignUpScreen({super.key});
+  const SignUpScreen({super.key});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -15,11 +17,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final viewmodel = AuthViewModel();
 
   bool _isCheckedAgree = false;
-
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +33,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         color: Color(0xffF2F2F2),
         child: SafeArea(
           child: SingleChildScrollView(
-            child: Column(   
-              mainAxisAlignment: MainAxisAlignment.center, 
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 50),
                 Text(
@@ -73,7 +76,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           }
                           return null;
                         },
-                        hintText: ('Enter your name')
+                        hintText: ('Enter your name'),
                       ),
                       SizedBox(height: 12),
                       _buildTitle("Email Address"),
@@ -117,7 +120,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           }
                           return null;
                         },
-                        hintText: "Confirm your Password", 
+                        hintText: "Confirm your Password",
                       ),
                       SizedBox(height: 12),
                       FormField<bool>(
@@ -142,11 +145,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         formFieldState.didChange(value);
                                       });
                                     },
-                                    visualDensity: VisualDensity(horizontal: -4),
-                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    visualDensity: VisualDensity(
+                                      horizontal: -4,
+                                    ),
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                     side: BorderSide(
                                       color: Color(0xFFD5D7DB),
-                                      width: 2,             
+                                      width: 2,
                                     ),
                                   ),
                                   SizedBox(width: 8),
@@ -170,8 +176,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                               fontSize: 14,
                                               fontFamily: 'Inter',
                                               fontWeight: FontWeight.w700,
-                                              decoration: TextDecoration.underline,
-                                              decorationColor: Color(0xFF1976D2),
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              decorationColor: Color(
+                                                0xFF1976D2,
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -195,27 +204,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 SizedBox(height: 24),
-                Container(
+                SizedBox(
                   width: double.infinity,
                   child: Column(
                     children: [
                       Container(
                         width: double.infinity,
                         decoration: ShapeDecoration(
-                        color: Color(0xFF1976D2),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          color: Color(0xFF1976D2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                         child: TextButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-
+                              viewmodel.register(
+                                _emailController.toString(),
+                                _confirmPasswordController.toString(),
+                              );
+                              MaterialPageRoute(
+                                  builder: (context) => const OtpScreen()
+                              );
                             } else {
                               showDialog(
                                 context: context,
                                 builder: (context) {
                                   return AlertDialog(
                                     title: Text('Error'),
-                                    content: Text('Please fill in all fields correctly.'),
+                                    content: Text(
+                                      'Please fill in all fields correctly.',
+                                    ),
                                     actions: [
                                       TextButton(
                                         onPressed: () {
@@ -239,7 +258,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               fontWeight: FontWeight.w700,
                               height: 1.22,
                             ),
-                          )
+                          ),
                         ),
                       ),
                       SizedBox(height: 28),
@@ -257,11 +276,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             Text(
                               'Or sign up with',
                               style: TextStyle(
-                                  color: Color(0xFF555658),
-                                  fontSize: 14,
-                                  fontFamily: 'Inter',
-                                  fontWeight: FontWeight.w400,
-                                  height: 1.29,
+                                color: Color(0xFF555658),
+                                fontSize: 14,
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w400,
+                                height: 1.29,
                               ),
                             ),
                             SizedBox(width: 8),
@@ -289,9 +308,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             ),
                             child: IconButton(
-                              icon: SvgPicture.asset('assets/images/login/google.svg'),
-                              onPressed: () {
-                              },
+                              icon: SvgPicture.asset(
+                                'assets/images/login/google.svg',
+                              ),
+                              onPressed: () {},
                             ),
                           ),
                           SizedBox(width: 16),
@@ -307,20 +327,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             ),
                             child: IconButton(
-                              icon: SvgPicture.asset('assets/images/login/facebook.svg'),
-                              onPressed: () {
-                              },
+                              icon: SvgPicture.asset(
+                                'assets/images/login/facebook.svg',
+                              ),
+                              onPressed: () {},
                             ),
                           ),
-                        ]
+                        ],
                       ),
                       SizedBox(height: 16),
                       Row(
-                        mainAxisAlignment:MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Already have an account?',
+                          Text(
+                            'Already have an account?',
                             style: TextStyle(
-                            color: Color(0xFF555658),
+                              color: Color(0xFF555658),
                               fontSize: 16,
                               fontFamily: 'Inter',
                               fontWeight: FontWeight.w400,
@@ -330,14 +352,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           TextButton(
                             onPressed: () {
                               Navigator.pushReplacement(
-                                context, 
+                                context,
                                 MaterialPageRoute(
                                   builder: (context) => const SignInScreen(),
-                                )
+                                ),
                               );
                             },
                             child: Text(
-                            'Sign In',
+                              'Sign In',
                               style: TextStyle(
                                 color: Color(0xFF1976D2),
                                 fontSize: 18,
@@ -347,21 +369,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 decoration: TextDecoration.underline,
                                 decorationColor: Color(0xFF1976D2),
                               ),
-                            )
-                          )
+                            ),
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
-          )
-        )
-      )
+          ),
+        ),
+      ),
     );
   }
 }
+
 Widget _buildTitle(String title) {
   return Text(
     title,
@@ -374,4 +397,3 @@ Widget _buildTitle(String title) {
     ),
   );
 }
-
