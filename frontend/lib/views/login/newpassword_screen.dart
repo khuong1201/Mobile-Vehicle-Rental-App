@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'widgets/custom_text_form_field.dart';
+import '../widgets/custom_text_form_field.dart';
 import 'signIn_screen.dart';
 class NewPasswordScreen extends StatefulWidget {
   const NewPasswordScreen({super.key});

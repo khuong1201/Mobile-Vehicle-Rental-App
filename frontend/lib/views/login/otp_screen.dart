@@ -71,7 +71,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 ),
                 SizedBox(height: 8),
-                Text('abcdhc@gmail.com',  //import ten gmail
+                Text('abcdhc@gmail.com',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color(0xff212121),

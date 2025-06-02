@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'widgets/custom_text_form_field.dart';
+import '../widgets/custom_text_form_field.dart';
 import '../home/homePage.dart';
 import 'signUp_screen.dart';
 import 'forgotPassword_screen.dart';
