@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
 
 import 'newpassword_screen.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen ({super.key});
+  const OtpScreen({super.key});
   @override
   State<OtpScreen> createState() => _OtpScreenState();
 }
 
 class _OtpScreenState extends State<OtpScreen> {
   final TextEditingController _otpController = TextEditingController();
-
   final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
+    final viewmodel = Provider.of<AuthViewModel>(context, listen: false);
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: Container(
@@ -52,15 +55,17 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                   backgroundColor: Colors.transparent,
                   elevation: 0,
-                  centerTitle:true,
+                  centerTitle: true,
                 ),
                 SizedBox(height: 40),
-                Image.asset('assets/images/login/otp.png',
+                Image.asset(
+                  'assets/images/login/otp.png',
                   width: 300,
                   height: 300,
                 ),
-                SizedBox(height: 16,),
-                Text('Please enter the 4 digit code sent to',
+                SizedBox(height: 16),
+                Text(
+                  'Please enter the 4 digit code sent to',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color(0xff555658),
@@ -71,7 +76,9 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 ),
                 SizedBox(height: 8),
-                Text('abcdhc@gmail.com',  //import ten gmail
+                
+                Text(
+                  '${viewmodel.email}',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color(0xff212121),
@@ -82,7 +89,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
                 SizedBox(height: 16),
                 Form(
-                  key:_formKey,
+                  key: _formKey,
                   child: PinCodeTextField(
                     appContext: context,
                     length: 5,
@@ -116,9 +123,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
                 SizedBox(height: 40),
                 TextButton(
-                  onPressed: () {
-
-                  },
+                  onPressed: () {},
                   child: Text(
                     'Resend Code',
                     style: TextStyle(
@@ -130,21 +135,25 @@ class _OtpScreenState extends State<OtpScreen> {
                       decorationColor: Color(0xFFEE463A),
                       height: 1.29,
                     ),
-                  )
+                  ),
                 ),
                 SizedBox(height: 60),
                 Container(
                   width: double.infinity,
                   decoration: ShapeDecoration(
-                  color: Color(0xFF1976D2),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    color: Color(0xFF1976D2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   child: TextButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         Navigator.push(
-                          context, 
-                          MaterialPageRoute(builder: (context) => NewPasswordScreen())
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NewPasswordScreen(),
+                          ),
                         );
                       } else {
                         showDialog(
@@ -152,7 +161,9 @@ class _OtpScreenState extends State<OtpScreen> {
                           builder: (context) {
                             return AlertDialog(
                               title: Text('Error'),
-                              content: Text('Please fill in all fields correctly.'),
+                              content: Text(
+                                'Please fill in all fields correctly.',
+                              ),
                               actions: [
                                 TextButton(
                                   onPressed: () {
@@ -176,16 +187,14 @@ class _OtpScreenState extends State<OtpScreen> {
                         fontWeight: FontWeight.w700,
                         height: 1.22,
                       ),
-                    )
+                    ),
                   ),
                 ),
               ],
-            )
-          )
+            ),
+          ),
         ),
-      )
+      ),
     );
   }
 }
-
-

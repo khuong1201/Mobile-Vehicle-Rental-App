@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:frontend/views/login/otp_screen.dart';
+import 'package:frontend/views/login/widgets/custom_text_form_field.dart';
+import 'package:provider/provider.dart';
 
 import 'signIn_screen.dart';
-import '../widgets/custom_text_form_field.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -26,6 +27,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final viewmodel = Provider.of<AuthViewModel>(context, listen: false);
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -220,14 +222,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               viewmodel.register(
-                                _emailController.toString(),
-                                _confirmPasswordController.toString(),
+                                _emailController.text.trim(),
+                                _confirmPasswordController.text.trim(),
                               );
+                              viewmodel.email = _emailController.text.trim().toString();
+                              debugPrint("${viewmodel.email}");
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const OtpScreen()
-                                )
+                                  builder: (context) => const OtpScreen(),
+                                ),
                               );
                             } else {
                               showDialog(
