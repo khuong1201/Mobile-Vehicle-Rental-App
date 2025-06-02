@@ -40,7 +40,7 @@ class _ProfileScreen extends State<ProfileScreen>{
                             height: 130,
                             errorBuilder: (context, error, stackTrace) => 
                               Image.asset(
-                                'assets/images/home/error.png',
+                                'assets/images/error/avatar.png',
                                 fit: BoxFit.contain,
                                 width: 130,
                                 height: 130,
@@ -76,9 +76,9 @@ class _ProfileScreen extends State<ProfileScreen>{
                     children: [
                       _buildTitle('My account'),
                       SizedBox(height: 16),
-                      _buildInkwellButton(context,'assets/images/home/profile/Personalnfo.svg', 'Personal Information', hasBorder: true),
-                      _buildInkwellButton(context,'assets/images/home/profile/Address.svg', 'Address', hasBorder: true),
-                      _buildInkwellButton(context,'assets/images/home/profile/StartHosting.svg', 'Start hosting'),
+                      _buildInkwellButton(context,'assets/images/homePage/profile/Personalnfo.svg', 'Personal Information', hasBorder: true),
+                      _buildInkwellButton(context,'assets/images/homePage/profile/Address.svg', 'Address', hasBorder: true),
+                      _buildInkwellButton(context,'assets/images/homePage/profile/StartHosting.svg', 'Start hosting'),
                     ],
                   )
                 ),
@@ -89,11 +89,11 @@ class _ProfileScreen extends State<ProfileScreen>{
                     children: [
                       _buildTitle('Settings'),
                       SizedBox(height: 16),
-                      _buildInkwellButton(context,'assets/images/home/profile/Language.svg', 'Language', hasBorder: true),
-                      _buildInkwellButton(context,'assets/images/home/profile/Currency.svg', 'Currency', hasBorder: true),
-                      _buildInkwellButton(context,'assets/images/home/profile/TermsofService.svg', 'Terms of Service', hasBorder: true),
-                      _buildInkwellButton(context,'assets/images/home/profile/PrivacyPolicy.svg', 'Privacy Policy', hasBorder: true),
-                      _buildInkwellButton(context,'assets/images/home/profile/ChangePassword.svg', 'Change Password'),
+                      _buildInkwellButton(context,'assets/images/homePage/profile/Language.svg', 'Language', hasBorder: true),
+                      _buildInkwellButton(context,'assets/images/homePage/profile/Currency.svg', 'Currency', hasBorder: true),
+                      _buildInkwellButton(context,'assets/images/homePage/profile/TermsofService.svg', 'Terms of Service', hasBorder: true),
+                      _buildInkwellButton(context,'assets/images/homePage/profile/PrivacyPolicy.svg', 'Privacy Policy', hasBorder: true),
+                      _buildInkwellButton(context,'assets/images/homePage/profile/ChangePassword.svg', 'Change Password'),
                     ],
                   )
                 ),
@@ -104,10 +104,10 @@ class _ProfileScreen extends State<ProfileScreen>{
                     children: [
                       _buildTitle('Support'),
                       SizedBox(height: 16),
-                      _buildInkwellButton(context,'assets/images/home/profile/EmergencyServices.svg', 'Emergency Services', hasBorder: true),
-                      _buildInkwellButton(context,'assets/images/home/profile/Support.svg', '24/7 Customer Support', hasBorder: true),
-                      _buildInkwellButton(context,'assets/images/home/profile/Feedback.svg', 'Send Feedback', hasBorder: true),
-                      _buildInkwellButton(context,'assets/images/home/profile/Signout.svg', 'Sign out'),
+                      _buildInkwellButton(context,'assets/images/homePage/profile/EmergencyServices.svg', 'Emergency Services', hasBorder: true),
+                      _buildInkwellButton(context,'assets/images/homePage/profile/Support.svg', '24/7 Customer Support', hasBorder: true),
+                      _buildInkwellButton(context,'assets/images/homePage/profile/Feedback.svg', 'Send Feedback', hasBorder: true),
+                      _buildInkwellButton(context,'assets/images/homePage/profile/Signout.svg', 'Sign out'),
                     ],
                   )
                 ),

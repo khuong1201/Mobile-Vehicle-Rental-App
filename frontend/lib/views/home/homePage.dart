@@ -17,10 +17,10 @@ class _HomePageState extends State<HomePage> {
   late List<Widget> _screens;
 
   final List<Map<String, String>> _navItems = [
-    {'icon': 'assets/images/home/home.svg', 'label': 'Home'},
-    {'icon': 'assets/images/home/history.svg', 'label': 'History'},
-    {'icon': 'assets/images/home/favorite.svg', 'label': 'Favorite'},
-    {'icon': 'assets/images/home/profile.svg', 'label': 'Profile'},
+    {'icon': 'assets/images/homePage/home.svg', 'label': 'Home'},
+    {'icon': 'assets/images/homePage/history.svg', 'label': 'History'},
+    {'icon': 'assets/images/homePage/favorite.svg', 'label': 'Favorite'},
+    {'icon': 'assets/images/homePage/profile.svg', 'label': 'Profile'},
   ];
 
   @override
