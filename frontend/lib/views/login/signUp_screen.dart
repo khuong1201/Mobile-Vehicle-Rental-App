@@ -4,7 +4,7 @@ import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:frontend/views/login/otp_screen.dart';
 
 import 'signIn_screen.dart';
-import 'widgets/custom_text_form_field.dart';
+import '../widgets/custom_text_form_field.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -223,8 +223,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 _emailController.toString(),
                                 _confirmPasswordController.toString(),
                               );
-                              MaterialPageRoute(
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
                                   builder: (context) => const OtpScreen()
+                                )
                               );
                             } else {
                               showDialog(
