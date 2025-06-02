@@ -76,13 +76,9 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 ),
                 SizedBox(height: 8),
-<<<<<<< HEAD
-                Text('abcdhc@gmail.com',
-=======
                 
                 Text(
                   '${viewmodel.email}',
->>>>>>> 7a779ad1a10577bcf9c7607a446cf4cb2d995771
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color(0xff212121),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:frontend/views/login/otp_screen.dart';
-import 'package:frontend/views/login/widgets/custom_text_form_field.dart';
+import 'package:frontend/views/widgets/custom_text_form_field.dart';
 import 'package:provider/provider.dart';
 
 import 'signIn_screen.dart';
