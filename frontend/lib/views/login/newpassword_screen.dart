@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/custom_text_form_field.dart';
+import 'package:frontend/views/widgets/custom_alert_dialog.dart';
+import 'package:frontend/views/widgets/custom_bottom_button.dart';
+import 'package:frontend/views/widgets/custom_text_form_field.dart';
 import 'signIn_screen.dart';
+
 class NewPasswordScreen extends StatefulWidget {
   const NewPasswordScreen({super.key});
 
@@ -11,7 +14,8 @@ class NewPasswordScreen extends StatefulWidget {
 
 class _NewPasswordScreenState extends State<NewPasswordScreen> {
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -36,11 +40,11 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                     },
                     icon: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Color(0xffD1E4F6),
                         shape: BoxShape.circle,
                       ),
                       padding: EdgeInsets.all(4),
-                      child: Icon(Icons.arrow_back, color: Colors.black),
+                      child: Icon(Icons.arrow_back, color: Color(0xff1976D2)),
                     ),
                   ),
                   title: Text(
@@ -56,12 +60,14 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                   elevation: 0,
                 ),
                 SizedBox(height: 40),
-                Image.asset('assets/images/login/creatnewpassword.png',
+                Image.asset(
+                  'assets/images/login/creatnewpassword.png',
                   width: 300,
-                  height: 300
+                  height: 300,
                 ),
                 SizedBox(height: 20),
-                Text('Your New Password Must Be Different from Previously Used Password.',
+                Text(
+                  'Your New Password Must Be Different from Previously Used Password.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color(0xff555658),
@@ -71,7 +77,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                     height: 1.25,
                   ),
                 ),
-                SizedBox(height: 20,),
+                SizedBox(height: 20),
                 Form(
                   key: _formKey,
                   child: Column(
@@ -105,83 +111,118 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                           }
                           return null;
                         },
-                        hintText: "Confirm Password", 
+                        hintText: "Confirm Password",
                       ),
                     ],
-                  )
+                  ),
                 ),
                 SizedBox(height: 30),
-                Container(
+                CustomButton(
                   width: double.infinity,
-                  decoration: ShapeDecoration(
-                  color: Color(0xFF1976D2),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        //
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text('Succes'),
-                              content: Text('Password has been updated'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => SignInScreen())
-                                    );
-                                  },
-                                  child: Text('Go to sign in'),
-                                ),
-                              ],
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => CustomAlertDialog(
+                          title: 'Go to sign in',
+                          content: 'Password has been updated',
+                          buttonText: 'Go to sign in',
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SignInScreen(),
+                              ),
                             );
                           },
-                        );
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text('Error'),
-                              content: Text('Please fill in all fields correctly.'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('OK'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                    },
-                    child: Text(
-                      'Save',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFFF7F7F8),
-                        fontSize: 18,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w700,
-                        height: 1.22,
-                      ),
-                    )
-                  ),
+                        ),
+                      );
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (context) => CustomAlertDialog(
+                              title: 'Error',
+                              content: 'Please fill in all fields correctly.',
+                              buttonText: 'OK',
+                            ),
+                      );
+                    }
+                  },
+                  title: 'Save',
                 ),
-              ]
-            )
-          )
-        )
-      )
+                // Container(
+                //   width: double.infinity,
+                //   decoration: ShapeDecoration(
+                //   color: Color(0xFF1976D2),
+                //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                //   ),
+                //   child: TextButton(
+                //     onPressed: () {
+                //       if (_formKey.currentState!.validate()) {
+                //         //
+                //         showDialog(
+                //           context: context,
+                //           builder: (context) {
+                //             return AlertDialog(
+                //               title: Text('Succes'),
+                //               content: Text('Password has been updated'),
+                //               actions: [
+                //                 TextButton(
+                //                   onPressed: () {
+                //                     Navigator.pushReplacement(
+                //                       context,
+                //                       MaterialPageRoute(builder: (context) => SignInScreen())
+                //                     );
+                //                   },
+                //                   child: Text('Go to sign in'),
+                //                 ),
+                //               ],
+                //             );
+                //           },
+                //         );
+                //       } else {
+                //         showDialog(
+                //           context: context,
+                //           builder: (context) {
+                //             return AlertDialog(
+                //               title: Text('Error'),
+                //               content: Text('Please fill in all fields correctly.'),
+                //               actions: [
+                //                 TextButton(
+                //                   onPressed: () {
+                //                     Navigator.of(context).pop();
+                //                   },
+                //                   child: Text('OK'),
+                //                 ),
+                //               ],
+                //             );
+                //           },
+                //         );
+                //       }
+                //     },
+                //     child: Text(
+                //       'Save',
+                //       textAlign: TextAlign.center,
+                //       style: TextStyle(
+                //         color: Color(0xFFF7F7F8),
+                //         fontSize: 18,
+                //         fontFamily: 'Inter',
+                //         fontWeight: FontWeight.w700,
+                //         height: 1.22,
+                //       ),
+                //     )
+                //   ),
+                // ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
+
 Widget _buildTitle(String title) {
   return Text(
     title,

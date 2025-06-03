@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+
+import 'package:frontend/views/widgets/custom_alert_dialog.dart';
+import 'package:frontend/views/widgets/custom_bottom_button.dart';
+import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import 'newpassword_screen.dart';
@@ -138,58 +141,27 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 ),
                 SizedBox(height: 60),
-                Container(
+                CustomButton(
                   width: double.infinity,
-                  decoration: ShapeDecoration(
-                    color: Color(0xFF1976D2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NewPasswordScreen(),
-                          ),
-                        );
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text('Error'),
-                              content: Text(
-                                'Please fill in all fields correctly.',
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('OK'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                    },
-                    child: Text(
-                      'Verify',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFFF7F7F8),
-                        fontSize: 18,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w700,
-                        height: 1.22,
-                      ),
-                    ),
-                  ),
-                ),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => NewPasswordScreen())
+                      );
+                    } else {
+                      showDialog(
+                        context: context, 
+                        builder: (context) => CustomAlertDialog(
+                          title: 'Error', 
+                          content: 'Please fill in all fields correctly.',
+                          buttonText: 'OK',
+                        )
+                      );
+                    }
+                  },
+                  title: 'Verify',
+                )
               ],
             ),
           ),

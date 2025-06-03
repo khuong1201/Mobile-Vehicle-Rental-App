@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:frontend/views/login/otp_screen.dart';
+import 'package:frontend/views/widgets/custom_bottom_button.dart';
+import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 import 'package:provider/provider.dart';
 
@@ -210,64 +212,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   width: double.infinity,
                   child: Column(
                     children: [
-                      Container(
+                      CustomButton(
                         width: double.infinity,
-                        decoration: ShapeDecoration(
-                          color: Color(0xFF1976D2),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: TextButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              viewmodel.register(
-                                _emailController.text.trim().toString(),
-                                _confirmPasswordController.text.trim().toString(),
-                                _nameController.text.trim().toString(),
-                              );
-                              viewmodel.email = _emailController.text.trim().toString();
-                              debugPrint("${viewmodel.email}");
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const OtpScreen(),
-                                ),
-                              );
-                            } else {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Text('Error'),
-                                    content: Text(
-                                      'Please fill in all fields correctly.',
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text('OK'),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            }
-                          },
-                          child: Text(
-                            'Sign Up',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color(0xFFF7F7F8),
-                              fontSize: 18,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w700,
-                              height: 1.22,
-                            ),
-                          ),
-                        ),
+                        title: 'Sing up',
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            viewmodel.register(
+                              _emailController.text.trim().toString(),
+                              _confirmPasswordController.text.trim().toString(),
+                              _nameController.text.trim().toString(),
+                            );
+                            viewmodel.email = _emailController.text.trim().toString();
+                            debugPrint("${viewmodel.email}");
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const OtpScreen(),
+                              ),
+                            );
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (context) => CustomAlertDialog(
+                                title: 'Error',
+                                content: 'Please fill in all fields correctly.',
+                                buttonText: 'OK',
+                              ),
+                            );
+                          }
+                        }
                       ),
                       SizedBox(height: 28),
                       Container(

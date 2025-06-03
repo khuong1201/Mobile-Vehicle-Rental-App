@@ -3,7 +3,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-import '../widgets/custom_text_form_field.dart';
+
+import 'package:frontend/views/widgets/custom_text_form_field.dart';
+import 'package:frontend/views/widgets/custom_bottom_button.dart';
+import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import '../home/homePage.dart';
 import 'signUp_screen.dart';
 import 'forgotPassword_screen.dart';
@@ -155,58 +158,29 @@ class _SignInScreenState extends State<SignInScreen> {
                   width: double.infinity,
                   child: Column(
                     children: [
-                      Container(
+                      CustomButton(
                         width: double.infinity,
-                        decoration: ShapeDecoration(
-                          color: Color(0xFF1976D2),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: TextButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              viewmodel.login(_emailController.text.trim(), _passwordController.text.trim());
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => HomePage(),
-                                ),
-                              );
-                            } else {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Text('Error'),
-                                    content: Text(
-                                      'Please fill in all fields correctly.',
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text('OK'),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            }
-                          },
-                          child: Text(
-                            'Sign In',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color(0xFFF7F7F8),
-                              fontSize: 18,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w700,
-                              height: 1.22,
-                            ),
-                          ),
-                        ),
+                        title: 'Sing In',
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            viewmodel.login(_emailController.text.trim(), _passwordController.text.trim());
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HomePage(),
+                              ),
+                            );
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (context) => CustomAlertDialog(
+                                title: 'Error',
+                                content: 'Please fill in all fields correctly.',
+                                buttonText: 'OK',
+                              ),
+                            );
+                          }
+                        }
                       ),
                       SizedBox(height: 40),
                       Row(

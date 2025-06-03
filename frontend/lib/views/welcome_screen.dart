@@ -5,6 +5,7 @@ import 'dart:async';
 
 import 'login/signIn_screen.dart';
 import 'login/signUp_screen.dart';
+import '/views/widgets/custom_bottom_button.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -135,34 +136,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const SizedBox(height: 40),
-                    Container(
+                    CustomButton(
                       height: 46,
                       width: 182,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1976D2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SignUpScreen(),
-                            )
-                          );
-                        },
-                        child: Text(
-                          'Sign Up',
-                          textAlign: TextAlign.center, // Căn giữa văn bản
-                          style: const TextStyle(
-                            color: Color(0xFFF7F7F8),
-                            fontSize: 18,
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w700,
-                            height: 1.22,
-                          ),
-                        ),
-                      ),
+                      onPressed:(){
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignUpScreen() )
+                        );
+                      },
+                      title:'Sign up'
                     ),
                     const SizedBox(height: 40),
                     Row(
