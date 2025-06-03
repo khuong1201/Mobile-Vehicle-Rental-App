@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
+import '/views/hosting/start_screen.dart';
 
 class ProfileScreen extends StatefulWidget{
   const ProfileScreen ({super.key});
@@ -78,7 +79,7 @@ class _ProfileScreen extends State<ProfileScreen>{
                       SizedBox(height: 16),
                       _buildInkwellButton(context,'assets/images/homePage/profile/Personalnfo.svg', 'Personal Information', hasBorder: true),
                       _buildInkwellButton(context,'assets/images/homePage/profile/Address.svg', 'Address', hasBorder: true),
-                      _buildInkwellButton(context,'assets/images/homePage/profile/StartHosting.svg', 'Start hosting'),
+                      _buildInkwellButton(context,'assets/images/homePage/profile/StartHosting.svg', 'Start hosting', destination: StartScreen()),
                     ],
                   )
                 ),

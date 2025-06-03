@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../login/widgets/custom_text_form_field.dart';
-import '../login/widgets/custom_Svg_icon.dart';
+import '../widgets/custom_text_form_field.dart';
+import '../widgets/custom_Svg_icon.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
