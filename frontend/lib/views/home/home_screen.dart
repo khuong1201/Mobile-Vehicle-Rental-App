@@ -359,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     Row(
                                       children: [
-                                        Container(
+                                        SizedBox(
                                           width: 20,
                                           height: 20,
                                           child: SvgPicture.asset(car['logo']),
@@ -381,7 +381,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     SizedBox(height: 4),
                                     Row(
                                       children: [
-                                        Container(
+                                        SizedBox(
                                           width: 20,
                                           height: 20,
                                           child: SvgPicture.asset(
@@ -419,7 +419,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 width: 12,
                                                 height: 12,
                                                 child: SvgPicture.asset(

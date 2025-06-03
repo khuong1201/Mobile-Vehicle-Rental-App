@@ -9,13 +9,13 @@ class SvgIconTextButton extends StatelessWidget {
   final double? height;
 
   const SvgIconTextButton({
-    Key? key,
+    super.key,
     required this.assetPath,
     required this.label,
     required this.onPressed,
     this.width,
     this.height
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

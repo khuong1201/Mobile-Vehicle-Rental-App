@@ -27,7 +27,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final viewmodel = Provider.of<AuthViewModel>(context, listen: false);
+    final viewmodel = Provider.of<AuthViewModel>(context, listen: true);
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -218,58 +218,94 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: TextButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              viewmodel.register(
-                                _emailController.text.trim().toString(),
-                                _confirmPasswordController.text.trim().toString(),
-                                _nameController.text.trim().toString(),
-                              );
-                              viewmodel.email = _emailController.text.trim().toString();
-                              debugPrint("${viewmodel.email}");
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const OtpScreen(),
-                                ),
-                              );
-                            } else {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Text('Error'),
-                                    content: Text(
-                                      'Please fill in all fields correctly.',
+                        child:
+                            viewmodel.isLoading
+                                ? Center(
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Color(0xFFF7F7F8),
                                     ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
+                                  ),
+                                )
+                                : TextButton(
+                                  onPressed: () async {
+                                    if (_formKey.currentState!.validate()) {
+                                      bool isSuccess = await viewmodel.register(
+                                        _emailController.text.trim().toString(),
+                                        _confirmPasswordController.text
+                                            .trim()
+                                            .toString(),
+                                        _nameController.text.trim().toString(),
+                                      );
+                                      if (!context.mounted) return;
+                                      if (isSuccess) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => const OtpScreen(
+                                                  mode: "register",
+                                                ),
+                                          ),
+                                        );
+                                      } else {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Text('Error'),
+                                              content: Text(
+                                                viewmodel.errorMessage ??
+                                                    'Registration failed. Please try again.',
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text('OK'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    } else {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text('Error'),
+                                            content: Text(
+                                              'Please fill in all fields correctly.',
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Text('OK'),
+                                              ),
+                                            ],
+                                          );
                                         },
-                                        child: Text('OK'),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            }
-                          },
-                          child: Text(
-                            'Sign Up',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color(0xFFF7F7F8),
-                              fontSize: 18,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w700,
-                              height: 1.22,
-                            ),
-                          ),
-                        ),
+                                      );
+                                    }
+                                  },
+                                  child: Text(
+                                    'Sign Up',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Color(0xFFF7F7F8),
+                                      fontSize: 18,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w700,
+                                      height: 1.22,
+                                    ),
+                                  ),
+                                ),
                       ),
-                      SizedBox(height: 28),
+                      const SizedBox(height: 28),
                       Container(
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
