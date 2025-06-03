@@ -222,8 +222,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               viewmodel.register(
-                                _emailController.text.trim(),
-                                _confirmPasswordController.text.trim(),
+                                _emailController.text.trim().toString(),
+                                _confirmPasswordController.text.trim().toString(),
+                                _nameController.text.trim().toString(),
                               );
                               viewmodel.email = _emailController.text.trim().toString();
                               debugPrint("${viewmodel.email}");

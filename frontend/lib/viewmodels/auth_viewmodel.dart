@@ -10,6 +10,7 @@ class AuthViewModel extends ChangeNotifier {
     try {
       final backendToken = await ApiLogin.login(email, password);
       if (backendToken != null) {
+        debugPrint('Login successful, token: $backendToken');
         token = backendToken;
         notifyListeners();
       }
@@ -18,9 +19,9 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> register(String email, String password) async {
+  Future<void> register(String email, String password, String name) async {
     try {
-      final response = await ApiRegister.register(email, password);
+      final response = await ApiRegister.register(email, password, name);
       if (response != null) {
         debugPrint('Registration successful: $response');
       }

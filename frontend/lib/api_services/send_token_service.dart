@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
 
-class sendTokenBackend {
+class SendTokenBackend {
   static const String baseUrl = 'http://localhost:5000'; 
   static Future<String?> sendTokenToBackend(String jwtToken) async {
     final url = Uri.parse('$baseUrl/api/auth/verify');

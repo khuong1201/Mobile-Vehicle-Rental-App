@@ -25,6 +25,7 @@ const verify = async (req, res) => {
         const { email, otp } = req.body;
         await authService.verifyEmail({ email, otp });
         res.json({ message: 'Email verified successfully' });
+        
     } catch (err) {
         res.status(400).json({ message: err.message });
     }

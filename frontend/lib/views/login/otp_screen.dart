@@ -76,7 +76,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 ),
                 SizedBox(height: 8),
-                
+
                 Text(
                   '${viewmodel.email}',
                   textAlign: TextAlign.center,

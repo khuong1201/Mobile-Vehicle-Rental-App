@@ -3,16 +3,17 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiRegister {
-  static const String baseUrl = 'http://localhost:5000';
+  static const String baseUrl = 'http://10.0.2.2:5000';
   static Future<String?> register(
-    String email,
-    String password,
+    email,
+    password,
+    name,
   ) async {
     final url = Uri.parse('$baseUrl/api/auth/register');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password }),
+      body: jsonEncode({'email': email, 'password': password, 'fullName': name }),
     );
 
     if (response.statusCode == 200) {

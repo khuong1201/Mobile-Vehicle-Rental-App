@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:frontend/viewmodels/auth_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 import 'widgets/custom_text_form_field.dart';
 import '../home/homePage.dart';
 import 'signUp_screen.dart';
 import 'forgotPassword_screen.dart';
-
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -23,6 +24,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final viewmodel = Provider.of<AuthViewModel>(context, listen: false);
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -33,7 +35,7 @@ class _SignInScreenState extends State<SignInScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height:118),
+                SizedBox(height: 118),
                 Text(
                   "Sign In",
                   textAlign: TextAlign.center,
@@ -89,7 +91,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         },
                         hintText: "Enter your Password",
                       ),
-                      SizedBox(height: 16,),
+                      SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -103,10 +105,11 @@ class _SignInScreenState extends State<SignInScreen> {
                                   });
                                 },
                                 visualDensity: VisualDensity(horizontal: -4),
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
                                 side: BorderSide(
                                   color: Color(0xFFD5D7DB),
-                                  width: 2,             
+                                  width: 2,
                                 ),
                               ),
                               SizedBox(width: 8),
@@ -119,13 +122,15 @@ class _SignInScreenState extends State<SignInScreen> {
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
-                            ]
+                            ],
                           ),
                           TextButton(
-                            onPressed: (){
+                            onPressed: () {
                               Navigator.push(
-                                context, 
-                                MaterialPageRoute(builder: (context) => ForgotPasswordScreen())
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ForgotPasswordScreen(),
+                                ),
                               );
                             },
                             child: Text(
@@ -139,11 +144,11 @@ class _SignInScreenState extends State<SignInScreen> {
                                 decorationColor: Color(0xFF1976D2),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ],
-                  )
+                  ),
                 ),
                 SizedBox(height: 24),
                 SizedBox(
@@ -153,15 +158,20 @@ class _SignInScreenState extends State<SignInScreen> {
                       Container(
                         width: double.infinity,
                         decoration: ShapeDecoration(
-                        color: Color(0xFF1976D2),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          color: Color(0xFF1976D2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                         child: TextButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
+                              viewmodel.login(_emailController.text.trim(), _passwordController.text.trim());
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => HomePage())
+                                MaterialPageRoute(
+                                  builder: (context) => HomePage(),
+                                ),
                               );
                             } else {
                               showDialog(
@@ -169,7 +179,9 @@ class _SignInScreenState extends State<SignInScreen> {
                                 builder: (context) {
                                   return AlertDialog(
                                     title: Text('Error'),
-                                    content: Text('Please fill in all fields correctly.'),
+                                    content: Text(
+                                      'Please fill in all fields correctly.',
+                                    ),
                                     actions: [
                                       TextButton(
                                         onPressed: () {
@@ -193,7 +205,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               fontWeight: FontWeight.w700,
                               height: 1.22,
                             ),
-                          )
+                          ),
                         ),
                       ),
                       SizedBox(height: 40),
@@ -241,9 +253,10 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                             ),
                             child: IconButton(
-                              icon: SvgPicture.asset('assets/images/login/google.svg'),
-                              onPressed: () {
-                              },
+                              icon: SvgPicture.asset(
+                                'assets/images/login/google.svg',
+                              ),
+                              onPressed: () {},
                             ),
                           ),
                           SizedBox(width: 16),
@@ -259,37 +272,39 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                             ),
                             child: IconButton(
-                              icon: SvgPicture.asset('assets/images/login/facebook.svg'),
-                              onPressed: () {
-                              },
+                              icon: SvgPicture.asset(
+                                'assets/images/login/facebook.svg',
+                              ),
+                              onPressed: () {},
                             ),
                           ),
-                        ]
+                        ],
                       ),
                       SizedBox(height: 40),
                       Row(
-                        mainAxisAlignment:MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Don’t have an account?',
+                          Text(
+                            'Don’t have an account?',
                             style: TextStyle(
-                            color: Color(0xFF555658),
+                              color: Color(0xFF555658),
                               fontSize: 16,
                               fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,  
+                              fontWeight: FontWeight.w400,
                               height: 1.25,
                             ),
                           ),
                           TextButton(
                             onPressed: () {
                               Navigator.pushReplacement(
-                                context, 
+                                context,
                                 MaterialPageRoute(
                                   builder: (context) => const SignUpScreen(),
-                                )
+                                ),
                               );
                             },
                             child: Text(
-                            'Sign Up',
+                              'Sign Up',
                               style: TextStyle(
                                 color: Color(0xfff1976d2),
                                 fontSize: 18,
@@ -299,17 +314,17 @@ class _SignInScreenState extends State<SignInScreen> {
                                 decoration: TextDecoration.underline,
                                 decorationColor: Color(0xfff1976d2),
                               ),
-                            )
-                          )
+                            ),
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ),
-                )
-              ]
-            )
-          )
-        )
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
