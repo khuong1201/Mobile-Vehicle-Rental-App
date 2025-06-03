@@ -64,7 +64,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   width: 300,
                   height: 300
                 ),
-                SizedBox(height: 40,),
+                SizedBox(height: 40),
                 Text('Please write your email to receive a confirmation code to set a new password',
                   textAlign: TextAlign.center,
                   style: TextStyle(

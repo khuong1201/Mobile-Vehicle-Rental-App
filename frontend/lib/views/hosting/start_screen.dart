@@ -12,7 +12,11 @@ class _StartScreen extends State<StartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment:CrossAxisAlignment.center,
           children: [
             AppBar(
@@ -30,7 +34,7 @@ class _StartScreen extends State<StartScreen> {
                 ),
               ),
               title: Text(
-                'Verify your email',
+                'Start Hosting',
                 style: TextStyle(
                   color: Color(0xff212121),
                   fontSize: 28,
@@ -42,8 +46,7 @@ class _StartScreen extends State<StartScreen> {
               elevation: 0,
               centerTitle: true,
             ),
-            Image.asset('assets/images/login/otp.png', width: 300, height: 300),
-            SizedBox(height: 36),
+            Image.asset('assets/images/hosting/startHosting1.png', width: 350, height: 350),
             Text(
               'Increase your monthly income with us',
               textAlign: TextAlign.center,
@@ -56,6 +59,7 @@ class _StartScreen extends State<StartScreen> {
               ),
             ),
             CustomButton(
+              width: double.infinity,
               onPressed:(){
 
               },
