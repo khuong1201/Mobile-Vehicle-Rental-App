@@ -212,36 +212,62 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   width: double.infinity,
                   child: Column(
                     children: [
-                      CustomButton(
+                      Container(
                         width: double.infinity,
-                        title: 'Sing up',
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            viewmodel.register(
-                              _emailController.text.trim().toString(),
-                              _confirmPasswordController.text.trim().toString(),
-                              _nameController.text.trim().toString(),
-                            );
-                            viewmodel.email = _emailController.text.trim().toString();
-                            debugPrint("${viewmodel.email}");
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const OtpScreen(),
-                              ),
-                            );
-                          } else {
-                            showDialog(
-                              context: context,
-                              builder: (context) => CustomAlertDialog(
-                                title: 'Error',
-                                content: 'Please fill in all fields correctly.',
-                                buttonText: 'OK',
-                              ),
-                            );
-                          }
-                        }
+                        decoration: ShapeDecoration(
+                          color: Color(0xFF1976D2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child:
+                            viewmodel.isLoading
+                                ? Center(
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Color(0xFFF7F7F8),
+                                    ),
+                                  ),
+                                )
+                                : CustomButton(
+                                  width: double.infinity,
+                                  title: 'register',
+                                  onPressed: () async {
+                                    if (_formKey.currentState!.validate()) {
+                                      bool isSuccess = await viewmodel.register(
+                                        _emailController.text.trim().toString(),
+                                        _confirmPasswordController.text
+                                            .trim()
+                                            .toString(),
+                                        _nameController.text.trim().toString(),
+                                      );
+                                      if (!context.mounted) return;
+                                      if (isSuccess) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => const OtpScreen(mode: 'register'),
+                                          ),
+                                        );
+                                      } else {
+                                        showDialog(
+                                          context: context,
+                                          builder:
+                                              (context) => CustomAlertDialog(
+                                                title: 'Error',
+                                                content:
+                                                    viewmodel.errorMessage ??
+                                                    'Registration failed. Please try again.',
+                                                buttonText: 'OK',
+                                              ),
+                                        );
+                                      }
+                                    }
+                                  },
+                                ),
                       ),
+
                       const SizedBox(height: 28),
                       Container(
                         child: Row(

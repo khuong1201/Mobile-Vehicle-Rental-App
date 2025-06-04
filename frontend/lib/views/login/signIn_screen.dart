@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
@@ -160,27 +159,44 @@ class _SignInScreenState extends State<SignInScreen> {
                     children: [
                       CustomButton(
                         width: double.infinity,
-                        title: 'Sing In',
-                        onPressed: () {
+                        title: 'Sign In',
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            viewmodel.login(_emailController.text.trim(), _passwordController.text.trim());
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HomePage(),
-                              ),
+                            bool isSuccess = await viewmodel.login(
+                              _emailController.text.trim(),
+                              _passwordController.text.trim(),
                             );
+                            if (!context.mounted) return;
+                            if (isSuccess) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomePage(),
+                                ),
+                              );
+                            }else{
+                              showDialog(
+                                context: context,
+                                builder: (context) => CustomAlertDialog(
+                                  title: 'Error',
+                                  content: viewmodel.errorMessage ?? 'Invalid email or password.',
+                                  buttonText: 'OK',
+                                ),
+                              );
+                            }
                           } else {
                             showDialog(
                               context: context,
-                              builder: (context) => CustomAlertDialog(
-                                title: 'Error',
-                                content: 'Please fill in all fields correctly.',
-                                buttonText: 'OK',
-                              ),
+                              builder:
+                                  (context) => CustomAlertDialog(
+                                    title: 'Error',
+                                    content:
+                                        'Please fill in all fields correctly.',
+                                    buttonText: 'OK',
+                                  ),
                             );
                           }
-                        }
+                        },
                       ),
                       SizedBox(height: 40),
                       Row(

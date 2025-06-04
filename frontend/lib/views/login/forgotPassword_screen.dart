@@ -112,7 +112,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     if (_formKey.currentState!.validate()) {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => OtpScreen())
+                        MaterialPageRoute(builder: (context) => OtpScreen(mode: 'forgotPassword'))
                       );
                     } else {
                       showDialog(

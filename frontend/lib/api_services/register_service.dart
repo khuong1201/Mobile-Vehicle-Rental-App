@@ -1,10 +1,11 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ApiRegister {
   static const String baseUrl = 'http://10.0.2.2:5000';
-  static Future<String?> register(
+  static Future<dynamic> register(
     email,
     password,
     name,
@@ -16,12 +17,12 @@ class ApiRegister {
       body: jsonEncode({'email': email, 'password': password, 'fullName': name }),
     );
 
-    if (response.statusCode == 200) {
+    try {
       final data = jsonDecode(response.body);
-      return data['message'];
-    } else {
-      print('register failed: ${response.statusCode} - ${response.body}');
-      return null;
+      return data; 
+    } catch (e) {
+      debugPrint('JSON decode error: $e');
+      return {'message': 'Unexpected error occurred', 'success': false};
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/views/login/newpassword_screen.dart';
+import 'package:frontend/views/login/signIn_screen.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
@@ -8,7 +9,8 @@ import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({super.key});
+  final mode;
+  const OtpScreen({super.key, required this.mode});
   @override
   State<OtpScreen> createState() => _OtpScreenState();
 }
@@ -144,27 +146,78 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 ),
                 SizedBox(height: 60),
-                CustomButton(
+                Container(
                   width: double.infinity,
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => NewPasswordScreen())
-                      );
-                    } else {
-                      showDialog(
-                        context: context, 
-                        builder: (context) => CustomAlertDialog(
-                          title: 'Error', 
-                          content: 'Please fill in all fields correctly.',
-                          buttonText: 'OK',
-                        )
-                      );
-                    }
-                  },
-                  title: 'Verify',
-                )
+                  decoration: ShapeDecoration(
+                    color: Color(0xFF1976D2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child:
+                      viewmodel.isLoading
+                          ? const Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFFF7F7F8),
+                              ),
+                            ),
+                          )
+                          : CustomButton(
+                            width: double.infinity,
+                            title: 'Verify',
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                bool isSuccess = await viewmodel.verifyOTP(
+                                  viewmodel.email.toString(),
+                                  _otpController.text.trim().toString(),
+                                );
+                                if (!context.mounted) return;
+                                if (isSuccess) {
+                                  if (widget.mode == "forgotPassword") {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => NewPasswordScreen(),
+                                      ),
+                                    );
+                                  } else if (widget.mode == "register") {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SignInScreen(),
+                                      ),
+                                    );
+                                  } else {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return CustomAlertDialog(
+                                          title: 'Erorr',
+                                          content:
+                                              viewmodel.errorMessage ??
+                                              'OTP verification failed. Please try again.',
+                                          buttonText: 'OK',
+                                        );
+                                      },
+                                    );
+                                  }
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder:
+                                        (context) => CustomAlertDialog(
+                                          title: 'Error',
+                                          content:
+                                              'Please fill in all fields correctly.',
+                                          buttonText: 'OK',
+                                        ),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                ),
               ],
             ),
           ),

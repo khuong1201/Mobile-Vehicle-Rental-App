@@ -79,14 +79,14 @@ class AuthViewModel extends ChangeNotifier {
       notifyListeners();
 
       final response = await ApiRegister.register(email, password, name);
-      if (response != null) {
+      if (response != null && response['success'] == true) {
         debugPrint('Registration successful: $response');
         this.email = email;
         notifyListeners();
         return true;
       } else {
         debugPrint('Registration failed');
-        errorMessage = 'Registration failed. Please try again.';
+        errorMessage = response['message'];
         notifyListeners();
         return false;
       }
@@ -110,22 +110,22 @@ class AuthViewModel extends ChangeNotifier {
       final response = await ApiLogout.logout(accessToken, userID);
       if (response != null) {
         debugPrint('Logout successful');
-        token = null; 
-        email = null; 
+        token = null;
+        email = null;
         notifyListeners();
         return true;
       } else {
         debugPrint('Logout failed');
         errorMessage = 'Logout failed. Please try again.';
         notifyListeners();
-        return false; 
+        return false;
       }
     } catch (e) {
       debugPrint('Logout error: $e');
       errorMessage = 'An error occurred: $e';
       notifyListeners();
-      return false; 
-    }finally{
+      return false;
+    } finally {
       isLoading = false;
       notifyListeners();
     }
