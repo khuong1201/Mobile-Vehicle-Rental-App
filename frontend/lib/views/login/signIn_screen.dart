@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/viewmodels/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/googleAuth_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
@@ -27,6 +28,7 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     final viewmodel = Provider.of<AuthViewModel>(context, listen: false);
+    final gAuth = Provider.of<GAuthViewModel>(context);
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -174,12 +176,14 @@ class _SignInScreenState extends State<SignInScreen> {
                                   builder: (context) => HomePage(),
                                 ),
                               );
-                            }else{
+                            } else {
                               showDialog(
                                 context: context,
                                 builder: (context) => CustomAlertDialog(
                                   title: 'Error',
-                                  content: viewmodel.errorMessage ?? 'Invalid email or password.',
+                                  content:
+                                  viewmodel.errorMessage ??
+                                  'Invalid email or password.',
                                   buttonText: 'OK',
                                 ),
                               );
@@ -191,7 +195,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                   (context) => CustomAlertDialog(
                                     title: 'Error',
                                     content:
-                                        'Please fill in all fields correctly.',
+                                    'Please fill in all fields correctly.',
                                     buttonText: 'OK',
                                   ),
                             );
@@ -246,7 +250,26 @@ class _SignInScreenState extends State<SignInScreen> {
                               icon: SvgPicture.asset(
                                 'assets/images/login/google.svg',
                               ),
-                              onPressed: () {},
+                              onPressed: () async {
+                                await gAuth.signInWithGoogle();
+                                if (gAuth.user != null) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomePage(),
+                                    ),
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => CustomAlertDialog(
+                                      title: 'Error',
+                                      content: 'Google sign in failed.',
+                                      buttonText: 'OK',
+                                    ),
+                                  );
+                                }
+                              },
                             ),
                           ),
                           SizedBox(width: 16),
