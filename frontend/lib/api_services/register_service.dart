@@ -1,28 +1,33 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:frontend/api_services/api_client.dart';
+import 'package:frontend/api_services/api_reponse.dart';
 
 class ApiRegister {
-  static const String baseUrl = 'http://10.0.2.2:5000';
-  static Future<dynamic> register(
-    email,
-    password,
-    name,
-  ) async {
-    final url = Uri.parse('$baseUrl/api/auth/register');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password, 'fullName': name }),
-    );
-
+  static Future<ApiResponse<Map<String, dynamic>>> register(
+      String email, String password, String name) async {
+    final url = Uri.parse('${ApiClient.baseUrl}/api/auth/register');
     try {
-      final data = jsonDecode(response.body);
-      return data; 
+      final response = await ApiClient().client.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'password': password, 'fullName': name}),
+      ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        return ApiResponse(success: true, data: data, message: data['message']);
+      } else {
+        final data = jsonDecode(response.body);
+        return ApiResponse(
+          success: false,
+          message: data['message'] ?? 'Đăng ký thất bại: ${response.statusCode}',
+        );
+      }
     } catch (e) {
-      debugPrint('JSON decode error: $e');
-      return {'message': 'Unexpected error occurred', 'success': false};
+      debugPrint('🔥 Lỗi trong quá trình đăng ký: $e');
+      return ApiResponse(success: false, message: 'Lỗi: $e');
     }
   }
 }
