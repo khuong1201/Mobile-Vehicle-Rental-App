@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/viewmodels/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/googleAuth_viewmodel.dart';
+import 'package:frontend/views/home/homePage.dart';
 import 'package:frontend/views/login/otp_screen.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
@@ -30,6 +32,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     final viewmodel = Provider.of<AuthViewModel>(context, listen: true);
+    final gAuth = Provider.of<GAuthViewModel>(context, listen: true);
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -247,7 +250,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           context,
                                           MaterialPageRoute(
                                             builder:
-                                                (context) => const OtpScreen(mode: 'register'),
+                                                (context) => const OtpScreen(
+                                                  mode: 'register',
+                                                ),
                                           ),
                                         );
                                       } else {
@@ -318,7 +323,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               icon: SvgPicture.asset(
                                 'assets/images/login/google.svg',
                               ),
-                              onPressed: () {},
+                              onPressed: () async {
+                                await gAuth.signInWithGoogle();
+                                if (gAuth.user != null) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => CustomAlertDialog(
+                                      title: 'Success',
+                                      content:
+                                          'Account created successfully',
+                                      onPressed: () {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => HomePage(),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder:
+                                        (context) => CustomAlertDialog(
+                                          title: 'Error',
+                                          content: 'Google sign in failed.',
+                                          buttonText: 'OK',
+                                        ),
+                                  );
+                                }
+                              },
                             ),
                           ),
                           SizedBox(width: 16),
