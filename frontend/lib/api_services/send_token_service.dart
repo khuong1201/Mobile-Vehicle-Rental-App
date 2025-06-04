@@ -1,18 +1,21 @@
+import 'package:frontend/api_services/api_client.dart';
+import 'package:frontend/api_services/api_reponse.dart';
 import 'package:http/http.dart' as http;
 
 class SendTokenBackend {
-  static const String baseUrl = 'http://localhost:5000'; 
-  static Future<String?> sendTokenToBackend(String jwtToken) async {
-    final url = Uri.parse('$baseUrl/api/auth/verify');
+  static Future<ApiResponse<String>> sendTokenToBackend(String jwtToken) async {
+    final url = Uri.parse('${ApiClient.baseUrl}/api/auth/verify');
     final response = await http.post(
       url,
       headers: {'Authorization': 'Bearer $jwtToken'},
     );
-
     if (response.statusCode == 200) {
-      return jwtToken;
+      return ApiResponse(success: true, data: 'Token sent successfully');
     } else {
-      return null;
+      return ApiResponse(
+        success: false,
+        message: 'Failed to send token: ${response.statusCode}',
+      );
     }
   }
 }

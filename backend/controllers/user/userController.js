@@ -60,10 +60,10 @@ const updateDetails = async (req, res) => {
       return res.status(400).json({ message: 'Request body is missing' });
     }
 
-    const { fullName, role, license } = req.body;
+    const { fullName, role, address, license } = req.body;
 
     // Validate inputs
-    if (!fullName && !role && !license) {
+    if (!fullName && !address && !role && !license) {
       return res.status(400).json({ message: 'At least one field (fullName, role, license) is required' });
     }
 
@@ -71,6 +71,14 @@ const updateDetails = async (req, res) => {
       return res.status(400).json({ message: 'Role must be either "renter" or "owner"' });
     }
 
+    if(address){
+      if (typeof address !== 'string') {
+        return res.status(400).json({ message: 'Address must be a string' });
+      }
+      if (address.length < 5) {
+        return res.status(400).json({ message: 'Address must be at least 5 characters long' });
+      }
+    }
     if (license) {
       if (typeof license !== 'object' || license === null) {
         return res.status(400).json({ message: 'License must be an object' });
@@ -95,6 +103,7 @@ const updateDetails = async (req, res) => {
     // Update provided fields
     if (fullName) user.fullName = fullName;
     if (role) user.role = role;
+    if (address) user.address = address;
     if (license) {
       user.license = {
         number: license.number || user.license?.number,
@@ -113,6 +122,7 @@ const updateDetails = async (req, res) => {
         email: user.email,
         role: user.role,
         fullName: user.fullName,
+        address: user.address,
         license: user.license
       }
     });
