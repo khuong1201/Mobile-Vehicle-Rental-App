@@ -31,7 +31,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 AppBar(
                   leading: IconButton(
                     onPressed: () {
@@ -59,12 +59,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   elevation: 0,
                   centerTitle:true,
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Image.asset('assets/images/login/Forgot password-amico 1.png',
                   width: 300,
                   height: 300
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Text('Please write your email to receive a confirmation code to set a new password',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -75,7 +75,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     height: 1.29,
                   ),
                 ),
-                SizedBox(height: 40,),
+                const SizedBox(height: 40,),
                 Form(
                   key: _formKey,
                   child: Column(
@@ -91,7 +91,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           height: 1.25,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       CustomTextField(
                         controller: _emailController,
                         validator: (value) {
@@ -105,7 +105,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ],
                   )
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 CustomButton(
                   width: double.infinity,
                   onPressed: () {

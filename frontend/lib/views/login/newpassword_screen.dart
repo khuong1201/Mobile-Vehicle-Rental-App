@@ -32,7 +32,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 AppBar(
                   leading: IconButton(
                     onPressed: () {
@@ -59,13 +59,13 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                   backgroundColor: Colors.transparent,
                   elevation: 0,
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Image.asset(
                   'assets/images/login/creatnewpassword.png',
                   width: 300,
                   height: 300,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Text(
                   'Your New Password Must Be Different from Previously Used Password.',
                   textAlign: TextAlign.center,
@@ -77,14 +77,14 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                     height: 1.25,
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildTitle("Password"),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       CustomTextField(
                         controller: _passwordController,
                         isPassword: true,
@@ -96,9 +96,9 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                         },
                         hintText: "Enter your Password",
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       _buildTitle("Confirm new password"),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       CustomTextField(
                         controller: _confirmPasswordController,
                         isPassword: true,
@@ -116,7 +116,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 CustomButton(
                   width: double.infinity,
                   onPressed: () {

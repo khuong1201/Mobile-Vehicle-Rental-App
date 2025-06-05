@@ -39,7 +39,7 @@ class _SignInScreenState extends State<SignInScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: 118),
+                const SizedBox(height: 118),
                 Text(
                   "Sign In",
                   textAlign: TextAlign.center,
@@ -51,7 +51,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     height: 1.14,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   "Hi! Welcome back, you’re been missed",
                   textAlign: TextAlign.center,
@@ -63,14 +63,14 @@ class _SignInScreenState extends State<SignInScreen> {
                     height: 1.29,
                   ),
                 ),
-                SizedBox(height: 28),
+                const SizedBox(height: 28),
                 Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildTitle("Email Address"),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       CustomTextField(
                         controller: _emailController,
                         validator: (value) {
@@ -81,9 +81,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         },
                         hintText: "Enter your email",
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       _buildTitle('Password'),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       CustomTextField(
                         controller: _passwordController,
                         isPassword: true,
@@ -95,7 +95,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         },
                         hintText: "Enter your Password",
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -116,7 +116,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                   width: 2,
                                 ),
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               Text(
                                 'Remember me',
                                 style: TextStyle(
@@ -154,7 +154,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
                   child: Column(
@@ -202,7 +202,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           }
                         },
                       ),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -212,7 +212,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             height: 1,
                             color: Color(0xFF555658),
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
                             'Or sign in with',
                             style: TextStyle(
@@ -223,7 +223,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               height: 1.29,
                             ),
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Container(
                             width: 40,
                             height: 1,
@@ -231,7 +231,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -272,7 +272,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               },
                             ),
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           Container(
                             width: 60,
                             height: 40,
@@ -293,7 +293,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
