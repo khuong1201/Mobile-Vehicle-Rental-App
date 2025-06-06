@@ -43,7 +43,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: 50),
+                const SizedBox(height: 50),
                 Text(
                   "Create Account",
                   textAlign: TextAlign.center,
@@ -55,7 +55,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 1.14,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   "Fill your information below or sign up with your social account",
                   textAlign: TextAlign.center,
@@ -67,14 +67,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 1.29,
                   ),
                 ),
-                SizedBox(height: 28),
+                const SizedBox(height: 28),
                 Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildTitle("Name"),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       CustomTextField(
                         controller: _nameController,
                         validator: (value) {
@@ -85,9 +85,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         },
                         hintText: ('Enter your name'),
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       _buildTitle("Email Address"),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       CustomTextField(
                         controller: _emailController,
                         validator: (value) {
@@ -98,9 +98,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         },
                         hintText: "Enter your email",
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       _buildTitle('Password'),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       CustomTextField(
                         controller: _passwordController,
                         isPassword: true,
@@ -112,9 +112,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         },
                         hintText: "Enter your Password",
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       _buildTitle('Confirm password'),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       CustomTextField(
                         controller: _confirmPasswordController,
                         isPassword: true,
@@ -129,7 +129,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         },
                         hintText: "Confirm your Password",
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       FormField<bool>(
                         initialValue: _isCheckedAgree,
                         validator: (value) {
@@ -162,7 +162,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       width: 2,
                                     ),
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: Text.rich(
                                       TextSpan(
@@ -210,9 +210,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
+                  height: 46,
                   child: Column(
                     children: [
                       Container(
@@ -284,7 +285,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               height: 1,
                               color: Color(0xFF555658),
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Text(
                               'Or sign up with',
                               style: TextStyle(
