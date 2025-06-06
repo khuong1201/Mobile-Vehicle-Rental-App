@@ -165,8 +165,8 @@ class _SignInScreenState extends State<SignInScreen> {
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             bool isSuccess = await viewmodel.login(
-                              _emailController.text.trim(),
-                              _passwordController.text.trim(),
+                              _emailController.text.trim().toString(),
+                              _passwordController.text.trim().toString(),
                             );
                             if (!context.mounted) return;
                             if (isSuccess) {

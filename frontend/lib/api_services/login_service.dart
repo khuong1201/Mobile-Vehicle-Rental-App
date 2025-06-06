@@ -18,7 +18,7 @@ class ApiLogin {
         final data = jsonDecode(response.body);
         return ApiResponse(
           success: data['success'] ?? true,
-          data: data['token'],
+          data: data['accessToken'],
           message: data['message'],
         );
       } else {
