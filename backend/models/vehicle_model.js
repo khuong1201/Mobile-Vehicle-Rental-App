@@ -3,13 +3,19 @@ const mongoose = require('mongoose');
 const vehicleSchema = new mongoose.Schema({
   vehicleId: {
     type: String,
-    required: true, // Bắt buộc có giá trị
-    unique: true, // Ngăn trùng lặp vehicleId
+    required: true, 
+    unique: true, 
     trim: true
   },
   vehicleName: {
     type: String,
     required: true,
+    trim: true
+  },
+  LicensePlate: {
+    type: String,
+    required: true,
+    unique: true, 
     trim: true
   },
   brand: {
@@ -19,7 +25,7 @@ const vehicleSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    required: true, // Bắt buộc có loại xe
+    required: true, 
     trim: true,
     enum: ['Sedan', 'SUV', 'MPV', 'Pickup', 'Hatchback', 'Electric'] // Các loại xe cho phép
   },
@@ -33,7 +39,6 @@ const vehicleSchema = new mongoose.Schema({
   }
 });
 
-// Tạo chỉ mục unique kết hợp cho vehicleName và brand
 vehicleSchema.index({ vehicleName: 1, brand: 1 }, { unique: true });
 
 module.exports = mongoose.model('Vehicle', vehicleSchema);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/viewmodels/auth_viewmodel.dart';
-import 'package:frontend/viewmodels/googleAuth_viewmodel.dart';
+import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import 'views/welcome_screen.dart';

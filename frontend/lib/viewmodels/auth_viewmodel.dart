@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/api_services/login_service.dart';
 import 'package:frontend/api_services/logout_service.dart';
 import 'package:frontend/api_services/register_service.dart';
-import 'package:frontend/api_services/verifyOTP_service.dart';
+import 'package:frontend/api_services/verify_otp_service.dart';
 
 class AuthViewModel extends ChangeNotifier {
   String? token;

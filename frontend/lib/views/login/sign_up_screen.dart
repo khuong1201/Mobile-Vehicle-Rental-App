@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/viewmodels/auth_viewmodel.dart';
-import 'package:frontend/viewmodels/googleAuth_viewmodel.dart';
-import 'package:frontend/views/home/homePage.dart';
+import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
+import 'package:frontend/views/home/home_page.dart';
 import 'package:frontend/views/login/otp_screen.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 import 'package:provider/provider.dart';
 
-import 'signIn_screen.dart';
+import 'sign_in_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

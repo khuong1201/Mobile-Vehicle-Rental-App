@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
-import 'signIn_screen.dart';
+import 'sign_in_screen.dart';
 
 class NewPasswordScreen extends StatefulWidget {
   const NewPasswordScreen({super.key});

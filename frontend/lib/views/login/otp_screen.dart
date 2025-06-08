@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/views/login/newpassword_screen.dart';
-import 'package:frontend/views/login/signIn_screen.dart';
+import 'package:frontend/views/login/new_password_screen.dart';
+import 'package:frontend/views/login/sign_in_screen.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
@@ -9,7 +9,7 @@ import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class OtpScreen extends StatefulWidget {
-  final mode;
+  final String mode;
   const OtpScreen({super.key, required this.mode});
   @override
   State<OtpScreen> createState() => _OtpScreenState();

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/viewmodels/auth_viewmodel.dart';
-import 'package:frontend/viewmodels/googleAuth_viewmodel.dart';
+import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
-import '../home/homePage.dart';
-import 'signUp_screen.dart';
-import 'forgotPassword_screen.dart';
+import '../home/home_page.dart';
+import 'sign_up_screen.dart';
+import 'forgot_password_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -179,13 +179,14 @@ class _SignInScreenState extends State<SignInScreen> {
                             } else {
                               showDialog(
                                 context: context,
-                                builder: (context) => CustomAlertDialog(
-                                  title: 'Error',
-                                  content:
-                                  viewmodel.errorMessage ??
-                                  'Invalid email or password.',
-                                  buttonText: 'OK',
-                                ),
+                                builder:
+                                    (context) => CustomAlertDialog(
+                                      title: 'Error',
+                                      content:
+                                          viewmodel.errorMessage ??
+                                          'Invalid email or password.',
+                                      buttonText: 'OK',
+                                    ),
                               );
                             }
                           } else {
@@ -195,7 +196,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                   (context) => CustomAlertDialog(
                                     title: 'Error',
                                     content:
-                                    'Please fill in all fields correctly.',
+                                        'Please fill in all fields correctly.',
                                     buttonText: 'OK',
                                   ),
                             );
@@ -262,11 +263,12 @@ class _SignInScreenState extends State<SignInScreen> {
                                 } else {
                                   showDialog(
                                     context: context,
-                                    builder: (context) => CustomAlertDialog(
-                                      title: 'Error',
-                                      content: 'Google sign in failed.',
-                                      buttonText: 'OK',
-                                    ),
+                                    builder:
+                                        (context) => CustomAlertDialog(
+                                          title: 'Error',
+                                          content: 'Google sign in failed.',
+                                          buttonText: 'OK',
+                                        ),
                                   );
                                 }
                               },

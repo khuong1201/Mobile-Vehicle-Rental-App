@@ -3,8 +3,8 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'dart:async';
 
 
-import 'login/signIn_screen.dart';
-import 'login/signUp_screen.dart';
+import 'login/sign_in_screen.dart';
+import 'login/sign_up_screen.dart';
 import '/views/widgets/custom_bottom_button.dart';
 
 class WelcomeScreen extends StatefulWidget {
