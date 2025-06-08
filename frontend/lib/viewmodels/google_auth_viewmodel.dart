@@ -1,106 +1,113 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:frontend/api_services/login_service.dart';
-import 'package:frontend/api_services/logout_service.dart';
-import 'package:frontend/api_services/register_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:frontend/api_services/google_login_endpoint.dart';
+import 'package:frontend/api_services/token_service.dart';
 import '/models/user.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class GAuthViewModel extends ChangeNotifier {
   final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
-  String? token;
-  User? _user;
-  User? get user => _user;
+  final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+  final TokenService _tokenService = TokenService();
 
-  String? errorMessage;
-  bool _isSigningIn = false;
-  bool get isSigningIn => _isSigningIn;
-
-  Future<bool> signInWithGoogle() async {
-    _isSigningIn = true;
-    notifyListeners();
-
-    try {
-      final GoogleSignInAccount? account = await _googleSignIn.signIn();
-      if (account != null) {
-        _user = User.fromGoogleAccount(account);
-
-        final response = await ApiLogin.login(account.email, account.id);
-
-        if (response.success && response.data != null) {
-          debugPrint('Đăng nhập Google thành công: ${response.message}');
-          token = response.data;
-          notifyListeners();
-          return true;
-        } else {
-          debugPrint('Đăng nhập Google thất bại: ${response.message}');
-          errorMessage = response.message ?? 'Đăng nhâp thất bại.';
-          notifyListeners();
-          return false;
-        } 
-      }
-    } catch (e) {
-      debugPrint('Lỗi đăng nhập Google: $e');
-      errorMessage = 'Đã xảy ra lỗi: $e';
-    } finally {
-      _isSigningIn = false;
-      notifyListeners();
-    }
-    return false;
+  // Check login status
+  Future<bool> isLoggedIn() async {
+    final accessToken = await getAccessToken();
+    final user = await getUser();
+    return accessToken != null && user != null;
   }
 
-  Future<bool> registerWithGoogle() async {
-    _isSigningIn = true;
-    errorMessage = null;
-    notifyListeners();
-
+  // Sign in with Google
+  Future<User?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? account = await _googleSignIn.signIn();
-      if (account != null) {
-        _user = User.fromGoogleAccount(account);
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        debugPrint('Google Sign-In cancelled by user');
+        return null;
+      }
 
-        final response = await ApiRegister.register(account.email, account.id, account.displayName ?? '');
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-        if (response.success) {
-          debugPrint('Đăng ký Google thành công: ${response.message}');
-          notifyListeners();
-          return true;
-        } else {
-          debugPrint('Đăng ký Google thất bại: ${response.message}');
-          errorMessage = response.message ?? 'Đăng ký thất bại.';
-          notifyListeners();
-          return false;
+      final response = await ApiLoginWithGoogle.googleLoginEndPoint(
+        googleUser.id,
+        googleUser.email,
+        googleUser.displayName ?? '',
+      );
+
+      if (response.success && response.data != null) {
+        final accessToken = response.data!['accessToken'] as String?;
+        final refreshToken = response.data!['refreshToken'] as String?;
+        final userData = response.data!['user'] as Map<String, dynamic>?;
+
+        if (accessToken == null || refreshToken == null || userData == null) {
+          debugPrint('Invalid response data: missing accessToken, refreshToken, or user');
+          return null;
         }
+
+        final user = User.fromJson(userData);
+
+        await _secureStorage.write(key: 'accessToken', value: accessToken);
+        await _secureStorage.write(key: 'refreshToken', value: refreshToken);
+        await _secureStorage.write(key: 'user', value: jsonEncode(user.toJson()));
+
+        debugPrint('Google Sign-In successful: ${user.email}');
+        notifyListeners();
+        return user;
+      } else {
+        debugPrint('Backend authentication failed: ${response.message}');
+        return null;
       }
-      notifyListeners();
-      return false;
-    } catch (e) {
-      debugPrint('Lỗi đăng ký Google: $e');
-      errorMessage = 'Đã xảy ra lỗi: $e';
-      notifyListeners();
-      return false;
-    } finally {
-      _isSigningIn = false;
-      notifyListeners();
+    } catch (error, stackTrace) {
+      debugPrint('Google Sign-In error: $error\n$stackTrace');
+      return null;
     }
   }
 
-  Future<bool> signOut(String accessToken, String userID) async {
-  try {
-    final response = await ApiLogout.logout(accessToken, userID);
-    if (response.success) {
-      token = null;
-      _user = null;
-      notifyListeners();
-      return true;
-    } else {
-      errorMessage = response.message ?? 'Đăng xuất thất bại.';
-      notifyListeners();
-      return false;
+  // Get accessToken
+  Future<String?> getAccessToken() async {
+    try {
+      return await _secureStorage.read(key: 'accessToken');
+    } catch (e) {
+      debugPrint('Error reading accessToken: $e');
+      return null;
     }
-  } catch (e) {
-    errorMessage = 'Đã xảy ra lỗi: $e';
-    notifyListeners();
-    return false;
   }
-}
+
+  // Get user data
+  Future<User?> getUser() async {
+    try {
+      final userJson = await _secureStorage.read(key: 'user');
+      if (userJson != null) {
+        return User.fromJson(jsonDecode(userJson));
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error reading user data: $e');
+      return null;
+    }
+  }
+
+  // Refresh token
+  Future<bool> refreshToken() async {
+    final success = await _tokenService.refreshToken();
+    if (success) {
+      notifyListeners();
+    }
+    return success;
+  }
+
+  // Sign out
+  Future<void> signOut() async {
+    try {
+      await _googleSignIn.signOut();
+      await _secureStorage.delete(key: 'accessToken');
+      await _secureStorage.delete(key: 'refreshToken');
+      await _secureStorage.delete(key: 'user');
+      debugPrint('Signed out successfully');
+      notifyListeners();
+    } catch (error, stackTrace) {
+      debugPrint('Sign out error: $error\n$stackTrace');
+    }
+  }
 }

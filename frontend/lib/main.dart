@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
+import 'package:frontend/views/home/home_screen.dart';
+import 'package:frontend/views/login/sign_in_screen.dart';
 import 'package:provider/provider.dart';
+import '/viewmodels/auth_viewmodel.dart';
+import '/views/splash_screen.dart';
+import '/views/welcome_screen.dart';
 
-import 'views/welcome_screen.dart';
-
-void main() async {
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -20,10 +23,16 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => GAuthViewModel()),
       ],
       child: MaterialApp(
-      title: 'VehicleVehicle Rental App',
-      debugShowCheckedModeBanner: false,
-      home: WelcomeScreen(),
-    )
+        title: 'Vehicle Rental App',
+        debugShowCheckedModeBanner: false,
+        initialRoute: '/splash',
+        routes: {
+          '/splash': (context) => const SplashScreen(),
+          '/welcome': (context) => const WelcomeScreen(),
+          '/home': (context) => const HomeScreen(),
+          '/login': (context) => const SignInScreen(),
+        },
+      ),
     );
   }
 }

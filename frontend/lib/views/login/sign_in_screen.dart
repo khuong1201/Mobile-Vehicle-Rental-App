@@ -252,8 +252,9 @@ class _SignInScreenState extends State<SignInScreen> {
                                 'assets/images/login/google.svg',
                               ),
                               onPressed: () async {
-                                await gAuth.signInWithGoogle();
-                                if (gAuth.user != null) {
+                                final user = await gAuth.signInWithGoogle();
+                                if (!context.mounted) return;
+                                if (user != null) {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(

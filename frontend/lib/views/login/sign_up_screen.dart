@@ -325,8 +325,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 'assets/images/login/google.svg',
                               ),
                               onPressed: () async {
-                                await gAuth.signInWithGoogle();
-                                if (gAuth.user != null) {
+                                final user = await gAuth.signInWithGoogle();
+                                if (!context.mounted) return;
+                                if (user != null) {
                                   showDialog(
                                     context: context,
                                     builder: (context) => CustomAlertDialog(

@@ -23,6 +23,7 @@ router.get('/google/callback',
     }
 );
 router.post('/google-login', authController.googleLogin);
+router.post('/google-login-endpoint', authController.googleLoginEndPoint);
 router.post('/logout', authenticateToken, authController.logout);
 router.post('/request-password-reset', authController.requestPasswordReset);
 router.post('/reset-password', authController.resetPassword);

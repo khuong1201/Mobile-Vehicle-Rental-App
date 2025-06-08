@@ -81,6 +81,7 @@ const loginUser = async ({ email, password }) => {
             id: user._id,
             userId: user.userId,
             email: user.email,
+            address: undefined,
             role: user.role,
             fullName: user.fullName,
         },
@@ -122,7 +123,53 @@ const refreshAccessToken = async (refreshToken) => {
         throw new Error("Invalid refresh token");
     }
 };
-
+const googleLoginEndPoint = async ({ googleId, email, fullName }) => {
+    try {
+      if (!googleId || !email || !fullName) {
+        throw new Error('Google ID, email, and full name are required');
+      }
+      const normalizedEmail = email.trim().toLowerCase();
+      let user = await User.findOne({
+        $or: [{ googleId }, { email: normalizedEmail }],
+      });
+  
+      if (user) {
+        if (!user.googleId) {
+          user.googleId = googleId;
+          user.verified = true; 
+          await user.save();
+        }
+      } else {
+        user = await User.create({
+          googleId,
+          fullName: fullName.trim(),
+          email: normalizedEmail,
+          address: undefined,
+          verified: true,
+          role: 'renter',
+          points: 0,
+          license: { approved: false },
+        });
+      }
+      const { accessToken, refreshToken } = generateTokens(user);
+      user.refreshToken = refreshToken;
+      await user.save();
+      return {
+        accessToken,
+        refreshToken,
+        user: {
+          googleId: user.googleId,
+          fullName: user.fullName,
+          email: user.email,
+          role: user.role,
+          verified: user.verified,
+        },
+      };
+    } catch (err) {
+      console.error('Google login error:', err.message);
+      throw new Error(`Google login failed: ${err.message}`);
+    }
+  };
 const googleLogin = async (idToken) => {
     try {
         const ticket = await client.verifyIdToken({
@@ -261,6 +308,7 @@ module.exports = {
     loginUser,
     verifyEmail,
     refreshAccessToken,
+    googleLoginEndPoint,
     googleLogin,
     logoutUser,
     requestPasswordReset,

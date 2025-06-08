@@ -1,24 +1,44 @@
-import 'package:google_sign_in/google_sign_in.dart';
-
+// models/user.dart
 class User {
-  final String uid;
+  final String id;
+  final String userId; 
+  final String? googleId;
+  final String fullName;
   final String email;
-  final String? displayName;
-  final String? photoUrl;
+  final String role;
+  final bool verified;
 
   User({
-    required this.uid, 
-    required this.email, 
-    this.displayName,
-    this.photoUrl
+    required this.id,
+    required this.userId,
+    this.googleId,
+    required this.fullName,
+    required this.email,
+    required this.role,
+    required this.verified,
   });
 
-  factory User.fromGoogleAccount(GoogleSignInAccount account) {
+  factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      uid: account.id,
-      email: account.email,
-      displayName: account.displayName,
-      photoUrl: account.photoUrl,
+      id: json['id'] ?? '',
+      userId: json['userId'] ?? '',
+      googleId: json['googleId'],
+      fullName: json['fullName'] ?? '',
+      email: json['email'] ?? '',
+      role: json['role'] ?? 'renter',
+      verified: json['verified'] ?? false,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'googleId': googleId,
+      'fullName': fullName,
+      'email': email,
+      'role': role,
+      'verified': verified,
+    };
   }
 }

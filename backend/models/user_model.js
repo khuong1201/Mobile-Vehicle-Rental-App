@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema({
     role: { type: String, enum: ['renter', 'owner'], default: 'renter' },
     fullName: String,
     email: { type: String, unique: true },
-    address: {type: String, unique: true},
+    address: {type: String},
     passwordHash: String,
     verified: Boolean,
     otp: String,

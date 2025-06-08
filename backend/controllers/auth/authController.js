@@ -43,7 +43,18 @@ const refresh = async (req, res) => {
         res.status(401).json({ message: err.message });
     }
 };
-
+const googleLoginEndPoint = async (req, res) => {
+    try {
+      const { googleId, email, fullName } = req.body;
+      if (!googleId || !email || !fullName) {
+        return res.status(400).json({ message: 'Google ID, email, and full name are required' });
+      }
+      const result = await authService.googleLoginEndPoint({ googleId, email, fullName });
+      res.json(result);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  };
 const googleLogin = async (req, res) => {
     try {
         const { idToken } = req.body;
@@ -92,4 +103,4 @@ const resetPassword = async (req, res) => {
     }
 };
 
-module.exports = { register, login, verify, refresh, googleLogin, logout, requestPasswordReset, resetPassword };
+module.exports = { register, login, verify, refresh, googleLoginEndPoint, googleLogin, logout, requestPasswordReset, resetPassword };

@@ -81,7 +81,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${viewmodel.email}',
+                  '${viewmodel.user?.email}',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color(0xff212121),
@@ -128,7 +128,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 TextButton(
                   onPressed: () {
                     viewmodel.verifyOTP(
-                      viewmodel.email.toString(),
+                      viewmodel.user!.email.toString(),
                       _otpController.text.trim().toString(),
                     );
                   },
@@ -169,7 +169,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 bool isSuccess = await viewmodel.verifyOTP(
-                                  viewmodel.email.toString(),
+                                  viewmodel.user!.email.toString(),
                                   _otpController.text.trim().toString(),
                                 );
                                 if (!context.mounted) return;
