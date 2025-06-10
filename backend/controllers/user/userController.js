@@ -53,83 +53,138 @@ const deleteAccount = async (req, res) => {
   }
 };
 
-// Update User Details
-const updateDetails = async (req, res) => {
-  try {
+const updatePersonalInfo = async (req, res) => {
+  try{
     if (!req.body) {
       return res.status(400).json({ message: 'Request body is missing' });
     }
-
-    const { fullName, role, address, license } = req.body;
-
-    // Validate inputs
-    if (!fullName && !address && !role && !license) {
-      return res.status(400).json({ message: 'At least one field (fullName, role, license) is required' });
+    const {fullName, dateOfBirth, phoneNumber, gender, IDs} = req.body;
+    if(!fullName){
+      return res.status(400).json({ message: 'Full name is required' });
+    }else if(fullName.length < 3){
+      return res.status(400).json({ message: 'Full name must be at least 3 characters long' });
+    }else if(!dateOfBirth){
+      return res.status(400).json({ message: 'Date of birth is required' });
+    }else if(!phoneNumber){
+      return res.status(400).json({ message: 'Phone number is required' });
+    }else if(phoneNumber.length < 10 || phoneNumber.length > 15){
+      return res.status(400).json({ message: 'Phone number must be between 10 and 15 characters long' });
+    }else if(!gender){
+      return res.status(400).json({message: 'gener is required'})
+    }else if(!IDs || IDs.length === 0){
+      return res.status(400).json({ message: 'At least one ID is required' });
     }
-
-    if (role && !['renter', 'owner'].includes(role)) {
-      return res.status(400).json({ message: 'Role must be either "renter" or "owner"' });
-    }
-
-    if(address){
-      if (typeof address !== 'string') {
-        return res.status(400).json({ message: 'Address must be a string' });
-      }
-      if (address.length < 5) {
-        return res.status(400).json({ message: 'Address must be at least 5 characters long' });
-      }
-    }
-    if (license) {
-      if (typeof license !== 'object' || license === null) {
-        return res.status(400).json({ message: 'License must be an object' });
-      }
-      const { number, imageUrl, approved } = license;
-      if (number && typeof number !== 'string') {
-        return res.status(400).json({ message: 'License number must be a string' });
-      }
-      if (imageUrl && typeof imageUrl !== 'string') {
-        return res.status(400).json({ message: 'License imageUrl must be a string' });
-      }
-      if (approved !== undefined && typeof approved !== 'boolean') {
-        return res.status(400).json({ message: 'License approved must be a boolean' });
-      }
-    }
-
     const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
-    // Update provided fields
-    if (fullName) user.fullName = fullName;
-    if (role) user.role = role;
-    if (address) user.address = address;
-    if (license) {
-      user.license = {
-        number: license.number || user.license?.number,
-        imageUrl: license.imageUrl || user.license?.imageUrl,
-        approved: license.approved !== undefined ? license.approved : user.license?.approved
-      };
-    }
-
+    // Update personal info
+    if( fullName) user.fullName = fullName;
+    if (dateOfBirth) user.dateOfBirth = dateOfBirth;
+    if (phoneNumber) user.phoneNumber = phoneNumber;
+    if(IDs) user.IDs = IDs;
     await user.save();
-
     res.json({
       message: 'User details updated successfully',
       user: {
         id: user._id,
         userId: user.userId,
         email: user.email,
-        role: user.role,
         fullName: user.fullName,
-        address: user.address,
-        license: user.license
+        dateOfBirth: user.dateOfBirth,
+        phoneNumber: user.phoneNumber,
+        IDs: user.IDs,
+      }
+    });
+
+  }catch (err) {
+    console.error('Update personal info error:', err.message);
+    res.status(400).json({ message: err.message });
+  }
+}
+const  updateAddress = async (req, res) => {
+  try {
+    if (!req.body) {
+      return res.status(400).json({ message: 'Request body is missing' });
+    }
+    const { addressType, address, floorOrApartmentNumber, contactName, phoneNUmber } = req.body;
+    if(!addressType) {
+      return res.status(400).json({ message: 'Address type is required' });
+    }else if(!address) {
+      return res.status(400).json({ message: 'Address is required' });
+    }else if(!floorOrApartmentNumber) {
+      return res.status(400).json({ message: 'Floor or apartment number is required' });
+    }else if(!contactName) {
+      return res.status(400).json({ message: 'Contact name is required' });
+    }else if(!phoneNUmber) {
+      return res.status(400).json({ message: 'Phone number is required' });
+    }
+    const user = await User.findById(req.user.id);
+    if( !user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    if(addressType) user.address.addressType = addressType;
+    if(address) user.address.address = address;
+    if(floorOrApartmentNumber) user.address.floorOrApartmentNumber = floorOrApartmentNumber;
+    if(contactName) user.address.contactName = contactName;
+    if(phoneNUmber) user.address.phoneNumber = phoneNUmber;
+    await user.save();
+    res.json({
+      message: 'Address updated successfully',
+      user: {
+        id: user._id,
+        userId: user.userId,
+        email: user.email,
+        fullName: user.fullName,
+        address: user.address
       }
     });
   } catch (err) {
-    console.error('Update details error:', err.message);
+    console.error('Update address error:', err.message);
     res.status(400).json({ message: err.message });
   }
-};
-
-module.exports = { changePassword, deleteAccount, updateDetails };
+}
+const updateDriverLicense = async(req, res) => {
+  try{
+    if(!res.body){
+      return res.status(400).json({ message: 'Request body is missing' });
+    }
+    const {typeOfDriverLicense, classLicense, licenseNumber, driverLicenseFront, driverLicenseBack } = req.body;
+    if(!typeOfDriverLicense){
+      return res.status(400).json({message: 'Type of driver license is required'})
+    }else if(!classLicense){
+      return res.status(400).json({message: 'Class is required'})
+    }else if(!licenseNumber){
+      return res.status(400).json({message: 'License number is required'})
+    }else if(!driverLicenseFront){
+      return res.status(400).json({message: 'Front view picture is required'})
+    }else if(!driverLicenseBack){
+      return res.status(400).json({message: 'Back view picture is required'})
+    }
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    if(typeOfDriverLicense) user.license.typeOfDriverLicense = typeOfDriverLicense;
+    if(classLicense) user.license.classLicense = classLicense;
+    if(licenseNumber) user.license.licenseNumber = licenseNumber;
+    if(driverLicenseFront) user.license.driverLicenseFront = driverLicenseFront;
+    if(driverLicenseBack) user.license.driverLicenseBack = driverLicenseBack;
+    user.license.approved = false; 
+    await user.save();
+    res.json({
+      message: 'Driver license updated successfully',
+      user: {
+        id: user._id,
+        userId: user.userId,
+        email: user.email,
+        fullName: user.fullName,
+        license: user.license
+      }
+    });
+  }catch(err){
+    console.error('Update driver license error:', err.message);
+    res.status(400).json({ message: err.message });
+  }
+}
+module.exports = { changePassword, deleteAccount, updatePersonalInfo, updateDriverLicense, updateAddress };

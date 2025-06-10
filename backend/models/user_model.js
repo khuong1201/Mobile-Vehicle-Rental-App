@@ -2,18 +2,31 @@ const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
 const LicenseSchema = new mongoose.Schema({
-    number: String,
-    imageUrl: String,
+    typeOfDriverLicense: { type: String, required: true },
+    classLicense: { type: String, required: true },
+    licenseNumber: { type: String, required: true },
+    driverLicenseFront: { type: String, required: true },
+    driverLicenseBack: { type: String, required: true },
     approved: Boolean
 }, { _id: false });
-
+const AddressSchema = new mongoose.Schema({
+    addressType: { type: String, enum: ['home', 'work'], default: 'home' },
+    address: { type: String, required: true },
+    floorOrApartmentNumber: { type: String, required: true },
+    contactName: { type: String, required: true },
+    phoneNumber: { type: String, required: true },
+});
 const UserSchema = new mongoose.Schema({
     userId: { type: String, unique: true, default: uuidv4 },
     googleId: { type: String, sparse: true, unique: true },
     role: { type: String, enum: ['renter', 'owner'], default: 'renter' },
     fullName: String,
+    gender: String,
     email: { type: String, unique: true },
-    address: {type: String},
+    address: AddressSchema,
+    phoneNumber: String,
+    dateOfBirth: Date,
+    IDs: String,
     passwordHash: String,
     verified: Boolean,
     otp: String,
