@@ -1,0 +1,24 @@
+import 'package:flutter/material.dart';
+
+class CustomTitleTextField extends StatelessWidget {
+  final String title;
+
+  const CustomTitleTextField({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: TextStyle(
+        color: Color(0xFF2B2B2C),
+        fontSize: 16,
+        fontFamily: 'Inter',
+        fontWeight: FontWeight.w600,
+        height: 1.25,
+      ),
+    );
+  }
+}

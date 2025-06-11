@@ -27,8 +27,6 @@ class GAuthViewModel extends ChangeNotifier {
         return null;
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
       final response = await ApiLoginWithGoogle.googleLoginEndPoint(
         googleUser.id,
         googleUser.email,
