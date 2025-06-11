@@ -1,10 +1,28 @@
+const mongoose = require('mongoose');
+
 const ReviewSchema = new mongoose.Schema({
-    vehicleId: { type: mongoose.Schema.Types.ObjectId, ref: 'Vehicle', required: true },
-    renterId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    rating: Number,
-    comment: String,
-    createdAt: { type: Date, default: Date.now }
-  });
-  
-  module.exports = mongoose.model('Review', ReviewSchema);
-  
+  vehicleId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Vehicle',
+    required: true
+  },
+  renterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  rating: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 5
+  },
+  comment: {
+    type: String,
+    trim: true
+  }
+}, {
+  timestamps: true 
+});
+
+module.exports = mongoose.model('Review', ReviewSchema);

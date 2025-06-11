@@ -27,13 +27,13 @@ class MyApp extends StatelessWidget {
         title: 'Vehicle Rental App',
         debugShowCheckedModeBanner: false,
         initialRoute: '/splash',
-        home: const StartScreen(),
-        // routes: {
-        //   '/splash': (context) => const SplashScreen(),
-        //   '/welcome': (context) => const WelcomeScreen(),
-        //   '/home': (context) => const HomeScreen(),
-        //   '/login': (context) => const SignInScreen(),
-        // },
+        home: const HomeScreen(),
+        routes: {
+          '/splash': (context) => const SplashScreen(),
+          '/welcome': (context) => const WelcomeScreen(),
+          '/home': (context) => const HomeScreen(),
+          '/login': (context) => const SignInScreen(),
+        },
       ),
     );
   }

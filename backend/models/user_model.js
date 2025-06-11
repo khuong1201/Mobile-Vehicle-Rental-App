@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
     fullName: String,
     gender: String,
     email: { type: String, unique: true },
-    address: AddressSchema,
+    address: list[AddressSchema],
     phoneNumber: String,
     dateOfBirth: Date,
     IDs: String,
@@ -32,7 +32,7 @@ const UserSchema = new mongoose.Schema({
     otp: String,
     otpExpires: Date,
     refreshToken: String,
-    license: LicenseSchema,
+    license: List[LicenseSchema],
     points: Number,
     createdAt: { type: Date, default: Date.now }
 });

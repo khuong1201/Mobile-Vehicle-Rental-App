@@ -2,16 +2,16 @@ const express = require('express');
 const router = express.Router();
 const brandController = require('../../controllers/vehicle/brandController');
 
-// Lấy tất cả hãng xe
+// [GET] /api/brands - Lấy tất cả hãng xe
 router.get('/', brandController.getAllBrands);
 
-// Thêm hãng xe mới
+// [POST] /api/brands - Thêm hãng xe mới
 router.post('/', brandController.createBrand);
 
-// Sửa hãng xe theo ID
+// [PUT] /api/brands/:id - Cập nhật hãng xe theo ObjectId
 router.put('/:id', brandController.updateBrand);
 
-// Xóa hãng xe theo ID
+// [DELETE] /api/brands/:id - Xóa hãng xe theo ObjectId
 router.delete('/:id', brandController.deleteBrand);
 
 module.exports = router;

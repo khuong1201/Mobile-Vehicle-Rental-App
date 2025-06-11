@@ -1,152 +1,124 @@
 const mongoose = require('mongoose');
-const Brand = require('../../models/brand_model');
+const Brand = require('../../models/vehicles/brand_model');
 
-// Lấy tất cả hãng xe
+// Get all brands
 const getAllBrands = async (req, res) => {
   try {
     const brands = await Brand.find();
-    res.status(200).json({
-      success: true,
-      data: brands
-    });
+    res.status(200).json({ success: true, data: brands });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Lỗi khi lấy danh sách hãng xe',
+      message: 'Error retrieving brand list',
       error: error.message
     });
   }
 };
 
-// Thêm hãng xe mới
+// Get brand by brandId (UUID)
+const getBrandByBrandId = async (req, res) => {
+  try {
+    const { brandId } = req.params;
+    const brand = await Brand.findOne({ brandId });
+
+    if (!brand) {
+      return res.status(404).json({
+        success: false,
+        message: `Brand with brandId: ${brandId} not found`
+      });
+    }
+
+    res.status(200).json({ success: true, data: brand });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving brand',
+      error: error.message
+    });
+  }
+};
+
+// Create a new brand (check for duplicate name)
 const createBrand = async (req, res) => {
   try {
     const { brand } = req.body;
+
     if (!brand) {
       return res.status(400).json({
         success: false,
-        message: 'Vui lòng cung cấp tên hãng xe'
+        message: 'Please provide a brand name'
       });
     }
-    // Tạo brandId tự động
-    let lastBrand = await Brand.findOne().sort({ brandId: -1 });
-    let nextNumber = 1;
-    if (lastBrand && lastBrand.brandId && lastBrand.brandId.startsWith('BR')) {
-      const number = parseInt(lastBrand.brandId.replace('BR', ''), 10);
-      if (!isNaN(number)) {
-        nextNumber = number + 1;
-      }
-    }
-    const brandId = 'BR' + String(nextNumber).padStart(2, '0');
-    // Kiểm tra brandId đã tồn tại chưa
-    const idExists = await Brand.findOne({ brandId });
-    if (idExists) {
+
+    const existed = await Brand.findOne({ brand });
+    if (existed) {
       return res.status(400).json({
         success: false,
-        message: `brandId ${brandId} đã tồn tại`
+        message: 'Brand name already exists'
       });
     }
-    // Tạo hãng xe mới
-    const newBrand = await Brand.create({ brandId, brand });
+
+    const newBrand = await Brand.create({ brand });
     res.status(201).json({
       success: true,
       data: newBrand,
-      message: 'Thêm hãng xe thành công'
+      message: 'Brand created successfully'
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Lỗi khi thêm hãng xe',
+      message: 'Error creating brand',
       error: error.message
     });
   }
 };
 
-// Sửa hãng xe theo ID
+// Update brand by ObjectId
 const updateBrand = async (req, res) => {
   try {
     const { id } = req.params;
     const { brand } = req.body;
 
-    // Kiểm tra ID có hợp lệ không
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: 'ID hãng xe không hợp lệ, vui lòng cung cấp ObjectId hợp lệ'
-      });
+      return res.status(400).json({ success: false, message: 'Invalid ID' });
     }
 
-    // Kiểm tra tên hãng xe
-    if (!brand) {
-      return res.status(400).json({
-        success: false,
-        message: 'Vui lòng cung cấp tên hãng xe'
-      });
+    const updated = await Brand.findByIdAndUpdate(id, { brand }, { new: true, runValidators: true });
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'Brand not found' });
     }
 
-    // Cập nhật hãng xe (không sửa brandId)
-    const updatedBrand = await Brand.findByIdAndUpdate(
-      id,
-      { brand },
-      { new: true, runValidators: true }
-    );
-    if (!updatedBrand) {
-      return res.status(404).json({
-        success: false,
-        message: 'Không tìm thấy hãng xe với ID này'
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      data: updatedBrand,
-      message: 'Cập nhật hãng xe thành công'
-    });
+    res.status(200).json({ success: true, data: updated, message: 'Brand updated successfully' });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Lỗi khi cập nhật hãng xe',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Error updating brand', error: error.message });
   }
 };
 
-// Xóa hãng xe theo ID
+// Delete brand by ObjectId
 const deleteBrand = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Kiểm tra ID có hợp lệ không
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: 'ID hãng xe không hợp lệ, vui lòng cung cấp ObjectId hợp lệ'
-      });
+      return res.status(400).json({ success: false, message: 'Invalid ID' });
     }
 
-    const deletedBrand = await Brand.findByIdAndDelete(id);
-    if (!deletedBrand) {
-      return res.status(404).json({
-        success: false,
-        message: 'Không tìm thấy hãng xe với ID này'
-      });
+    const deleted = await Brand.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return res.status(404).json({ success: false, message: 'Brand not found' });
     }
 
-    res.status(200).json({
-      success: true,
-      message: 'Xóa hãng xe thành công'
-    });
+    res.status(200).json({ success: true, message: 'Brand deleted successfully' });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Lỗi khi xóa hãng xe',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Error deleting brand', error: error.message });
   }
 };
 
 module.exports = {
   getAllBrands,
+  getBrandByBrandId,
   createBrand,
   updateBrand,
   deleteBrand
