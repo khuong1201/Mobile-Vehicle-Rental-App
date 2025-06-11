@@ -8,12 +8,11 @@ class PersonalInfoViewModel extends ChangeNotifier {
   String? gender;
   String? ids;
 
-  String? className;
+  String? classLicense;
   String? typeDriverLicense;
   ImagePicker _picker = ImagePicker();
   XFile? frontImage;
   XFile? backImage;
-
 
   void setInformation({
     String? name,
@@ -31,7 +30,7 @@ class PersonalInfoViewModel extends ChangeNotifier {
     this.gender = gender;
     this.ids = ids;
 
-    this.className = className;
+    this.classLicense = classLicense;
     this.typeDriverLicense = typeDriverLicense;
     notifyListeners();
   }
@@ -43,6 +42,7 @@ class PersonalInfoViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
   Future<void> pickBackImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
@@ -50,13 +50,14 @@ class PersonalInfoViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
   void clear() {
     name = null;
     dateOfBirth = null;
     phoneNumber = null;
     gender = null;
     ids = null;
-    className = null;
+    classLicense = null;
     frontImage = null;
     backImage = null;
     notifyListeners();

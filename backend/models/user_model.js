@@ -8,7 +8,7 @@ const LicenseSchema = new mongoose.Schema({
     driverLicenseFront: { type: String, required: true },
     driverLicenseBack: { type: String, required: true },
     approved: Boolean
-}, { _id: false });
+});
 const AddressSchema = new mongoose.Schema({
     addressType: { type: String, enum: ['home', 'work'], default: 'home' },
     address: { type: String, required: true },
@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
     fullName: String,
     gender: String,
     email: { type: String, unique: true },
-    address: list[AddressSchema],
+    addresses: [AddressSchema],
     phoneNumber: String,
     dateOfBirth: Date,
     IDs: String,
@@ -32,10 +32,9 @@ const UserSchema = new mongoose.Schema({
     otp: String,
     otpExpires: Date,
     refreshToken: String,
-    license: List[LicenseSchema],
+    license: [LicenseSchema],
     points: Number,
-    createdAt: { type: Date, default: Date.now }
-});
+},{ timestamps: true });
 
 UserSchema.index(
     { otpExpires: 1 },

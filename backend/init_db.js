@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
-const Brand = require('./models/brand_model');
-const Vehicle = require('./models/vehicle_model'); // base model
+const Brand = require('./models/vehicles/brand_model');
+const Vehicle = require('./models/vehicles/vehicle_model');
+
 const InitStatus = mongoose.model('InitStatus', new mongoose.Schema({
   initialized: { type: Boolean, default: false },
   lastInit: { type: Date }
@@ -25,15 +26,14 @@ const initDB = async () => {
     for (const brandName of brands) {
       const exists = await Brand.findOne({ brand: brandName });
       if (!exists) {
-        const brandId = 'BR' + uuidv4().slice(0, 6).toUpperCase();
-        await Brand.create({ brandId, brand: brandName });
-        console.log(`✅ Đã thêm brand mới: ${brandName} (ID: ${brandId})`);
+        const newBrand = await Brand.create({ brand: brandName });
+        console.log(`✅ Đã thêm brand mới: ${brandName} (ID: ${newBrand.brandId})`);
       } else {
         console.log(`ℹ️ Brand đã tồn tại: ${brandName}`);
       }
     }
 
-    // Map tên brand → _id
+    // Map brand name -> _id
     const savedBrands = await Brand.find();
     const brandMap = {};
     savedBrands.forEach(b => brandMap[b.brand] = b._id);
@@ -50,6 +50,8 @@ const initDB = async () => {
       { vehicleName: "Ranger", brand: "Ford", type: "Car", pricePerHour: 800000 }
     ];
 
+    const fakeOwnerId = new mongoose.Types.ObjectId(); // dùng tạm nếu chưa có user
+
     for (const v of vehicles) {
       const exists = await Vehicle.findOne({
         vehicleName: v.vehicleName,
@@ -57,17 +59,16 @@ const initDB = async () => {
       });
 
       if (!exists) {
-        const vehicleId = uuidv4();
-
-        await Vehicle.create({
-          vehicleId,
+        const newVehicle = await Vehicle.create({
+          ownerId: fakeOwnerId,
+          vehicleId: uuidv4(),
           vehicleName: v.vehicleName,
           brand: brandMap[v.brand],
-          pricePerHour: v.pricePerHour,
-          type: v.type, // discriminator key
+          type: v.type,
           licensePlate: 'TEMP-' + Math.floor(Math.random() * 10000),
           yearOfManufacture: 2022,
           description: `Mẫu xe ${v.vehicleName} của hãng ${v.brand}`,
+          pricePerHour: v.pricePerHour,
           location: {
             address: "Hà Nội",
             lat: 21.0278,
@@ -75,13 +76,12 @@ const initDB = async () => {
           }
         });
 
-        console.log(`✅ Đã thêm xe mới: ${v.vehicleName} (UUID: ${vehicleId})`);
+        console.log(`✅ Đã thêm xe mới: ${v.vehicleName} (UUID: ${newVehicle.vehicleId})`);
       } else {
         console.log(`ℹ️ Xe đã tồn tại: ${v.vehicleName}`);
       }
     }
 
-    // Đánh dấu đã khởi tạo
     await InitStatus.findOneAndUpdate(
       {},
       { initialized: true, lastInit: new Date() },

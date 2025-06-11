@@ -2,7 +2,7 @@ const Vehicle = require('../../models/vehicles/vehicle_model');
 const Brand = require('../../models/vehicles/brand_model')
 
 // GET /api/vehicles
-exports.getAllVehicles = async (req, res) => {
+const getAllVehicles = async (req, res) => {
   try {
     const vehicles = await Vehicle.find().populate('brand').populate('ownerId');
     res.status(200).json(vehicles);
@@ -12,7 +12,7 @@ exports.getAllVehicles = async (req, res) => {
 };
 
 // GET /api/vehicles/:id
-exports.getVehicleById = async (req, res) => {
+const getVehicleById = async (req, res) => {
   try {
     const vehicle = await Vehicle.findById(req.params.id).populate('brand').populate('ownerId');
     if (!vehicle) return res.status(404).json({ message: 'Không tìm thấy xe' });
@@ -23,7 +23,7 @@ exports.getVehicleById = async (req, res) => {
 };
 
 // POST /api/vehicles
-exports.createVehicle = async (req, res) => {
+const createVehicle = async (req, res) => {
   try {
     const data = req.body;
 
@@ -39,7 +39,7 @@ exports.createVehicle = async (req, res) => {
 };
 
 // PUT /api/vehicles/:id
-exports.updateVehicle = async (req, res) => {
+const updateVehicle = async (req, res) => {
   try {
     const updated = await Vehicle.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updated) return res.status(404).json({ message: 'Không tìm thấy xe để cập nhật' });
@@ -50,7 +50,7 @@ exports.updateVehicle = async (req, res) => {
 };
 
 // DELETE /api/vehicles/:id
-exports.deleteVehicle = async (req, res) => {
+const deleteVehicle = async (req, res) => {
   try {
     const deleted = await Vehicle.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: 'Không tìm thấy xe để xóa' });
@@ -58,4 +58,11 @@ exports.deleteVehicle = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Lỗi khi xóa xe', error });
   }
+};
+module.exports = {
+  getAllVehicles,
+  getVehicleById,
+  createVehicle,
+  updateVehicle,
+  deleteVehicle
 };

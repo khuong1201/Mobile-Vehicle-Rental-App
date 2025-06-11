@@ -1,5 +1,5 @@
 const transporter = require('../config/nodemailer');
-
+require('dotenv').config();
 const sendOTP = async ({ email, otp, purpose }) => {
     try {
         let subject, html;
@@ -17,7 +17,7 @@ const sendOTP = async ({ email, otp, purpose }) => {
         }
 
         await transporter.sendMail({
-            from: "VEHICLE RENTAL",
+            from: `VEHICLE RENTAL <${process.env.EMAIL_USER}>`,
             to: email,
             subject,
             html,
