@@ -140,25 +140,22 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
                         children: [
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFFFEEFEF),
-                            ),
-                            child: ClipOval(
-                              child: Image.network(
-                                '', //import anh gg
-                                fit: BoxFit.contain,
-                                errorBuilder:
-                                    (context, error, stackTrace) => Image.asset(
-                                      'assets/images/error/avatar.png',
-                                      fit: BoxFit.contain,
-                                    ),
-                              ),
+                          ClipOval(
+                            child: Image.network(
+                              '',
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.contain,
+                              errorBuilder:
+                                  (context, error, stackTrace) => Image.asset(
+                                    'assets/images/error/avatar.png',
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.contain,
+                                  ),
                             ),
                           ),
+
                           SizedBox(width: 10),
                           Column(
                             children: [

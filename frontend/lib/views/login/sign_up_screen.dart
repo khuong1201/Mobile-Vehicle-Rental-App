@@ -22,8 +22,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final viewmodel = AuthViewModel();
 
