@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/views/myAcount/address_screen.dart';
 import 'package:frontend/views/myAcount/driver_license_screen.dart';
 import 'package:frontend/views/myAcount/infomation_screen.dart';
+import 'package:frontend/views/widgets/custom_text_body_L.dart';
 import '/views/hosting/start_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -71,7 +72,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildTitle('My account'),
+                      CustomTextBodyL(title: 'My account'),
                       SizedBox(height: 16),
                       _buildInkwellButton(
                         context,
@@ -108,7 +109,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildTitle('Settings'),
+                      CustomTextBodyL(title: 'Settings'),
                       SizedBox(height: 16),
                       _buildInkwellButton(
                         context,
@@ -147,7 +148,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildTitle('Support'),
+                      CustomTextBodyL(title: 'Support'),
                       SizedBox(height: 16),
                       _buildInkwellButton(
                         context,
@@ -184,19 +185,6 @@ class _ProfileScreen extends State<ProfileScreen> {
     );
   }
 }
-
-Widget _buildTitle(String title) {
-  return Text(
-    title,
-    style: TextStyle(
-      color: Colors.black,
-      fontSize: 18,
-      fontFamily: 'Inter',
-      fontWeight: FontWeight.w700,
-    ),
-  );
-}
-
 Widget _buildInkwellButton(
   BuildContext context,
   String pathSvg,

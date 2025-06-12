@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:frontend/viewmodels/vehicle_viewmodel.dart';
+import 'package:frontend/views/vehicle_detail/detail_screen.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/custom_text_form_field.dart';
 import '../widgets/custom_Svg_icon.dart';
@@ -23,68 +26,80 @@ class _HomeScreenState extends State<HomeScreen> {
     'assets/images/banners/banner5.png',
   ];
 
-  final List<Map<String, dynamic>> rentalCars = [
-    {
-      'image': 'assets/images/vehicle/car/mercedes.png',
-      'logo': 'assets/images/logo/Mercedes.svg',
-      'name': 'Mercedes C-Class',
-      'location': 'Thu Duc District, HCM',
-      'price': '2.500.000 VND',
-      'rating': 4.9,
-      'rentals': 100,
-      'type': 'Car',
-    },
-    {
-      'image': 'assets/images/vehicle/car/mercedes.png',
-      'logo': 'assets/images/logo/Mercedes.svg',
-      'name': 'Mercedes C-Class',
-      'location': 'Thu Duc District, HCM',
-      'price': '2.500.000 VND',
-      'rating': 4.9,
-      'rentals': 100,
-      'type': 'Car',
-    },
-    {
-      'image': 'assets/images/vehicle/car/mercedes.png',
-      'logo': 'assets/images/logo/Mercedes.svg',
-      'name': 'Mercedes C-Class',
-      'location': 'Thu Duc District, HCM',
-      'price': '2.500.000 VND',
-      'rating': 4.9,
-      'rentals': 100,
-      'type': 'Car',
-    },
-    {
-      'image': 'assets/images/vehicle/car/mercedes.png',
-      'logo': 'assets/images/logo/Mercedes.svg',
-      'name': 'Mercedes C-Class',
-      'location': 'Thu Duc District, HCM',
-      'price': '2.500.000 VND',
-      'rating': 4.9,
-      'rentals': 100,
-      'type': 'Car',
-    },
-    {
-      'image': 'assets/images/vehicle/car/mercedes.png',
-      'logo': 'assets/images/logo/Mercedes.svg',
-      'name': 'Mercedes C-Class',
-      'location': 'Thu Duc District, HCM',
-      'price': '2.500.000 VND',
-      'rating': 4.9,
-      'rentals': 100,
-      'type': 'Car',
-    },
-    {
-      'image': 'assets/images/vehicle/car/mercedes.png',
-      'logo': 'assets/images/logo/Mercedes.svg',
-      'name': 'Mercedes C-Class',
-      'location': 'Thu Duc District, HCM',
-      'price': '2.500.000 VND',
-      'rating': 4.9,
-      'rentals': 100,
-      'type': 'Car',
-    },
-  ];
+  // final List<Map<String, dynamic>> rentalCars = [
+  //   {
+  //     'id': 1,
+  //     'image': 'assets/images/vehicle/car/mercedes.png',
+  //     'logo': 'assets/images/logo/Mercedes.svg',
+  //     'logoName': 'Mercedes',
+  //     'vehicleName': 'C-Class',
+  //     'location': 'Thu Duc District, HCM',
+  //     'price': '2.500.000 VND',
+  //     'rating': 4.9,
+  //     'rentals': 100,
+  //     'type': 'Car',
+  //   },
+  //   {
+  //     'id': 2,
+  //     'image': 'assets/images/vehicle/car/mercedes.png',
+  //     'logo': 'assets/images/logo/Mercedes.svg',
+  //     'logoName': 'Mercedes',
+  //     'vehicleName': 'C-Class',
+  //     'location': 'Thu Duc District, HCM',
+  //     'price': '2.500.000 VND',
+  //     'rating': 4.9,
+  //     'rentals': 100,
+  //     'type': 'Car',
+  //   },
+  //   {
+  //     'id': 3,
+  //     'image': 'assets/images/vehicle/car/mercedes.png',
+  //     'logo': 'assets/images/logo/Mercedes.svg',
+  //     'logoName': 'Mercedes',
+  //     'vehicleName': 'C-Class',
+  //     'location': 'Thu Duc District, HCM',
+  //     'price': '2.500.000 VND',
+  //     'rating': 4.9,
+  //     'rentals': 100,
+  //     'type': 'Car',
+  //   },
+  //   {
+  //     'id': 4,
+  //     'image': 'assets/images/vehicle/car/mercedes.png',
+  //     'logo': 'assets/images/logo/Mercedes.svg',
+  //     'logoName': 'Mercedes',
+  //     'vehicleName': 'C-Class',
+  //     'location': 'Thu Duc District, HCM',
+  //     'price': '2.500.000 VND',
+  //     'rating': 4.9,
+  //     'rentals': 100,
+  //     'type': 'Car',
+  //   },
+  //   {
+  //     'id': 5,
+  //     'image': 'assets/images/vehicle/car/mercedes.png',
+  //     'logo': 'assets/images/logo/Mercedes.svg',
+  //     'logoName': 'Mercedes',
+  //     'vehicleName': 'C-Class',
+  //     'location': 'Thu Duc District, HCM',
+  //     'price': '2.500.000 VND',
+  //     'rating': 4.9,
+  //     'rentals': 100,
+  //     'type': 'Car',
+  //   },
+  //   {
+  //     'id': 6,
+  //     'image': 'assets/images/vehicle/car/mercedes.png',
+  //     'logo': 'assets/images/logo/Mercedes.svg',
+  //     'logoName': 'Mercedes',
+  //     'vehicleName': 'C-Class',
+  //     'location': 'Thu Duc District, HCM',
+  //     'price': '2.500.000 VND',
+  //     'rating': 4.9,
+  //     'rentals': 100,
+  //     'type': 'Car',
+  //   },
+  // ];
 
   late final PageController _bannerController;
   int _currentBanner = 0;
@@ -115,6 +130,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+  final vehicleVM = Provider.of<VehicleViewModel>(context);
+  final rentalCars = vehicleVM.vehicles;
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -317,183 +334,193 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: rentalCars.length,
                       itemBuilder: (context, index) {
                         final car = rentalCars[index];
-                        return Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 5,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color(0x33000000),
-                                blurRadius: 9,
-                                offset: Offset(0, 3),
-                                spreadRadius: 0,
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => VehicleDetailScreen(vehicle: car),
                               ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              Container(
-                                width: 172,
-                                height: 172,
-                                decoration: ShapeDecoration(
-                                  image: DecorationImage(
-                                    image: AssetImage(car['image']),
-                                    fit: BoxFit.cover,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
+                            );
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0x33000000),
+                                  blurRadius: 9,
+                                  offset: Offset(0, 3),
+                                  spreadRadius: 0,
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 172,
+                                  height: 172,
+                                  decoration: ShapeDecoration(
+                                    image: DecorationImage(
+                                      image: NetworkImage(car.image),
+                                      fit: BoxFit.cover,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(height: 8),
-                              Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: SvgPicture.asset(car['logo']),
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          car['name'],
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 12,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w800,
+                                SizedBox(height: 8),
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 8),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: SvgPicture.asset(car.logo),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: SvgPicture.asset(
-                                            'assets/images/homePage/home/address.svg',
-                                          ),
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          car['location'],
-                                          style: TextStyle(
-                                            color: const Color(0xFFAAACAF),
-                                            fontSize: 12,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsetsDirectional.all(2),
-                                          decoration: BoxDecoration(
-                                            color: Color(0xffFFF5E0),
-                                            borderRadius: BorderRadius.circular(
-                                              2,
-                                            ),
-                                            border: Border.all(
-                                              color: Color(0xFFFFC107),
-                                              width: 1,
+                                          SizedBox(width: 4),
+                                          Text(
+                                            '${car.logoName} ${car.vehicleName}',
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 12,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w800,
                                             ),
                                           ),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              SizedBox(
-                                                width: 12,
-                                                height: 12,
-                                                child: SvgPicture.asset(
-                                                  'assets/images/homePage/home/star.svg',
-                                                ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: SvgPicture.asset(
+                                              'assets/images/homePage/home/address.svg',
+                                            ),
+                                          ),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            car.location,
+                                            style: TextStyle(
+                                              color: const Color(0xFFAAACAF),
+                                              fontSize: 12,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsetsDirectional.all(2),
+                                            decoration: BoxDecoration(
+                                              color: Color(0xffFFF5E0),
+                                              borderRadius: BorderRadius.circular(
+                                                2,
                                               ),
-                                              SizedBox(width: 3),
-                                              Text(
-                                                car['rating'].toString(),
-                                                style: TextStyle(
-                                                  color: const Color(
-                                                    0xFF2B2B2C,
+                                              border: Border.all(
+                                                color: Color(0xFFFFC107),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                SizedBox(
+                                                  width: 12,
+                                                  height: 12,
+                                                  child: SvgPicture.asset(
+                                                    'assets/images/homePage/home/star.svg',
                                                   ),
-                                                  fontSize: 10,
-                                                  fontFamily: 'Inter',
-                                                  fontWeight: FontWeight.w500,
-                                                  height: 1.20,
                                                 ),
-                                              ),
-                                            ],
+                                                SizedBox(width: 3),
+                                                Text(
+                                                  car.rating.toString(),
+                                                  style: TextStyle(
+                                                    color: const Color(
+                                                      0xFF2B2B2C,
+                                                    ),
+                                                    fontSize: 10,
+                                                    fontFamily: 'Inter',
+                                                    fontWeight: FontWeight.w500,
+                                                    height: 1.20,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(width: 4),
-                                        Container(
-                                          width: 1,
-                                          height: 16,
-                                          color: Color(0xFF555658),
-                                        ),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          '${car['rentals'].toString()} rentals',
-                                          style: TextStyle(
-                                            color: const Color(0xFF555658),
-                                            fontSize: 10,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                            height: 1.20,
+                                          SizedBox(width: 4),
+                                          Container(
+                                            width: 1,
+                                            height: 16,
+                                            color: Color(0xFF555658),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 4),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          car['price'],
-                                          style: TextStyle(
-                                            color: const Color(0xFF1976D2),
-                                            fontSize: 16,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w700,
-                                            height: 1.25,
+                                          SizedBox(width: 4),
+                                          Text(
+                                            '${car.rentals.toString()} rentals',
+                                            style: TextStyle(
+                                              color: const Color(0xFF555658),
+                                              fontSize: 10,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w400,
+                                              height: 1.20,
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          '/ day',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: const Color(0xFF808183),
-                                            fontSize: 10,
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.w400,
-                                            height: 1.20,
+                                        ],
+                                      ),
+                                      SizedBox(height: 4),
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            car.price,
+                                            style: TextStyle(
+                                              color: const Color(0xFF1976D2),
+                                              fontSize: 16,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w700,
+                                              height: 1.25,
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                          SizedBox(width: 4),
+                                          Text(
+                                            '/ day',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: const Color(0xFF808183),
+                                              fontSize: 10,
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.w400,
+                                              height: 1.20,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
+                          )
                         );
                       },
                     ),

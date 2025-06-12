@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
 import 'package:frontend/viewmodels/personal_information_viewmodel.dart';
+import 'package:frontend/viewmodels/vehicle_viewmodel.dart';
 import 'package:frontend/views/home/home_page.dart';
 import 'package:frontend/views/home/home_screen.dart';
 import 'package:frontend/views/login/sign_in_screen.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
         ChangeNotifierProvider(create: (_) => GAuthViewModel()),
         ChangeNotifierProvider(create: (_) => PersonalInfoViewModel()),
+        ChangeNotifierProvider(create: (_) => VehicleViewModel()),
       ],
       child: MaterialApp(
         title: 'Vehicle Rental App',
