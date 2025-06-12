@@ -7,6 +7,7 @@ import 'package:frontend/views/login/otp_screen.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
+import 'package:frontend/views/widgets/custom_title_textfield.dart';
 import 'package:provider/provider.dart';
 
 import 'sign_in_screen.dart';
@@ -72,7 +73,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildTitle("Name"),
+                      CustomTitleTextField(title: 'Name'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _nameController,
@@ -85,7 +86,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintText: ('Enter your name'),
                       ),
                       const SizedBox(height: 12),
-                      _buildTitle("Email Address"),
+                      CustomTitleTextField(title: 'Email Address'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _emailController,
@@ -98,7 +99,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintText: "Enter your email",
                       ),
                       const SizedBox(height: 12),
-                      _buildTitle('Password'),
+                      CustomTitleTextField(title: 'Password'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _passwordController,
@@ -112,7 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintText: "Enter your Password",
                       ),
                       const SizedBox(height: 12),
-                      _buildTitle('Confirm password'),
+                      CustomTitleTextField(title: 'Confirm password'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _confirmPasswordController,
@@ -426,17 +427,4 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
     );
   }
-}
-
-Widget _buildTitle(String title) {
-  return Text(
-    title,
-    style: TextStyle(
-      color: Color(0xFF2B2B2C),
-      fontSize: 16,
-      fontFamily: 'Inter',
-      fontWeight: FontWeight.w600,
-      height: 1.25,
-    ),
-  );
 }

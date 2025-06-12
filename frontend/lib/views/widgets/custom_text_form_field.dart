@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 
+  bool isValidDate(String value) {
+    final regex = RegExp(r'^\d{2}/\d{2}/\d{4}$');
+    return regex.hasMatch(value);
+  }
+
+  bool isValidPhone(String value) {
+    final regex = RegExp(r'^\d{10,11}$');
+    return regex.hasMatch(value);
+  }
+
 class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
   final String? Function(String?)? validator;
   final String? hintText;
   final bool isPassword;
   final Widget? prefixIcon;
+  final TextInputType? keyboardType;
 
   const CustomTextField({
     super.key,
@@ -14,6 +25,7 @@ class CustomTextField extends StatefulWidget {
     this.hintText,
     this.isPassword = false,
     this.prefixIcon,
+    this.keyboardType,
     
   });
 
@@ -28,6 +40,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: widget.controller,
+      keyboardType: widget.keyboardType ?? TextInputType.text,
       obscureText: widget.isPassword ? _obscurePassword : false,
       decoration: InputDecoration(
         hintText: widget.hintText,

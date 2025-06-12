@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
+import 'package:frontend/views/widgets/custom_title_textfield.dart';
 import 'package:provider/provider.dart';
 
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
@@ -69,7 +70,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildTitle("Email Address"),
+                      CustomTitleTextField(title: "Email Address"),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _emailController,
@@ -82,7 +83,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         hintText: "Enter your email",
                       ),
                       const SizedBox(height: 12),
-                      _buildTitle('Password'),
+                      CustomTitleTextField(title: 'Password'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _passwordController,
@@ -344,17 +345,4 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     );
   }
-}
-
-Widget _buildTitle(String title) {
-  return Text(
-    title,
-    style: TextStyle(
-      color: Color(0xFF2B2B2C),
-      fontSize: 16,
-      fontFamily: 'Inter',
-      fontWeight: FontWeight.w600,
-      height: 1.25,
-    ),
-  );
 }

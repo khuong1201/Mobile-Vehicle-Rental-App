@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:frontend/views/personal_information/infomation_screen.dart';
+import 'package:frontend/views/myAcount/address_screen.dart';
+import 'package:frontend/views/myAcount/driver_license_screen.dart';
+import 'package:frontend/views/myAcount/infomation_screen.dart';
 import '/views/hosting/start_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -18,7 +20,7 @@ class _ProfileScreen extends State<ProfileScreen> {
         height: double.infinity,
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: 16),
-        child: SafeArea(  
+        child: SafeArea(
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -83,6 +85,14 @@ class _ProfileScreen extends State<ProfileScreen> {
                         'assets/images/homePage/profile/Address.svg',
                         'Address',
                         hasBorder: true,
+                        destination: AddressScreen(),
+                      ),
+                      _buildInkwellButton(
+                        context,
+                        'assets/images/homePage/profile/Driver_license.svg',
+                        "Driver's license",
+                        hasBorder: true,
+                        destination: DriverLicenseScreen(),
                       ),
                       _buildInkwellButton(
                         context,
