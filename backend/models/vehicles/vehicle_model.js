@@ -36,7 +36,7 @@ const VehicleSchema = new mongoose.Schema(
     description: String,
     location: LocationSchema,
     ownerEmail: {type: mongoose.Schema.Types.ObjectId, ref: 'User',},
-    pricePerHour: Number,
+    price: Number,
     rate: { type: Number, default: 0 },
     available: { type: Boolean, default: true },
     status: { type: String, default: "pending" },

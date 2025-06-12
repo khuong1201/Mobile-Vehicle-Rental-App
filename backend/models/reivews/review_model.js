@@ -20,6 +20,10 @@ const ReviewSchema = new mongoose.Schema({
   comment: {
     type: String,
     trim: true
+  },
+  reviewCount: {
+    type: Number,
+    default: 0
   }
 }, {
   timestamps: true 
