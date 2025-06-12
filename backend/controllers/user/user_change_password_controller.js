@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("../../models/user_model");
 
-// Change Password
 const changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
@@ -42,24 +41,6 @@ const changePassword = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-
-// Delete Account
-const deleteAccount = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    await User.deleteOne({ _id: user._id });
-    res.json({ message: "Account deleted successfully" });
-  } catch (err) {
-    console.error("Delete account error:", err.message);
-    res.status(400).json({ message: err.message });
-  }
-};
-
 module.exports = {
   changePassword,
-  deleteAccount,
 };

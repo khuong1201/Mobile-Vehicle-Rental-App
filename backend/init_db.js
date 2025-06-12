@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 const Brand = require('./models/vehicles/brand_model');
 const Vehicle = require('./models/vehicles/vehicle_model');
+require("dotenv").config();
+const User = require('./models/user_model');
+const bcrypt = require('bcrypt');
+
 
 const InitStatus = mongoose.model('InitStatus', new mongoose.Schema({
   initialized: { type: Boolean, default: false },
@@ -10,6 +14,25 @@ const InitStatus = mongoose.model('InitStatus', new mongoose.Schema({
 
 const initDB = async () => {
   try {
+    const adminEmail = process.env.EMAIL_USER;
+    const adminPassword = process.env.EMAIL_PASS;
+
+    const adminExists = await User.findOne({ email: adminEmail });
+    if (!adminExists) {
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      const adminUser = await User.create({
+        userId: uuidv4(),
+        fullName: "Administrator",
+        email: adminEmail,
+        passwordHash: hashedPassword,
+        role: "admin",
+        verified: true,
+      });
+
+      console.log(`✅ Admin user created: ${adminUser.email}`);
+    } else {
+      console.log(`ℹ️ Admin user already exists: ${adminEmail}`);
+    }
     const status = await InitStatus.findOne();
     if (status && status.initialized) {
       console.log('ℹ️ Cơ sở dữ liệu đã được khởi tạo trước đó.');

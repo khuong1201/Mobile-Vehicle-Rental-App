@@ -38,7 +38,6 @@ const getBrandByBrandId = async (req, res) => {
   }
 };
 
-// Create a new brand (check for duplicate name)
 const createBrand = async (req, res) => {
   try {
     const { brand } = req.body;
@@ -73,7 +72,6 @@ const createBrand = async (req, res) => {
   }
 };
 
-// Update brand by ObjectId
 const updateBrand = async (req, res) => {
   try {
     const { id } = req.params;

@@ -21,7 +21,7 @@ const AddressSchema = new mongoose.Schema({
 const UserSchema = new mongoose.Schema({
     userId: { type: String, unique: true, default: uuidv4 },
     googleId: { type: String, sparse: true, unique: true },
-    role: { type: String, enum: ['renter', 'owner'], default: 'renter' },
+    role: { type: String, enum: ['renter', 'owner','admin'], default: 'renter' },
     fullName: String,
     gender: String,
     email: { type: String, unique: true },
