@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
 const LicenseSchema = new mongoose.Schema({
-    licenseId: { type: String, unique: true, default: uuidv4 },
+    licenseId: { type: String, default: uuidv4 },
     typeOfDriverLicense: { type: String, required: true },
     classLicense: { type: String, required: true },
     licenseNumber: { type: String, required: true },
@@ -11,7 +11,7 @@ const LicenseSchema = new mongoose.Schema({
     approved: Boolean
 });
 const AddressSchema = new mongoose.Schema({
-    addressId: { type: String, unique: true, default: uuidv4 },
+    addressId: { type: String, default: uuidv4 },
     addressType: { type: String, enum: ['home', 'work'], default: 'home' },
     address: { type: String, required: true },
     floorOrApartmentNumber: { type: String, required: true },

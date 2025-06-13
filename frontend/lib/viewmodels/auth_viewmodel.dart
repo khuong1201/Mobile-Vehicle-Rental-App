@@ -56,6 +56,7 @@ class AuthViewModel extends ChangeNotifier {
     return success;
   }
 
+  // Verify OTP
   Future<bool> verifyOTP(String email, String otp) async {
     try {
       isLoading = true;
@@ -65,20 +66,20 @@ class AuthViewModel extends ChangeNotifier {
 
       final response = await ApiVerifyOTP.verifyOTP(email, otp);
       if (response.success) {
-        debugPrint('Xác minh OTP thành công: ${response.message}');
+        debugPrint('OTP verification successful: ${response.message}');
         isOTPVerified = true;
         notifyListeners();
         return true;
       } else {
-        debugPrint('Xác minh OTP thất bại: ${response.message}');
-        errorMessage = response.message ?? 'Xác minh OTP thất bại.';
+        debugPrint('OTP verification failed: ${response.message}');
+        errorMessage = response.message ?? 'OTP verification failed.';
         isOTPVerified = false;
         notifyListeners();
         return false;
       }
     } catch (e) {
-      debugPrint('Lỗi xác minh OTP: $e');
-      errorMessage = 'Đã xảy ra lỗi: $e';
+      debugPrint('OTP verification error: $e');
+      errorMessage = 'An error occurred: $e';
       isOTPVerified = false;
       notifyListeners();
       return false;
@@ -88,6 +89,7 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
+  // Login
   Future<bool> login(String email, String password) async {
     try {
       isLoading = true;
@@ -99,24 +101,24 @@ class AuthViewModel extends ChangeNotifier {
         final userData = response.data!['user'] as Map<String, dynamic>?;
         if (userData == null) {
           debugPrint('Invalid login response: missing user data');
-          errorMessage = 'Dữ liệu người dùng không hợp lệ';
+          errorMessage = 'Invalid user data.';
           notifyListeners();
           return false;
         }
 
         user = User.fromJson(userData);
-        debugPrint('Đăng nhập thành công: ${user!.email}');
+        debugPrint('Login successful: ${user!.email}');
         notifyListeners();
         return true;
       } else {
-        debugPrint('Đăng nhập thất bại: ${response.message}');
-        errorMessage = response.message ?? 'Đăng nhập sai thông tin.';
+        debugPrint('Login failed: ${response.message}');
+        errorMessage = response.message ?? 'Incorrect login information.';
         notifyListeners();
         return false;
       }
     } catch (err, stackTrace) {
       debugPrint('Login error: $err\n$stackTrace');
-      errorMessage = 'Đã xảy ra lỗi: $err';
+      errorMessage = 'An error occurred: $err';
       notifyListeners();
       return false;
     } finally {
@@ -125,6 +127,7 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
+  // Register
   Future<bool> register(String email, String password, String name) async {
     try {
       isLoading = true;
@@ -133,7 +136,7 @@ class AuthViewModel extends ChangeNotifier {
 
       final response = await ApiRegister.register(email, password, name);
       if (response.success) {
-        debugPrint('Đăng ký thành công: ${response.message}');
+        debugPrint('Registration successful: ${response.message}');
         user = User(
           id: '',
           userId: '',
@@ -145,14 +148,14 @@ class AuthViewModel extends ChangeNotifier {
         notifyListeners();
         return true;
       } else {
-        debugPrint('Đăng ký thất bại: ${response.message}');
-        errorMessage = response.message ?? 'Đăng ký thất bại.';
+        debugPrint('Registration failed: ${response.message}');
+        errorMessage = response.message ?? 'Registration failed.';
         notifyListeners();
         return false;
       }
     } catch (e) {
-      debugPrint('Lỗi đăng ký: $e');
-      errorMessage = 'Đã xảy ra lỗi: $e';
+      debugPrint('Registration error: $e');
+      errorMessage = 'An error occurred: $e';
       notifyListeners();
       return false;
     } finally {
@@ -161,15 +164,16 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> logout(String accessToken, String userID) async {
+  // Logout
+  Future<bool> logout() async {
     try {
       isLoading = true;
       errorMessage = null;
       notifyListeners();
 
-      final response = await ApiLogout.logout(accessToken, userID);
+      final response = await ApiLogout.logout();
       if (response.success) {
-        debugPrint('Đăng xuất thành công: ${response.message}');
+        debugPrint('Logout successful: ${response.message}');
         user = null;
         await _secureStorage.delete(key: 'accessToken');
         await _secureStorage.delete(key: 'refreshToken');
@@ -177,14 +181,14 @@ class AuthViewModel extends ChangeNotifier {
         notifyListeners();
         return true;
       } else {
-        debugPrint('Đăng xuất thất bại: ${response.message}');
-        errorMessage = response.message ?? 'Đăng xuất thất bại.';
+        debugPrint('Logout failed: ${response.message}');
+        errorMessage = response.message ?? 'Logout failed.';
         notifyListeners();
         return false;
       }
     } catch (e) {
-      debugPrint('Lỗi đăng xuất: $e');
-      errorMessage = '';
+      debugPrint('Logout error: $e');
+      errorMessage = 'An error occurred.';
       notifyListeners();
       return false;
     } finally {

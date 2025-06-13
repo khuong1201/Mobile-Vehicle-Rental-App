@@ -31,7 +31,7 @@ class ApiLogin {
 
         if (accessToken == null || refreshToken == null || userData == null) {
           debugPrint('Invalid login response: missing accessToken, refreshToken, or user');
-          return ApiResponse(success: false, message: 'Dữ liệu trả về không hợp lệ');
+          return ApiResponse(success: false, message: 'The returned data is invalid');
         }
 
         // Convert userData to User object
@@ -50,7 +50,7 @@ class ApiLogin {
             'refreshToken': refreshToken,
             'user': userData,
           },
-          message: data['message'] ?? 'Đăng nhập thành công',
+          message: data['message'] ?? 'Log in successfully',
         );
       } else {
         debugPrint('Login failed: ${response.statusCode} - ${response.body}');

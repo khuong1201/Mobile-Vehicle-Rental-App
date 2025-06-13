@@ -32,12 +32,12 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: '/splash',
         home: const HomePage(),
-        // routes: {
-        //   '/splash': (context) => const SplashScreen(),
-        //   '/welcome': (context) => const WelcomeScreen(),
-        //   '/home': (context) => const HomeScreen(),
-        //   '/login': (context) => const SignInScreen(),
-        // },
+        routes: {
+          '/splash': (context) => const SplashScreen(),
+          '/welcome': (context) => const WelcomeScreen(),
+          '/home': (context) => const HomeScreen(),
+          '/login': (context) => const SignInScreen(),
+        },
       ),
     );
   }

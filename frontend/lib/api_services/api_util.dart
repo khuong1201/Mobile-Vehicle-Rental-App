@@ -10,7 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> checkLoginStatus(BuildContext context) async {
   try {
-    // Kiểm tra lần đầu mở ứng dụng
     final prefs = await SharedPreferences.getInstance();
     final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
 
@@ -50,7 +49,6 @@ Future<ApiResponse<Map<String, dynamic>>> callProtectedApi<T extends ChangeNotif
   Map<String, dynamic>? body,
 }) async {
   try {
-    // Get access token from the appropriate ViewModel
     String? accessToken;
     if (viewModel is AuthViewModel) {
       accessToken = await viewModel.getAccessToken();
@@ -186,7 +184,7 @@ Future<ApiResponse<Map<String, dynamic>>> callProtectedApi<T extends ChangeNotif
         debugPrint('Token refresh failed for endpoint=$endpoint');
         // Call logout based on ViewModel type
         if (viewModel is AuthViewModel) {
-          await viewModel.logout('', '');
+          await viewModel.logout();
         } else if (viewModel is GAuthViewModel) {
           await viewModel.signOut();
         }

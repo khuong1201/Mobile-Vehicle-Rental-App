@@ -4,15 +4,15 @@ const vehicleController = require('../../controllers/vehicle/vehicleController')
 const authenticateToken = require('../../middlewares/auth_middleware');
 const AdminOrOwnerMiddleware = require('../../middlewares/admin_or_owner_middleware');
 // Lấy tất cả xe
-router.get('/', authenticateToken, vehicleController.getAllVehicles);
+router.get('/get-vehicle', authenticateToken, vehicleController.getAllVehicles);
 
 // Thêm xe mới
-router.post('/', authenticateToken, AdminOrOwnerMiddleware, vehicleController.createVehicle);
+router.post('/create-vehicle', authenticateToken, AdminOrOwnerMiddleware, vehicleController.createVehicle);
 
 // Sửa xe theo ID
-router.put('/:id', authenticateToken, AdminOrOwnerMiddleware, vehicleController.updateVehicle);
+router.put('/cehicle/:id', authenticateToken, AdminOrOwnerMiddleware, vehicleController.updateVehicle);
 
 // Xóa xe theo ID
-router.delete('/:id', authenticateToken, AdminOrOwnerMiddleware, vehicleController.deleteVehicle);
+router.delete('/vehicle/:id', authenticateToken, AdminOrOwnerMiddleware, vehicleController.deleteVehicle);
 
 module.exports = router;
