@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:frontend/viewmodels/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle_viewmodel.dart';
 import 'package:frontend/views/vehicle_detail/detail_screen.dart';
 import 'package:provider/provider.dart';
@@ -26,81 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
     'assets/images/banners/banner5.png',
   ];
 
-  // final List<Map<String, dynamic>> rentalCars = [
-  //   {
-  //     'id': 1,
-  //     'image': 'assets/images/vehicle/car/mercedes.png',
-  //     'logo': 'assets/images/logo/Mercedes.svg',
-  //     'logoName': 'Mercedes',
-  //     'vehicleName': 'C-Class',
-  //     'location': 'Thu Duc District, HCM',
-  //     'price': '2.500.000 VND',
-  //     'rating': 4.9,
-  //     'rentals': 100,
-  //     'type': 'Car',
-  //   },
-  //   {
-  //     'id': 2,
-  //     'image': 'assets/images/vehicle/car/mercedes.png',
-  //     'logo': 'assets/images/logo/Mercedes.svg',
-  //     'logoName': 'Mercedes',
-  //     'vehicleName': 'C-Class',
-  //     'location': 'Thu Duc District, HCM',
-  //     'price': '2.500.000 VND',
-  //     'rating': 4.9,
-  //     'rentals': 100,
-  //     'type': 'Car',
-  //   },
-  //   {
-  //     'id': 3,
-  //     'image': 'assets/images/vehicle/car/mercedes.png',
-  //     'logo': 'assets/images/logo/Mercedes.svg',
-  //     'logoName': 'Mercedes',
-  //     'vehicleName': 'C-Class',
-  //     'location': 'Thu Duc District, HCM',
-  //     'price': '2.500.000 VND',
-  //     'rating': 4.9,
-  //     'rentals': 100,
-  //     'type': 'Car',
-  //   },
-  //   {
-  //     'id': 4,
-  //     'image': 'assets/images/vehicle/car/mercedes.png',
-  //     'logo': 'assets/images/logo/Mercedes.svg',
-  //     'logoName': 'Mercedes',
-  //     'vehicleName': 'C-Class',
-  //     'location': 'Thu Duc District, HCM',
-  //     'price': '2.500.000 VND',
-  //     'rating': 4.9,
-  //     'rentals': 100,
-  //     'type': 'Car',
-  //   },
-  //   {
-  //     'id': 5,
-  //     'image': 'assets/images/vehicle/car/mercedes.png',
-  //     'logo': 'assets/images/logo/Mercedes.svg',
-  //     'logoName': 'Mercedes',
-  //     'vehicleName': 'C-Class',
-  //     'location': 'Thu Duc District, HCM',
-  //     'price': '2.500.000 VND',
-  //     'rating': 4.9,
-  //     'rentals': 100,
-  //     'type': 'Car',
-  //   },
-  //   {
-  //     'id': 6,
-  //     'image': 'assets/images/vehicle/car/mercedes.png',
-  //     'logo': 'assets/images/logo/Mercedes.svg',
-  //     'logoName': 'Mercedes',
-  //     'vehicleName': 'C-Class',
-  //     'location': 'Thu Duc District, HCM',
-  //     'price': '2.500.000 VND',
-  //     'rating': 4.9,
-  //     'rentals': 100,
-  //     'type': 'Car',
-  //   },
-  // ];
-
   late final PageController _bannerController;
   int _currentBanner = 0;
   Timer? _bannerTimer;
@@ -119,6 +46,9 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }
     });
+    Future.microtask(() {
+      Provider.of<VehicleViewModel>(context, listen: false).fetchVehicles();
+    });
   }
 
   @override
@@ -130,8 +60,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final vehicleVM = Provider.of<VehicleViewModel>(context);
-    final rentalCars = vehicleVM.vehicles;
+  final authViewmodel = Provider.of<AuthViewModel>(context);
+  final gAuthViewmodel = Provider.of<GAuthViewModel>(context);
+  final vehicleVM = Provider.of<VehicleViewModel>(context);
+  
+  final rentalCars = vehicleVM.vehicles;
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -177,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Column(
                             children: [
                               Text(
-                                'Welcome, Linda!', //import ten tu google
+                                'Welcome, ${authViewmodel.user?.fullName ?? gAuthViewmodel.user?.fullName ?? 'Bro'}',
                                 style: TextStyle(
                                   color: const Color(0xFFF7F7F8),
                                   fontSize: 18,
@@ -369,7 +302,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   height: 172,
                                   decoration: ShapeDecoration(
                                     image: DecorationImage(
-                                      image: NetworkImage(car.image),
+                                      image: NetworkImage(car.images.isNotEmpty
+                                          ? car.images[0]
+                                          : 'https://via.placeholder.com/172'),
                                       fit: BoxFit.cover,
                                     ),
                                     shape: RoundedRectangleBorder(
@@ -387,11 +322,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                           SizedBox(
                                             width: 20,
                                             height: 20,
-                                            child: SvgPicture.asset(car.logo),
+                                            child: SvgPicture.asset(
+                                              'frontend/assets/images/logo/Mercedes.svg',
+                                            ),
                                           ),
                                           SizedBox(width: 4),
                                           Text(
-                                            '${car.logoName} ${car.vehicleName}',
+                                            '${car.brand} ${car.vehicleName}',
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
@@ -415,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                           SizedBox(width: 8),
                                           Text(
-                                            car.location,
+                                            car.location?.address ?? 'Unknown Location',
                                             style: TextStyle(
                                               color: const Color(0xFFAAACAF),
                                               fontSize: 12,
@@ -454,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ),
                                                 SizedBox(width: 3),
                                                 Text(
-                                                  car.rating.toString(),
+                                                  car.rate.toString(),
                                                   style: TextStyle(
                                                     color: const Color(
                                                       0xFF2B2B2C,
@@ -495,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            car.price,
+                                            car.price.toString(),
                                             style: TextStyle(
                                               color: const Color(0xFF1976D2),
                                               fontSize: 16,

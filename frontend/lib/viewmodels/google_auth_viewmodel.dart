@@ -11,6 +11,8 @@ class GAuthViewModel extends ChangeNotifier {
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
   final TokenService _tokenService = TokenService();
   User? user;
+
+
   // Check login status
   Future<bool> isLoggedIn() async {
     final accessToken = await getAccessToken();
@@ -46,6 +48,7 @@ class GAuthViewModel extends ChangeNotifier {
         }
 
         final user = User.fromJson(userData);
+        this.user = user;
 
         await _secureStorage.write(key: 'accessToken', value: accessToken);
         await _secureStorage.write(key: 'refreshToken', value: refreshToken);
