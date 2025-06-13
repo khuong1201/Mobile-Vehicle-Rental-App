@@ -130,8 +130,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-  final vehicleVM = Provider.of<VehicleViewModel>(context);
-  final rentalCars = vehicleVM.vehicles;
+    final vehicleVM = Provider.of<VehicleViewModel>(context);
+    final rentalCars = vehicleVM.vehicles;
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -339,7 +339,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => VehicleDetailScreen(vehicle: car),
+                                builder:
+                                    (context) =>
+                                        VehicleDetailScreen(vehicle: car),
                               ),
                             );
                           },
@@ -427,12 +429,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Row(
                                         children: [
                                           Container(
-                                            padding: EdgeInsetsDirectional.all(2),
+                                            padding: EdgeInsetsDirectional.all(
+                                              2,
+                                            ),
                                             decoration: BoxDecoration(
                                               color: Color(0xffFFF5E0),
-                                              borderRadius: BorderRadius.circular(
-                                                2,
-                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(2),
                                               border: Border.all(
                                                 color: Color(0xFFFFC107),
                                                 width: 1,
@@ -520,7 +523,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ],
                             ),
-                          )
+                          ),
                         );
                       },
                     ),
