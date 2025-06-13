@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:frontend/viewmodels/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle_viewmodel.dart';
 import 'package:frontend/views/vehicle_detail/detail_screen.dart';
 import 'package:provider/provider.dart';
@@ -130,6 +132,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+  final authViewmodel = Provider.of<AuthViewModel>(context);
+  final gAuthViewmodel = Provider.of<GAuthViewModel>(context);
   final vehicleVM = Provider.of<VehicleViewModel>(context);
   final rentalCars = vehicleVM.vehicles;
     return Scaffold(
@@ -177,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Column(
                             children: [
                               Text(
-                                'Welcome, Linda!', //import ten tu google
+                                'Welcome, ${authViewmodel.user?.fullName ?? gAuthViewmodel.user?.fullname ?? 'Bro'}',
                                 style: TextStyle(
                                   color: const Color(0xFFF7F7F8),
                                   fontSize: 18,
