@@ -1,31 +1,18 @@
-import 'dart:convert';
-
-import 'package:flutter/material.dart';
-import 'package:frontend/api_services/api_client.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/api_services/api_reponse.dart';
 
 class ApiLogout {
-  static Future<ApiResponse<String>> logout(String accessToken, String userID) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/api/auth/logout');
-    try {
-      final response = await ApiClient().client.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'accessToken': accessToken, 'userID': userID}),
-      ).timeout(const Duration(seconds: 10));
+  static final _storage = FlutterSecureStorage();
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return ApiResponse(success: true, message: data['message']);
-      } else {
-        return ApiResponse(
-          success: false,
-          message: 'Đăng xuất thất bại: ${response.statusCode}',
-        );
-      }
+  static Future<ApiResponse<String>> logout() async {
+    try {
+      await _storage.delete(key: 'accessToken');
+      await _storage.delete(key: 'refreshToken');
+      await _storage.delete(key: 'userID');
+
+      return ApiResponse(success: true, message: 'Successfully logged out');
     } catch (e) {
-      debugPrint('🔥 Lỗi trong quá trình đăng xuất: $e');
-      return ApiResponse(success: false, message: 'Lỗi: $e');
+      return ApiResponse(success: false, message: 'Error when logging out: $e');
     }
   }
 }

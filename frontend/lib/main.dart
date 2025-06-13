@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         title: 'Vehicle Rental App',
         debugShowCheckedModeBanner: false,
         initialRoute: '/splash',
-        //home: const HomePage(),
+        home: const HomePage(),
         routes: {
           '/splash': (context) => const SplashScreen(),
           '/welcome': (context) => const WelcomeScreen(),
