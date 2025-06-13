@@ -1,3 +1,4 @@
+
 class Location {
   final String address;
   final double lat;
@@ -41,6 +42,7 @@ class Vehicle {
   final String ownerEmail;
   final double price;
   final double rate;
+  final double rentals;
   final bool available;
   final String status;
   final String type;
@@ -60,6 +62,7 @@ class Vehicle {
     required this.ownerEmail,
     required this.price,
     required this.rate,
+    this.rentals = 0,
     required this.available,
     required this.status,
     required this.type,

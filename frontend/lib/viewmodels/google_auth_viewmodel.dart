@@ -10,6 +10,8 @@ class GAuthViewModel extends ChangeNotifier {
   final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
   final TokenService _tokenService = TokenService();
+  User? user;
+
 
   // Check login status
   Future<bool> isLoggedIn() async {
@@ -44,6 +46,7 @@ class GAuthViewModel extends ChangeNotifier {
         }
 
         final user = User.fromJson(userData);
+        this.user = user;
 
         await _secureStorage.write(key: 'accessToken', value: accessToken);
         await _secureStorage.write(key: 'refreshToken', value: refreshToken);
