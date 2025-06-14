@@ -15,7 +15,7 @@ class ApiRefresh {
         return ApiResponse(success: false, message: 'No refresh token available');
       }
 
-      final url = Uri.parse('${ApiClient.baseUrl}/api/auth/refresh');
+      final url = Uri.parse('${ApiClient.baseUrl}/api/auth/refresh-token');
       final response = await ApiClient().client.post(
         url,
         headers: {'Content-Type': 'application/json'},

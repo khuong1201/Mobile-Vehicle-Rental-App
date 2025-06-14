@@ -2,10 +2,9 @@ const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 const Brand = require('./models/vehicles/brand_model');
 const Vehicle = require('./models/vehicles/vehicle_model');
-require("dotenv").config();
 const User = require('./models/user_model');
 const bcrypt = require('bcrypt');
-
+require('dotenv').config();
 
 const InitStatus = mongoose.model('InitStatus', new mongoose.Schema({
   initialized: { type: Boolean, default: false },
@@ -17,83 +16,131 @@ const initDB = async () => {
     const adminEmail = process.env.EMAIL_USER;
     const adminPassword = process.env.EMAIL_PASS;
 
-    const adminExists = await User.findOne({ email: adminEmail });
-    if (!adminExists) {
+    // Tạo admin user nếu chưa có
+    let adminUser = await User.findOne({ email: adminEmail });
+    if (!adminUser) {
       const hashedPassword = await bcrypt.hash(adminPassword, 10);
-      const adminUser = await User.create({
+      adminUser = await User.create({
         userId: uuidv4(),
-        fullName: "Administrator",
+        fullName: 'Administrator',
         email: adminEmail,
         passwordHash: hashedPassword,
-        role: "admin",
+        role: 'admin',
         verified: true,
       });
-
       console.log(`✅ Admin user created: ${adminUser.email}`);
     } else {
       console.log(`ℹ️ Admin user already exists: ${adminEmail}`);
     }
+
+    // Kiểm tra trạng thái đã khởi tạo
     const status = await InitStatus.findOne();
-    if (status && status.initialized) {
+    if (status?.initialized) {
       console.log('ℹ️ Cơ sở dữ liệu đã được khởi tạo trước đó.');
       return;
     }
 
     // Danh sách hãng xe
-    const brands = [
-      "Mercedes-Benz", "Audi", "BMW", "Toyota", "Mitsubishi",
-      "Volkswagen", "Ford", "Lexus", "Hyundai", "VinFast"
-    ];
+    // Danh sách hãng xe kèm logo
+const brands = [
+  {
+    brandName: 'Mercedes-Benz',
+    brandImage: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg'
+  },
+  {
+    brandName: 'Audi',
+    brandImage: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg'
+  },
+  {
+    brandName: 'BMW',
+    brandImage: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg'
+  },
+  {
+    brandName: 'Toyota',
+    brandImage: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg'
+  },
+  {
+    brandName: 'Mitsubishi',
+    brandImage: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg'
+  },
+  {
+    brandName: 'Volkswagen',
+    brandImage: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg'
+  },
+  {
+    brandName: 'Ford',
+    brandImage: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg'
+  },
+  {
+    brandName: 'Lexus',
+    brandImage: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg'
+  },
+  {
+    brandName: 'Hyundai',
+    brandImage: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg'
+  },
+  {
+    brandName: 'VinFast',
+    brandImage: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg'
+  }
+];
 
-    // Thêm hãng xe nếu chưa tồn tại
-    for (const brandName of brands) {
-      const exists = await Brand.findOne({ brand: brandName });
-      if (!exists) {
-        const newBrand = await Brand.create({ brand: brandName });
-        console.log(`✅ Đã thêm brand mới: ${brandName} (ID: ${newBrand.brandId})`);
-      } else {
-        console.log(`ℹ️ Brand đã tồn tại: ${brandName}`);
-      }
+for (const brand of brands) {
+  const exists = await Brand.findOne({ brandName: brand.brandName });
+
+  if (!exists) {
+    const newBrand = await Brand.create({
+      brandName: brand.brandName,
+      brandImage: brand.brandImage
+    });
+    console.log(`✅ Đã thêm brand mới: ${brand.brandName}`);
+  } else {
+    if (!exists.brandImage) {
+      exists.brandImage = brand.brandImage;
+      await exists.save();
+      console.log(`🔄 Đã cập nhật brandImage cho: ${brand.brandName}`);
+    } else {
+      console.log(`ℹ️ Brand đã tồn tại: ${brand.brandName}`);
     }
+  }
+}
 
-    // Map brand name -> _id
+    // Ánh xạ brandName -> _id
     const savedBrands = await Brand.find();
     const brandMap = {};
-    savedBrands.forEach(b => brandMap[b.brand] = b._id);
+    savedBrands.forEach(b => {
+      brandMap[b.brandName] = b._id;
+    });
 
     // Danh sách xe mẫu
     const vehicles = [
-      { vehicleName: "C-Class", brand: "Mercedes-Benz", type: "Car", pricePerHour: 1800000 },
-      { vehicleName: "E-Class", brand: "Mercedes-Benz", type: "Car", pricePerHour: 2200000 },
-      { vehicleName: "GLC", brand: "Mercedes-Benz", type: "Car", pricePerHour: 2000000 },
-      { vehicleName: "Q5", brand: "Audi", type: "Car", pricePerHour: 1800000 },
-      { vehicleName: "RX", brand: "Lexus", type: "Car", pricePerHour: 2500000 },
-      { vehicleName: "VF e34", brand: "VinFast", type: "Car", pricePerHour: 700000 },
-      { vehicleName: "Tucson", brand: "Hyundai", type: "Car", pricePerHour: 800000 },
-      { vehicleName: "Ranger", brand: "Ford", type: "Car", pricePerHour: 800000 }
+      { vehicleName: 'C-Class', brandName: 'Mercedes-Benz', type: 'Car', price: 1800000 },
+      { vehicleName: 'E-Class', brandName: 'Mercedes-Benz', type: 'Car', price: 2200000 },
+      { vehicleName: 'GLC', brandName: 'Mercedes-Benz', type: 'Car', price: 2000000 },
+      { vehicleName: 'Q5', brandName: 'Audi', type: 'Car', price: 1800000 },
+      { vehicleName: 'RX', brandName: 'Lexus', type: 'Car', price: 2500000 },
+      { vehicleName: 'VF e34', brandName: 'VinFast', type: 'Car', price: 700000 },
+      { vehicleName: 'Tucson', brandName: 'Hyundai', type: 'Car', price: 800000 },
+      { vehicleName: 'Ranger', brandName: 'Ford', type: 'Car', price: 800000 }
     ];
 
-    const fakeOwnerId = new mongoose.Types.ObjectId(); // dùng tạm nếu chưa có user
-
     for (const v of vehicles) {
-      const exists = await Vehicle.findOne({
-        vehicleName: v.vehicleName,
-        brand: brandMap[v.brand]
-      });
+      const licensePlate = 'TEMP-' + Math.floor(Math.random() * 10000);
+      const exists = await Vehicle.findOne({ licensePlate });
 
       if (!exists) {
         const newVehicle = await Vehicle.create({
-          ownerId: fakeOwnerId,
+          ownerId: adminUser._id,
           vehicleId: uuidv4(),
           vehicleName: v.vehicleName,
-          brand: brandMap[v.brand],
+          brandId: brandMap[v.brandName],
           type: v.type,
-          licensePlate: 'TEMP-' + Math.floor(Math.random() * 10000),
+          licensePlate: licensePlate,
           yearOfManufacture: 2022,
-          description: `Mẫu xe ${v.vehicleName} của hãng ${v.brand}`,
-          pricePerHour: v.pricePerHour,
+          description: `Mẫu xe ${v.vehicleName} của hãng ${v.brandName}`,
+          price: v.price,
           location: {
-            address: "Hà Nội",
+            address: 'Hà Nội',
             lat: 21.0278,
             lng: 105.8342
           }
@@ -101,17 +148,18 @@ const initDB = async () => {
 
         console.log(`✅ Đã thêm xe mới: ${v.vehicleName} (UUID: ${newVehicle.vehicleId})`);
       } else {
-        console.log(`ℹ️ Xe đã tồn tại: ${v.vehicleName}`);
+        console.log(`ℹ️ Xe đã tồn tại với biển số: ${licensePlate}`);
       }
     }
 
+    // Cập nhật trạng thái đã khởi tạo
     await InitStatus.findOneAndUpdate(
       {},
       { initialized: true, lastInit: new Date() },
       { upsert: true }
     );
 
-    console.log("✅ Khởi tạo dữ liệu hoàn tất.");
+    console.log('✅ Khởi tạo dữ liệu hoàn tất.');
   } catch (e) {
     console.error('❌ Lỗi khi khởi tạo dữ liệu:', e.message);
     throw e;

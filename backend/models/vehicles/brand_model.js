@@ -8,7 +8,7 @@ const BrandSchema = new mongoose.Schema({
     unique: true,
     trim: true
   },
-  brand: {
+  brandName: {
     type: String,
     required: true,
     unique: true,
