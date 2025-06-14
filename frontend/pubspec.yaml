@@ -79,7 +79,8 @@ flutter:
     - assets/images/homePage/home/
     - assets/images/homePage/profile/
     - assets/images/hosting/start/
-    - assets/images/hosting/Lessor home/
+    - assets/images/vehicle_detail/
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
