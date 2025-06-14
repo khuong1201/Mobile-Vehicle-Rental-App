@@ -3,11 +3,11 @@ const { v4: uuidv4 } = require('uuid');
 
 const LicenseSchema = new mongoose.Schema({
     licenseId: { type: String, default: uuidv4 },
-    typeOfDriverLicense: { type: String, required: true },
-    classLicense: { type: String, required: true },
-    licenseNumber: { type: String, required: true },
-    driverLicenseFront: { type: String, required: true },
-    driverLicenseBack: { type: String, required: true },
+    typeOfDriverLicense: { type: String, },
+    classLicense: { type: String,  },
+    licenseNumber: { type: String,  },
+    driverLicenseFront: { type: String, },
+    driverLicenseBack: { type: String,  },
     approved: Boolean
 });
 const AddressSchema = new mongoose.Schema({

@@ -1,14 +1,10 @@
-
+import 'package:frontend/models/vehicles/brand.dart';
 class Location {
   final String address;
   final double lat;
   final double lng;
 
-  Location({
-    required this.address,
-    required this.lat,
-    required this.lng,
-  });
+  Location({required this.address, required this.lat, required this.lng});
 
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(
@@ -19,21 +15,15 @@ class Location {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'address': address,
-      'lat': lat,
-      'lng': lng,
-    };
+    return {'address': address, 'lat': lat, 'lng': lng};
   }
 }
-
 class Vehicle {
   final String id;
   final String vehicleId;
   final String vehicleName;
   final String licensePlate;
-  final String brand;
-  final String model;
+  final Brand brand;
   final int yearOfManufacture;
   final List<String> images;
   final String description;
@@ -53,7 +43,6 @@ class Vehicle {
     required this.vehicleName,
     required this.licensePlate,
     required this.brand,
-    required this.model,
     required this.yearOfManufacture,
     required this.images,
     required this.description,
@@ -69,21 +58,20 @@ class Vehicle {
   });
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
+    final owner = json['ownerId'] as Map<String, dynamic>?;
+
     return Vehicle(
       id: json['_id'] ?? '',
       vehicleId: json['vehicleId'] ?? '',
       vehicleName: json['vehicleName'] ?? '',
       licensePlate: json['licensePlate'] ?? '',
-      brand: json['brand'] is Map ? json['brand']['_id'] : json['brand'],
-      model: json['model'] ?? '',
+      brand: Brand.fromJson(json['brandId'] ?? {}),
       yearOfManufacture: json['yearOfManufacture'] ?? 0,
       images: List<String>.from(json['images'] ?? []),
       description: json['description'] ?? '',
-      location: json['location'] != null
-          ? Location.fromJson(json['location'])
-          : null,
-      ownerId: json['ownerId'] ?? '',
-      ownerEmail: json['ownerEmail'] ?? '',
+      location: json['location'] != null ? Location.fromJson(json['location']) : null,
+      ownerId: owner?['_id'] ?? '',
+      ownerEmail: owner?['email'] ?? '',
       price: (json['price'] ?? 0).toDouble(),
       rate: (json['rate'] ?? 0).toDouble(),
       available: json['available'] ?? true,

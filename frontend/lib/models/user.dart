@@ -1,10 +1,11 @@
 // models/user.dart
 class User {
   final String id;
-  final String userId; 
+  final String userId;
   final String? googleId;
   final String fullName;
   final String email;
+  final String imageAvatarUrl;
   final String role;
   final bool verified;
 
@@ -14,6 +15,7 @@ class User {
     this.googleId,
     required this.fullName,
     required this.email,
+    required this.imageAvatarUrl,
     required this.role,
     required this.verified,
   });
@@ -24,6 +26,7 @@ class User {
       userId: json['userId'] ?? '',
       googleId: json['googleId'],
       fullName: json['fullName'] ?? '',
+      imageAvatarUrl: json['imageAvatarUrl'] ?? '',
       email: json['email'] ?? '',
       role: json['role'] ?? 'renter',
       verified: json['verified'] ?? false,
@@ -37,6 +40,7 @@ class User {
       'googleId': googleId,
       'fullName': fullName,
       'email': email,
+      'imageAvatarUrl': imageAvatarUrl,
       'role': role,
       'verified': verified,
     };

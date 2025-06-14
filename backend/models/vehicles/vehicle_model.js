@@ -25,17 +25,21 @@ const VehicleSchema = new mongoose.Schema(
     },
     vehicleName: String,
     licensePlate: { type: String, required: true },
-    brand: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Brand",
+    brandId: {
+      type: String, 
       required: true,
+      ref: 'Brand' 
     },
     model: String,
     yearOfManufacture: Number,
     images: [String],
     description: String,
     location: LocationSchema,
-    ownerEmail: {type: mongoose.Schema.Types.ObjectId, ref: 'User',},
+    type: {
+      type: String,
+      enum: ["Car", "Motorbike", "Coach", "Bike"],
+      required: true,
+    },
     price: Number,
     rate: { type: Number, default: 0 },
     available: { type: Boolean, default: true },

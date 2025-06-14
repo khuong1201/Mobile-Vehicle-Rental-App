@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
+import 'package:frontend/viewmodels/user_provider_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle_viewmodel.dart';
 import 'package:frontend/views/vehicle_detail/detail_screen.dart';
 import 'package:provider/provider.dart';
@@ -46,8 +48,13 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }
     });
-    Future.microtask(() {
-      Provider.of<VehicleViewModel>(context, listen: false).fetchVehicles();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final vehicleVM = Provider.of<VehicleViewModel>(context, listen: false);
+        vehicleVM.fetchBrands(context).then((_) {
+          vehicleVM.fetchVehicles(context);
+        });
+      }
     });
   }
 
@@ -60,11 +67,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-  final authViewmodel = Provider.of<AuthViewModel>(context);
-  final gAuthViewmodel = Provider.of<GAuthViewModel>(context);
-  final vehicleVM = Provider.of<VehicleViewModel>(context);
-  
-  final rentalCars = vehicleVM.vehicles;
+    final authViewmodel = Provider.of<AuthViewModel>(context);
+    final gAuthViewmodel = Provider.of<GAuthViewModel>(context);
+    final vehicleVM = Provider.of<VehicleViewModel>(context);
+    final userVM = Provider.of<UserViewModel>(context);
+    final user = userVM.user;
+    final rentalvehicles = vehicleVM.vehicles;
+    final brands = vehicleVM.brands;
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -92,7 +101,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           ClipOval(
                             child: Image.network(
-                              '',
+                              authViewmodel.user?.imageAvatarUrl ??
+                                  gAuthViewmodel.user?.imageAvatarUrl ??
+                                  '',
                               width: 50,
                               height: 50,
                               fit: BoxFit.contain,
@@ -110,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Column(
                             children: [
                               Text(
-                                'Welcome, ${authViewmodel.user?.fullName ?? gAuthViewmodel.user?.fullName ?? 'Bro'}',
+                                'Welcome, ${user?.fullName.isNotEmpty == true ? user!.fullName : 'Bro'}',
                                 style: TextStyle(
                                   color: const Color(0xFFF7F7F8),
                                   fontSize: 18,
@@ -178,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       'assets/images/homePage/home/car.svg',
                                   width: 32,
                                   height: 32,
-                                  label: 'Car',
+                                  label: 'car',
                                   onPressed: () {},
                                 ),
                                 SvgIconTextButton(
@@ -247,7 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Explore Rental Cars',
+                      'Explore Rental vehicles',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
@@ -264,15 +275,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisSpacing: 16,
                         childAspectRatio: 0.63,
                       ),
-                      itemCount: rentalCars.length,
+                      itemCount: rentalvehicles.length,
                       itemBuilder: (context, index) {
-                        final car = rentalCars[index];
+                        final vehicle = rentalvehicles[index];
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => VehicleDetailScreen(vehicle: car),
+                                builder:
+                                    (context) =>
+                                        VehicleDetailScreen(vehicle: vehicle),
                               ),
                             );
                           },
@@ -300,9 +313,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   height: 172,
                                   decoration: ShapeDecoration(
                                     image: DecorationImage(
-                                      image: NetworkImage(car.images.isNotEmpty
-                                          ? car.images[0]
-                                          : 'https://via.placeholder.com/172'),
+                                      image: NetworkImage(
+                                        vehicle.images.isNotEmpty
+                                            ? vehicle.images[0]
+                                            : 'https://www.kia.com/content/dam/kwcms/gt/en/images/discover-kia/voice-search/parts-80-1.jpg',
+                                      ),
                                       fit: BoxFit.cover,
                                     ),
                                     shape: RoundedRectangleBorder(
@@ -320,13 +335,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                           SizedBox(
                                             width: 20,
                                             height: 20,
-                                            child: SvgPicture.asset(
-                                              'frontend/assets/images/logo/Mercedes.svg',
+                                            child: Image.network(
+                                              '${vehicle.brand.brandImage}',
                                             ),
                                           ),
                                           SizedBox(width: 4),
                                           Text(
-                                            '${car.brand} ${car.vehicleName}',
+                                            '${vehicle.brand.brandName} ${vehicle.vehicleName}',
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
@@ -350,7 +365,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                           SizedBox(width: 8),
                                           Text(
-                                            car.location?.address ?? 'Unknown Location',
+                                            vehicle.location?.address ??
+                                                'Unknown Location',
                                             style: TextStyle(
                                               color: const Color(0xFFAAACAF),
                                               fontSize: 12,
@@ -364,12 +380,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Row(
                                         children: [
                                           Container(
-                                            padding: EdgeInsetsDirectional.all(2),
+                                            padding: EdgeInsetsDirectional.all(
+                                              2,
+                                            ),
                                             decoration: BoxDecoration(
                                               color: Color(0xffFFF5E0),
-                                              borderRadius: BorderRadius.circular(
-                                                2,
-                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(2),
                                               border: Border.all(
                                                 color: Color(0xFFFFC107),
                                                 width: 1,
@@ -388,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ),
                                                 SizedBox(width: 3),
                                                 Text(
-                                                  car.rate.toString(),
+                                                  vehicle.rate.toString(),
                                                   style: TextStyle(
                                                     color: const Color(
                                                       0xFF2B2B2C,
@@ -410,7 +427,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                           SizedBox(width: 4),
                                           Text(
-                                            '${car.rentals.toString()} rentals',
+                                            '${vehicle.rentals.toString()} rentals',
                                             style: TextStyle(
                                               color: const Color(0xFF555658),
                                               fontSize: 10,
@@ -429,7 +446,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            car.price.toString(),
+                                            vehicle.price.toString(),
                                             style: TextStyle(
                                               color: const Color(0xFF1976D2),
                                               fontSize: 16,
@@ -457,7 +474,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ],
                             ),
-                          )
+                          ),
                         );
                       },
                     ),

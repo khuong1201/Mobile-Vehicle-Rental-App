@@ -8,11 +8,15 @@ const BrandSchema = new mongoose.Schema({
     unique: true,
     trim: true
   },
-  brand: {
+  brandName: {
     type: String,
     required: true,
     unique: true,
     trim: true
+  },
+  brandImage: {
+    type: String,
+    trim: true,
   }
 });
 

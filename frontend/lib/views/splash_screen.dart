@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/api_services/api_util.dart';
+import 'package:frontend/viewmodels/check_login_status.dart';
+
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -10,7 +11,7 @@ class SplashScreen extends StatelessWidget {
       checkLoginStatus(context);
     });
     return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
+      body: Center(),
     );
   }
 }
