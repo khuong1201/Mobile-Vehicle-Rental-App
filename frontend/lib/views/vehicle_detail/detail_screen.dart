@@ -20,11 +20,26 @@ class VehicleDetailScreen extends StatelessWidget {
             CustomAppbar(title: 'Details'),
             const SizedBox(height: 28),
             Container(
+              height: 213,
+              decoration: ShapeDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(vehicle.images.isNotEmpty
+                      ? vehicle.images[0]
+                      : 'https://via.placeholder.com/172'),
+                  fit: BoxFit.cover,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 28),
+            Container(
               child: Column(
                 children: [
                   Row(
                     children: [
-                      CustomTextBodyL(title: ''),
+                      CustomTextBodyL(title: '${vehicle.brand} ${vehicle.vehicleName}'),
                       Spacer(),
                       Row(
                         children: [
@@ -37,7 +52,7 @@ class VehicleDetailScreen extends StatelessWidget {
                           ),
                           SizedBox(width: 3),
                           Text(
-                            '',
+                            vehicle.rate.toString(),
                             style: TextStyle(
                               color: const Color(
                                 0xFF2B2B2C,
@@ -48,6 +63,29 @@ class VehicleDetailScreen extends StatelessWidget {
                               height: 1.20,
                             ),
                           ),        
+                        ],
+                      ),
+                      const SizedBox(width: 16),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 28,
+                            height: 28,
+                            child: SvgPicture.asset(
+                              'frontend/assets/images/logo/Mercedes.svg',
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            vehicle.brand,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 12,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w400,
+                              height: 1.33,
+                            ),
+                          ),
                         ],
                       )
                     ],

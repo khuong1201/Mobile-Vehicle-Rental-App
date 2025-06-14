@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:frontend/viewmodels/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
 import 'package:frontend/views/myAcount/address_screen.dart';
 import 'package:frontend/views/myAcount/driver_license_screen.dart';
 import 'package:frontend/views/myAcount/infomation_screen.dart';
 import 'package:frontend/views/widgets/custom_text_body_L.dart';
+import 'package:provider/provider.dart';
 import '/views/hosting/start_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -16,6 +19,9 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreen extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
+  final authViewmodel = Provider.of<AuthViewModel>(context);
+  final gAuthViewmodel = Provider.of<GAuthViewModel>(context);
+  
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -32,7 +38,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                     children: [
                       ClipOval(
                         child: Image.network(
-                          '', //import anh gg
+                          '',
                           fit: BoxFit.contain,
                           width: 130,
                           height: 130,
@@ -47,7 +53,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        'LinDa',
+                        '${authViewmodel.user?.fullName ?? gAuthViewmodel.user?.fullName ?? 'Guest'}',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -56,7 +62,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                         ),
                       ),
                       Text(
-                        'linda01@gmai.com',
+                        '${authViewmodel.user?.email ?? gAuthViewmodel.user?.email ?? 'Unknown'}',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -192,16 +198,21 @@ Widget _buildInkwellButton(
   bool hasBorder = false,
   Widget? destination,
 }) {
+  final authViewmodel = Provider.of<AuthViewModel>(context);
+  final gAuthViewmodel = Provider.of<GAuthViewModel>(context);
   return InkWell(
-    onTap:
-        destination != null
-            ? () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => destination),
-              );
-            }
-            : null,
+    onTap: () {
+      if (label == 'Sign out') {
+        Navigator.popUntil(context, ModalRoute.withName('/login'));
+        authViewmodel.logout();
+        gAuthViewmodel.signOut();
+      } else if (destination != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => destination),
+        );
+      }
+    },
     child: Container(
       padding: EdgeInsets.symmetric(vertical: 8),
       margin: EdgeInsets.only(bottom: 8, left: 16, right: 16),

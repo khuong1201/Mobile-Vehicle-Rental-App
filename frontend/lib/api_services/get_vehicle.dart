@@ -11,7 +11,7 @@ class ApiGetAllVehicle {
   static Future<ApiResponse<List<Vehicle>>> getAllVehicle<T extends ChangeNotifier>(T viewModel) async {
     final response = await callProtectedApi<T>(
       viewModel,
-      endpoint: '/get-vehicle',
+      endpoint: '/api/vehicles/get-vehicle',
       method: 'GET',
     );
 
