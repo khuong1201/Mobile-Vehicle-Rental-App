@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/auth_viewmodel.dart';
 import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
 import 'package:frontend/viewmodels/user_provider_viewmodel.dart';
@@ -73,7 +72,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final userVM = Provider.of<UserViewModel>(context);
     final user = userVM.user;
     final rentalvehicles = vehicleVM.vehicles;
-    final brands = vehicleVM.brands;
     return Scaffold(
       body: Container(
         height: double.infinity,
