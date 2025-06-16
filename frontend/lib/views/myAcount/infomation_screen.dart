@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/viewmodels/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
 import 'package:frontend/viewmodels/personal_information_viewmodel.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
@@ -16,7 +18,7 @@ class PersonalInfoScreen extends StatefulWidget {
 }
 
 class _PersonalInfoScreen extends State<PersonalInfoScreen> {
-  final TextEditingController _nameController = TextEditingController();
+  late TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _ids = TextEditingController();
@@ -25,9 +27,22 @@ class _PersonalInfoScreen extends State<PersonalInfoScreen> {
   final List<String> _genderItems = ['Male', 'Female', 'Other'];
 
   @override
-  Widget build(BuildContext context) {
-  final personalInfoVM = Provider.of<PersonalInfoViewModel>(context, listen: false);
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+  }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final authViewmodel = Provider.of<AuthViewModel>(context);
+    final gAuthViewmodel = Provider.of<GAuthViewModel>(context);
+    _nameController.text = authViewmodel.user?.fullName ?? gAuthViewmodel.user?.fullName ?? '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final personalInfoVM = Provider.of<PersonalInfoViewModel>(context);
     return Scaffold(
       body: SizedBox(
         height: double.infinity,
@@ -38,12 +53,13 @@ class _PersonalInfoScreen extends State<PersonalInfoScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                decoration: BoxDecoration(
-                  color: Color(0xFF1976D2),
-                ),
+                decoration: BoxDecoration(color: Color(0xFF1976D2)),
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  child: CustomAppbar(title: 'Personal Information', textColor: Color(0xffFFFFFF),),
+                  child: CustomAppbar(
+                    title: 'Personal Information',
+                    textColor: Color(0xffFFFFFF),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -88,7 +104,7 @@ class _PersonalInfoScreen extends State<PersonalInfoScreen> {
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _phoneController,
-                        keyboardType:TextInputType.numberWithOptions(),
+                        keyboardType: TextInputType.numberWithOptions(),
                         hintText: 'Enter your phone number',
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -118,10 +134,14 @@ class _PersonalInfoScreen extends State<PersonalInfoScreen> {
                                     });
                                   },
                                   items: _genderItems,
-                                  validator: (value) => value == null || value.isEmpty ? 'Please select' : null,
-                                )
+                                  validator:
+                                      (value) =>
+                                          value == null || value.isEmpty
+                                              ? 'Please select'
+                                              : null,
+                                ),
                               ],
-                            )
+                            ),
                           ),
                           const SizedBox(width: 20),
                           Expanded(
@@ -140,15 +160,15 @@ class _PersonalInfoScreen extends State<PersonalInfoScreen> {
                                     }
                                     return null;
                                   },
-                                )
+                                ),
                               ],
-                            )
-                          )
+                            ),
+                          ),
                         ],
-                      )
+                      ),
                     ],
-                  )
-                )
+                  ),
+                ),
               ),
             ],
           ),
@@ -161,7 +181,6 @@ class _PersonalInfoScreen extends State<PersonalInfoScreen> {
           title: 'Save',
           onPressed: () {
             if (_formKey.currentState?.validate() ?? false) {
-
               personalInfoVM.setInformation(
                 name: _nameController.text,
                 dateOfBirth: _dateController.text,
@@ -170,30 +189,32 @@ class _PersonalInfoScreen extends State<PersonalInfoScreen> {
                 ids: _ids.text,
               );
               showDialog(
-                context: context, 
-                builder: (context) => CustomAlertDialog(
-                  title: 'Success',
-                  content: 'Information saved successfully.',
-                  buttonText: 'OK',
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  }
-                ),
+                context: context,
+                builder:
+                    (context) => CustomAlertDialog(
+                      title: 'Success',
+                      content: 'Information saved successfully.',
+                      buttonText: 'OK',
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      },
+                    ),
               );
             } else {
               showDialog(
                 context: context,
-                builder: (context) => CustomAlertDialog(
-                  title: 'Error',
-                  content: 'Registration failed. Please try again.',
-                  buttonText: 'OK',
-                ),
+                builder:
+                    (context) => CustomAlertDialog(
+                      title: 'Error',
+                      content: 'Registration failed. Please try again.',
+                      buttonText: 'OK',
+                    ),
               );
             }
           },
-        )
-      )
+        ),
+      ),
     );
   }
 }

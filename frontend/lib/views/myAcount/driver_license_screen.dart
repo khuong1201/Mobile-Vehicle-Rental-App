@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/viewmodels/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
 import 'package:frontend/viewmodels/personal_information_viewmodel.dart';
 import 'package:frontend/views/myAcount/address_screen.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
@@ -31,7 +33,15 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.name ?? '');
+    _nameController = TextEditingController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final authViewmodel = Provider.of<AuthViewModel>(context);
+    final gAuthViewmodel = Provider.of<GAuthViewModel>(context);
+    _nameController.text = authViewmodel.user?.fullName ?? gAuthViewmodel.user?.fullName ?? '';
   }
 
   @override

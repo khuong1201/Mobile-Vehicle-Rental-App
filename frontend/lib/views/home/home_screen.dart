@@ -333,14 +333,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                           SizedBox(
                                             width: 20,
                                             height: 20,
-                                            child: Image.network(
+                                            child: SvgPicture.network(
                                               '${vehicle.brand.brandImage}',
                                             ),
                                           ),
                                           SizedBox(width: 4),
                                           Text(
                                             '${vehicle.brand.brandName} ${vehicle.vehicleName}',
-                                            maxLines: 2,
+                                            maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               color: Colors.black,
