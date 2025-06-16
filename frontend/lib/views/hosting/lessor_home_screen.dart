@@ -62,7 +62,7 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
             ),
 
             const SizedBox(height: 14),
-            Container(
+            SizedBox(
               width: double.infinity,
               child: Column(
                 children: [
@@ -85,7 +85,7 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
                     ],
                   ),
                   const SizedBox(height: 14),
-                  Container(
+                  SizedBox(
                     height: 40,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
@@ -112,7 +112,7 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 if (index != 0 && navItems[index]['icon'] != null)
-                                  Container(
+                                  SizedBox(
                                     width: 24,
                                     height: 24,
                                     child: SvgPicture.asset(

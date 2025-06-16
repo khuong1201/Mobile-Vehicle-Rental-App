@@ -4,9 +4,9 @@ class CustomTitleTextField extends StatelessWidget {
   final String title;
 
   const CustomTitleTextField({
-    Key? key,
+    super.key,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

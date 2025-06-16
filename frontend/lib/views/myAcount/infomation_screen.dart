@@ -29,7 +29,7 @@ class _PersonalInfoScreen extends State<PersonalInfoScreen> {
   final personalInfoVM = Provider.of<PersonalInfoViewModel>(context, listen: false);
 
     return Scaffold(
-      body: Container(
+      body: SizedBox(
         height: double.infinity,
         width: double.infinity,
         child: SingleChildScrollView(

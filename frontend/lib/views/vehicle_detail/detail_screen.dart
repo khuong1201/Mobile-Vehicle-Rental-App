@@ -6,7 +6,7 @@ import 'package:frontend/views/widgets/custom_text_body_L.dart';
 
 class VehicleDetailScreen extends StatelessWidget {
   final Vehicle vehicle;
-  VehicleDetailScreen({super.key, required this.vehicle});
+  const VehicleDetailScreen({super.key, required this.vehicle});
 
   @override
   Widget build(BuildContext context) {

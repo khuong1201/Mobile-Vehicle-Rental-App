@@ -39,7 +39,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
     final personalInfoVM = Provider.of<PersonalInfoViewModel>(context, listen: false);
 
     return Scaffold(
-      body: Container(
+      body: SizedBox(
         height: double.infinity,
         width: double.infinity,
         child: SingleChildScrollView(
@@ -194,7 +194,7 @@ Widget _buildImagePicker(BuildContext context, String title, String hintText, {r
     child: Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       decoration: BoxDecoration(
-        color: const Color(0xFFFD9D9D9),
+        color: const Color(0xfffd9d9d9),
         borderRadius: BorderRadius.circular(8),
       ),
       child: image == null
