@@ -1,6 +1,6 @@
 const authService = require('../../services/auth_service');
 
-const register = async (req, res) => {
+const Register = async (req, res) => {
     try {
         const { email, password, fullName } = req.body;
         const user = await authService.registerUser({ email, password, fullName });
@@ -10,7 +10,7 @@ const register = async (req, res) => {
     }
 };
 
-const login = async (req, res) => {
+const Login = async (req, res) => {
     try {
         const { email, password } = req.body;
         const result = await authService.loginUser({ email, password });
@@ -20,7 +20,7 @@ const login = async (req, res) => {
     }
 };
 
-const verify = async (req, res) => {
+const Verify = async (req, res) => {
     try {
         const { email, otp } = req.body;
         await authService.verifyEmail({ email, otp });
@@ -31,7 +31,7 @@ const verify = async (req, res) => {
     }
 };
 
-const refresh = async (req, res) => {
+const Refresh = async (req, res) => {
     try {
         const { refreshToken } = req.body;
         if (!refreshToken) {
@@ -43,7 +43,7 @@ const refresh = async (req, res) => {
         res.status(401).json({ message: err.message });
     }
 };
-const googleLoginEndPoint = async (req, res) => {
+const GoogleLoginEndPoint = async (req, res) => {
     try {
       const { googleId, email, fullName } = req.body;
       if (!googleId || !email || !fullName) {
@@ -55,7 +55,7 @@ const googleLoginEndPoint = async (req, res) => {
       res.status(400).json({ message: err.message });
     }
   };
-const googleLogin = async (req, res) => {
+const GoogleLogin = async (req, res) => {
     try {
         const { idToken } = req.body;
         if (!idToken) {
@@ -68,7 +68,7 @@ const googleLogin = async (req, res) => {
     }
 };
 
-const logout = async (req, res) => {
+const Logout = async (req, res) => {
     try {
         await authService.logoutUser(req.user.id);
         res.json({ message: 'Logged out successfully' });
@@ -77,7 +77,7 @@ const logout = async (req, res) => {
     }
 };
 
-const requestPasswordReset = async (req, res) => {
+const RequestPasswordReset = async (req, res) => {
     try {
         const { email } = req.body;
         if (!email) {
@@ -90,7 +90,7 @@ const requestPasswordReset = async (req, res) => {
     }
 };
 
-const resetPassword = async (req, res) => {
+const ResetPassword = async (req, res) => {
     try {
         const { email, otp, newPassword } = req.body;
         if (!email || !otp || !newPassword) {
@@ -103,4 +103,4 @@ const resetPassword = async (req, res) => {
     }
 };
 
-module.exports = { register, login, verify, refresh, googleLoginEndPoint, googleLogin, logout, requestPasswordReset, resetPassword };
+module.exports = { Register, Login, Verify, Refresh, GoogleLoginEndPoint, GoogleLogin, Logout, RequestPasswordReset, ResetPassword };

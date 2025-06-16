@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/viewmodels/auth_viewmodel.dart';
-import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
-import 'package:frontend/viewmodels/personal_information_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
+import 'package:frontend/viewmodels/user/personal_information_viewmodel.dart';
 import 'package:frontend/views/myAcount/address_screen.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';

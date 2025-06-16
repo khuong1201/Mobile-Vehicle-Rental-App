@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/viewmodels/auth_service.dart';
-import 'package:frontend/viewmodels/auth_viewmodel.dart';
-import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
-import 'package:frontend/viewmodels/personal_information_viewmodel.dart';
-import 'package:frontend/viewmodels/user_provider_viewmodel.dart';
-import 'package:frontend/viewmodels/vehicle_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/auth_service.dart';
+import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
+import 'package:frontend/viewmodels/user/personal_information_viewmodel.dart';
+import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
+import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/home/home_page.dart';
 import 'package:frontend/views/login/sign_in_screen.dart';
 import 'package:frontend/views/splash_screen.dart';

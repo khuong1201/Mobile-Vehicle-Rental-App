@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../../models/user_model");
 
-const changePassword = async (req, res) => {
+const ChangePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
     if (!oldPassword || !newPassword) {
@@ -42,5 +42,5 @@ const changePassword = async (req, res) => {
   }
 };
 module.exports = {
-  changePassword,
+  ChangePassword,
 };

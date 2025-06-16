@@ -2,17 +2,18 @@ const express = require('express');
 const router = express.Router();
 const vehicleController = require('../../controllers/vehicle/vehicleController');
 const authenticateToken = require('../../middlewares/auth_middleware');
-const AdminOrOwnerMiddleware = require('../../middlewares/admin_or_owner_middleware');
-// Lấy tất cả xe
-router.get('/get-vehicle', authenticateToken, vehicleController.getAllVehicles);
+const adminOrOwnerMiddleware = require('../../middlewares/admin_or_owner_middleware');
+const adminMiddleware = require('../../middlewares/admin_middleware')
+router.get('/get-vehicle', authenticateToken, vehicleController.GetAllVehicles);
 
-// Thêm xe mới
-router.post('/create-vehicle', authenticateToken, AdminOrOwnerMiddleware, vehicleController.createVehicle);
+router.post('/create-vehicle', authenticateToken, adminOrOwnerMiddleware, vehicleController.CreateVehicle);
 
-// Sửa xe theo ID
-router.put('/cehicle/:id', authenticateToken, AdminOrOwnerMiddleware, vehicleController.updateVehicle);
+router.put('/vehicle/:id', authenticateToken, adminOrOwnerMiddleware, vehicleController.UpdateVehicle);
 
-// Xóa xe theo ID
-router.delete('/vehicle/:id', authenticateToken, AdminOrOwnerMiddleware, vehicleController.deleteVehicle);
+router.delete('/vehicle/:id', authenticateToken, adminOrOwnerMiddleware, vehicleController.DeleteVehicle);
+
+router.get('/get-vehicle-pending', authenticateToken, adminMiddleware, vehicleController.GetVehiclePending);
+
+router.put('/vehicle-change-status', authenticateToken, adminMiddleware, vehicleController.ChangeVehicleStatus);
 
 module.exports = router;

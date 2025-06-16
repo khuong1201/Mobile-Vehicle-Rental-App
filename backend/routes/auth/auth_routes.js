@@ -5,10 +5,10 @@ const passport = require('passport');
 const authController = require('../../controllers/auth/authController');
 const  authenticateToken  = require('../../middlewares/auth_middleware');
 
-router.post('/register', authController.register);
-router.post('/login', authController.login);
-router.post('/verify', authController.verify);
-router.post('/refresh-token', authController.refresh);
+router.post('/register', authController.Register);
+router.post('/login', authController.Login);
+router.post('/verify', authController.Verify);
+router.post('/refresh-token', authController.Refresh);
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get('/google/callback', 
     passport.authenticate('google', { failureRedirect: '/login' }),
@@ -22,10 +22,10 @@ router.get('/google/callback',
         res.redirect(`http://localhost:5000?token=${token}`);
     }
 );
-router.post('/google-login', authController.googleLogin);
-router.post('/google-login-endpoint', authController.googleLoginEndPoint);
-router.post('/logout', authenticateToken, authController.logout);
-router.post('/request-password-reset', authController.requestPasswordReset);
-router.post('/reset-password', authController.resetPassword);
+router.post('/google-login', authController.GoogleLogin);
+router.post('/google-login-endpoint', authController.GoogleLoginEndPoint);
+router.post('/logout', authenticateToken, authController.Logout);
+router.post('/request-password-reset', authController.RequestPasswordReset);
+router.post('/reset-password', authController.ResetPassword);
 
 module.exports = router;

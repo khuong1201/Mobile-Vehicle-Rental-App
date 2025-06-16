@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/viewmodels/auth_service.dart';
-import 'package:frontend/viewmodels/user_secure_storage.dart';
+import 'package:frontend/viewmodels/auth/auth_service.dart';
+import 'package:frontend/viewmodels/user/user_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 

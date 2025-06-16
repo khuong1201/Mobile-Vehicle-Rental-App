@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:frontend/viewmodels/auth_viewmodel.dart';
-import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
 import 'package:frontend/views/widgets/custom_title_textfield.dart';
 import 'package:provider/provider.dart';
 

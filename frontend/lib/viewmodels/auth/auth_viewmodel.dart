@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/api_services/login_service.dart';
-import 'package:frontend/api_services/logout_service.dart';
-import 'package:frontend/api_services/register_service.dart';
-import 'package:frontend/api_services/verify_otp_service.dart';
-import 'package:frontend/api_services/token_service.dart';
+import 'package:frontend/api_services/auth/login_service.dart';
+import 'package:frontend/api_services/auth/logout_service.dart';
+import 'package:frontend/api_services/auth/register_service.dart';
+import 'package:frontend/api_services/auth/verify_otp_service.dart';
+import 'package:frontend/api_services/auth/token_service.dart';
 import '/models/user.dart';
-import 'user_secure_storage.dart';
+import '../user/user_secure_storage.dart';
 
 class AuthViewModel extends ChangeNotifier {
   User? user;

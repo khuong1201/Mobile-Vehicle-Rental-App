@@ -297,7 +297,7 @@ Widget _buildContainer(String title, String subtitle, String svgPath) {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(width: 24, height: 24, child: SvgPicture.asset(svgPath)),
+        SizedBox(width: 24, height: 24, child: SvgPicture.asset(svgPath)),
         Text(
           title,
           textAlign: TextAlign.center,

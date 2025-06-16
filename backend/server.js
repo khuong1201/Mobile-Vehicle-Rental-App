@@ -9,6 +9,7 @@ const authRoutes = require("./routes/auth/auth_routes");
 const userRoutes = require("./routes/user/user_routes");
 const brandRoutes = require("./routes/vehicle/brand_routes");
 const vehicleRoutes = require("./routes/vehicle/vehicle_routes");
+const bannerRoutes = require("./routes/banner/banner_routes");
 
 const { connectDB } = require("./config/database");
 const { initializePassport } = require("./config/passport");
@@ -35,7 +36,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/vehicles', vehicleRoutes);
-
+app.use('api/banners',bannerRoutes);
 // Initialize Passport
 initializePassport();
 

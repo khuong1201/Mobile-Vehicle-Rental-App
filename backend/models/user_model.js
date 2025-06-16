@@ -26,6 +26,7 @@ const UserSchema = new mongoose.Schema({
     gender: String,
     email: { type: String, unique: true },
     addresses: [AddressSchema],
+    avatar: String,
     phoneNumber: String,
     dateOfBirth: Date,
     IDs: String,

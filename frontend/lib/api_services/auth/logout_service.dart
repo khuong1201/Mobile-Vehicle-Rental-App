@@ -1,5 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:frontend/api_services/api_reponse.dart';
+import 'package:frontend/api_services/client/api_reponse.dart';
 
 class ApiLogout {
   static final _storage = FlutterSecureStorage();

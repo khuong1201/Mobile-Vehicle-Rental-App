@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Brand = require('../../models/vehicles/brand_model');
 
 // Get all brands
-const getAllBrands = async (req, res) => {
+const GetAllBrands = async (req, res) => {
   try {
     const brands = await Brand.find();
     res.status(200).json({ success: true, data: brands });
@@ -15,8 +15,7 @@ const getAllBrands = async (req, res) => {
   }
 };
 
-// Get brand by brandId (UUID)
-const getBrandByBrandId = async (req, res) => {
+const GetBrandByBrandId = async (req, res) => {
   try {
     const { brandId } = req.params;
     const brand = await Brand.findOne({ brandId });
@@ -38,26 +37,26 @@ const getBrandByBrandId = async (req, res) => {
   }
 };
 
-const createBrand = async (req, res) => {
+const CreateBrand = async (req, res) => {
   try {
-    const { brand } = req.body;
+    const { brandName, brandLogo } = req.body;
 
-    if (!brand) {
+    if (!req.body) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide a brand name'
+        message: 'Please provide a brand name and logo'
       });
     }
 
-    const existed = await Brand.findOne({ brand });
+    const existed = await Brand.findOne({ brandName });
     if (existed) {
       return res.status(400).json({
         success: false,
-        message: 'Brand name already exists'
+        message: 'Brand already exists'
       });
     }
 
-    const newBrand = await Brand.create({ brand });
+    const newBrand = await Brand.create({ brandName, brandLogo });
     res.status(201).json({
       success: true,
       data: newBrand,
@@ -72,16 +71,16 @@ const createBrand = async (req, res) => {
   }
 };
 
-const updateBrand = async (req, res) => {
+const UpdateBrand = async (req, res) => {
   try {
     const { id } = req.params;
-    const { brand } = req.body;
+    const { brandName, brandLogo } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ success: false, message: 'Invalid ID' });
     }
 
-    const updated = await Brand.findByIdAndUpdate(id, { brand }, { new: true, runValidators: true });
+    const updated = await Brand.findByIdAndUpdate(id, { brandName, brandLogo }, { new: true, runValidators: true });
 
     if (!updated) {
       return res.status(404).json({ success: false, message: 'Brand not found' });
@@ -93,8 +92,7 @@ const updateBrand = async (req, res) => {
   }
 };
 
-// Delete brand by ObjectId
-const deleteBrand = async (req, res) => {
+const DeleteBrand = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -115,9 +113,9 @@ const deleteBrand = async (req, res) => {
 };
 
 module.exports = {
-  getAllBrands,
-  getBrandByBrandId,
-  createBrand,
-  updateBrand,
-  deleteBrand
+  GetAllBrands,
+  GetBrandByBrandId,
+  CreateBrand,
+  UpdateBrand,
+  DeleteBrand
 };

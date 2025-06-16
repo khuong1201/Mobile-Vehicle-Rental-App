@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/viewmodels/auth_viewmodel.dart';
-import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
-import 'package:frontend/viewmodels/personal_information_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
+import 'package:frontend/viewmodels/user/personal_information_viewmodel.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';

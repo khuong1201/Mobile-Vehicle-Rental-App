@@ -5,19 +5,19 @@ const authenticateToken = require('../../middlewares/auth_middleware');
 const userProfileController = require('../../controllers/user/user_profile_controller');
 const userLicenseController = require('../../controllers/user/user_license_controller');
 const userAddressController = require('../../controllers/user/user_address_controller');
-const AdminMiddleware = require('../../middlewares/Admin_middleware');
+const adminMiddleware = require('../../middlewares/admin_middleware');
 
-router.post('/change-password', authenticateToken, userController.changePassword);
+router.post('/change-password', authenticateToken, userController.ChangePassword);
 
-router.put('/update-PersonalInfo', authenticateToken, userProfileController.updatePersonalInfo);
-router.get('/get-user-profile', authenticateToken, userProfileController.getUserProfile);
+router.put('/update-PersonalInfo', authenticateToken, userProfileController.UpdatePersonalInfo);
+router.get('/get-user-profile', authenticateToken, userProfileController.GetUserProfile);
 
-router.delete('/delete-DriverLicense', authenticateToken, userLicenseController.deleteDriverLicense);
-router.put('/update-DriverLicense', authenticateToken, userLicenseController.updateDriverLicense);
-router.get('/get-DriverLicense', authenticateToken, userLicenseController.getDriverLicenses);
+router.delete('/delete-DriverLicense', authenticateToken, userLicenseController.DeleteDriverLicense);
+router.put('/update-DriverLicense', authenticateToken, userLicenseController.UpdateDriverLicense);
+router.get('/get-DriverLicense', authenticateToken, userLicenseController.GetDriverLicenses);
 
-router.get('/get-Address', authenticateToken, userAddressController.getAddresses);
-router.put('/update-Address', authenticateToken, userAddressController.updateAddress);
-router.delete('/delete-Address', authenticateToken, userAddressController.deleteAddress);
+router.get('/get-Address', authenticateToken, userAddressController.GetAddresses);
+router.put('/update-Address', authenticateToken, userAddressController.UpdateAddress);
+router.delete('/delete-Address', authenticateToken, userAddressController.DeleteAddress);
 
 module.exports = router;

@@ -5,7 +5,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
-import 'package:frontend/viewmodels/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class OtpScreen extends StatefulWidget {

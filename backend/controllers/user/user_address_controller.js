@@ -1,6 +1,6 @@
 const User = require("../../models/user_model");
 
-const getAddresses = async (req, res) => {
+const GetAddresses = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('addresses');
     if (!user) {
@@ -17,7 +17,7 @@ const getAddresses = async (req, res) => {
   }
 };
 
-const deleteAddress = async (req, res) => {
+const DeleteAddress = async (req, res) => {
   try {
     const { addressId } = req.body;
 
@@ -60,7 +60,7 @@ const deleteAddress = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-const updateAddress = async (req, res) => {
+const UpdateAddress = async (req, res) => {
   try {
     if (!req.body) {
       return res.status(400).json({ message: "Request body is missing" });
@@ -138,4 +138,4 @@ const updateAddress = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-module.exports = { deleteAddress, updateAddress, getAddresses };
+module.exports = { DeleteAddress, UpdateAddress, GetAddresses };

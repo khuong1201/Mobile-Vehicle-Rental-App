@@ -13,7 +13,7 @@ const bannedWords = [
   "zalo",
   "facebook",
 ];
-const createReview = async (req, res) => {
+const CreateReview = async (req, res) => {
   try {
     const { vehicleId, rating, comment } = req.body;
     const renterId = req.user._id;
@@ -60,7 +60,7 @@ const createReview = async (req, res) => {
   }
 };
 
-const getReviewsByVehicle = async (req, res) => {
+const GetReviewsByVehicle = async (req, res) => {
   try {
     const { vehicleId } = req.params;
 
@@ -76,7 +76,7 @@ const getReviewsByVehicle = async (req, res) => {
   }
 };
 
-const deleteReview = async (req, res) => {
+const DeleteReview = async (req, res) => {
   try {
     const { reviewId } = req.params;
     const userId = req.user._id;
@@ -97,7 +97,7 @@ const deleteReview = async (req, res) => {
     res.status(500).json({ message: "Error deleting review" });
   }
 };
-const reportReview = async (req, res) => {
+const ReportReview = async (req, res) => {
   try {
     const { reviewId, reason } = req.body;
     const ownerId = req.user._id;
@@ -139,8 +139,8 @@ const reportReview = async (req, res) => {
   }
 };
 module.exports = {
-  createReview,
-  getReviewsByVehicle,
-  deleteReview,
-  reportReview,
+  CreateReview,
+  GetReviewsByVehicle,
+  DeleteReview,
+  ReportReview,
 };

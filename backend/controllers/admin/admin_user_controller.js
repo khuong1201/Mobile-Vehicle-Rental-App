@@ -1,6 +1,6 @@
 const User = require("../../models/user_model");
 
-const getAllUsers = async (req, res) => {
+const GetAllUsers = async (req, res) => {
   try {
     const users = await User.find({ role: { $ne: "admin" } }).select(
       "-passwordHash -otp -otpExpires -refreshToken"
@@ -11,7 +11,7 @@ const getAllUsers = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-const getUsersWithUnapprovedLicenses = async (req, res) => {
+const GetUsersWithUnapprovedLicenses = async (req, res) => {
   try {
     const users = await User.find({
       "license.approved": false,
@@ -24,7 +24,7 @@ const getUsersWithUnapprovedLicenses = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-const approveLicense = async (req, res) => {
+const ApproveLicense = async (req, res) => {
   const { userId, licenseId } = req.body;
 
   try {
@@ -51,7 +51,7 @@ const approveLicense = async (req, res) => {
   }
 };
 
-const rejectLicense = async (req, res) => {
+const RejectLicense = async (req, res) => {
   const { userId, licenseId } = req.body;
 
   try {
@@ -70,7 +70,7 @@ const rejectLicense = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-const getUser = async (req, res) => {
+const GetUser = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -89,7 +89,7 @@ const getUser = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-const deleteAccount = async (req, res) => {
+const DeleteAccount = async (req, res) => {
     try {
       const user = await User.findById(req.user.id);
       if (!user) {
@@ -104,10 +104,10 @@ const deleteAccount = async (req, res) => {
     }
   };
 module.exports = {
-  deleteAccount,
-  getAllUsers,
-  getUsersWithUnapprovedLicenses,
-  approveLicense,
-  rejectLicense,
-  getUser,
+  DeleteAccount,
+  GetAllUsers,
+  GetUsersWithUnapprovedLicenses,
+  ApproveLicense,
+  RejectLicense,
+  GetUser,
 };

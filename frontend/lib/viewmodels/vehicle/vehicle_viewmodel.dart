@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/api_services/api_get_brand.dart';
-import 'package:frontend/api_services/get_vehicle.dart';
+import 'package:frontend/api_services/brand/api_get_brand.dart';
+import 'package:frontend/api_services/auth/get_vehicle.dart';
 
 import 'package:frontend/models/vehicles/vehicle.dart';
 import 'package:frontend/models/vehicles/brand.dart';
-import 'package:frontend/viewmodels/auth_service.dart';
+import 'package:frontend/viewmodels/auth/auth_service.dart';
 
 class VehicleViewModel extends ChangeNotifier {
   final AuthService authService;
