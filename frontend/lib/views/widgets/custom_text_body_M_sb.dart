@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class CustomTitleTextField extends StatelessWidget {
+class CustomTextBodyMsb extends StatelessWidget {
   final String title;
 
-  const CustomTitleTextField({
+  const CustomTextBodyMsb({
     Key? key,
     required this.title,
   }) : super(key: key);

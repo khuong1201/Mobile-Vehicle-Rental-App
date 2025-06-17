@@ -10,7 +10,7 @@ import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_dropdown_formfield.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
-import 'package:frontend/views/widgets/custom_title_textfield.dart';
+import 'package:frontend/views/widgets/custom_text_body_M_sb.dart';
 import 'package:provider/provider.dart';
 
 class DriverLicenseScreen extends StatefulWidget {
@@ -75,7 +75,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CustomTitleTextField(title: 'Name'),
+                      CustomTextBodyMsb(title: 'Name'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _nameController,
@@ -88,7 +88,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                         },
                       ),
                       const SizedBox(height: 24),
-                      CustomTitleTextField(title: "Type of Driver's License"),
+                      CustomTextBodyMsb(title: "Type of Driver's License"),
                       const SizedBox(height: 8),
                       CustomDropdownButtonFormField(
                         value: _slectedTypeDriver,
@@ -105,7 +105,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                                     : null,
                       ),
                       const SizedBox(height: 24),
-                      CustomTitleTextField(title: 'Class'),
+                      CustomTextBodyMsb(title: 'Class'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _classController,
@@ -118,7 +118,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                         },
                       ),
                       const SizedBox(height: 24),
-                      CustomTitleTextField(title: 'Images'),
+                      CustomTextBodyMsb(title: 'Images'),
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -211,7 +211,7 @@ Widget _buildImagePicker(BuildContext context, String title, String hintText, {r
       ? Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CustomTitleTextField(title: title),
+          CustomTextBodyMsb(title: title),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
