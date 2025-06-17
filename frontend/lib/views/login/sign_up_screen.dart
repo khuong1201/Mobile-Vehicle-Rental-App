@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:frontend/viewmodels/auth_viewmodel.dart';
-import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
 import 'package:frontend/views/home/home_page.dart';
 import 'package:frontend/views/login/otp_screen.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';

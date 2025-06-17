@@ -123,7 +123,7 @@ const refreshAccessToken = async (refreshToken) => {
         throw new Error("Invalid refresh token");
     }
 };
-const googleLoginEndPoint = async ({ googleId, email, fullName }) => {
+const googleLoginEndPoint = async ({ googleId, email, fullName, avatar }) => {
     try {
       if (!googleId || !email || !fullName) {
         throw new Error('Google ID, email, and full name are required');
@@ -143,6 +143,7 @@ const googleLoginEndPoint = async ({ googleId, email, fullName }) => {
         user = await User.create({
           googleId,
           fullName: fullName.trim(),
+          avatar : avatar,
           email: normalizedEmail,
           address: undefined,
           verified: true,

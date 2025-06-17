@@ -14,7 +14,7 @@ const BrandSchema = new mongoose.Schema({
     unique: true,
     trim: true
   },
-  brandImage: {
+  brandLogo: {
     type: String,
     trim: true,
   }

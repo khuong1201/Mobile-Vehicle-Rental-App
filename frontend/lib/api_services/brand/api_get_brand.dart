@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/api_services/api_reponse.dart';
-import 'package:frontend/api_services/api_util.dart';
+import 'package:frontend/api_services/client/api_reponse.dart';
+import 'package:frontend/api_services/util/api_util.dart';
 import 'package:frontend/models/vehicles/brand.dart';
-import 'package:frontend/viewmodels/auth_service.dart';
+import 'package:frontend/viewmodels/auth/auth_service.dart';
 
 class ApiGetAllBrand {
   static Future<ApiResponse<List<Brand>>> getAllBrand<T extends ChangeNotifier>(
@@ -11,7 +11,7 @@ class ApiGetAllBrand {
   }) async {
     final response = await callProtectedApi<T>(
       viewModel,
-      endpoint: '/api/brands',
+      endpoint: '/api/brands/get-all-brand',
       authService: authService,
       method: 'GET',
     );

@@ -1,6 +1,6 @@
 const User = require("../../models/user_model");
 
-const getDriverLicenses = async (req, res) => {
+const GetDriverLicenses = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("license");
     if (!user) {
@@ -17,7 +17,7 @@ const getDriverLicenses = async (req, res) => {
   }
 };
 
-const updateDriverLicense = async (req, res) => {
+const UpdateDriverLicense = async (req, res) => {
   try {
     if (!req.body) {
       return res.status(400).json({ message: "Request body is missing" });
@@ -67,7 +67,6 @@ const updateDriverLicense = async (req, res) => {
     };
 
     if (licenseId) {
-      // Update existing license
       const licenseIndex = user.license.findIndex(
         (lic) => lic._id.toString() === licenseId
       );
@@ -79,7 +78,6 @@ const updateDriverLicense = async (req, res) => {
         ...newLicense,
       };
     } else {
-      // Add new license
       user.license.push(newLicense);
     }
 
@@ -100,7 +98,7 @@ const updateDriverLicense = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-const deleteDriverLicense = async (req, res) => {
+const DeleteDriverLicense = async (req, res) => {
   try {
     const { licenseId } = req.body;
 
@@ -143,4 +141,4 @@ const deleteDriverLicense = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-module.exports = { updateDriverLicense, deleteDriverLicense, getDriverLicenses };
+module.exports = { UpdateDriverLicense, DeleteDriverLicense, GetDriverLicenses };

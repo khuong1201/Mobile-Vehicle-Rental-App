@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/user.dart';
-import 'package:frontend/viewmodels/user_secure_storage.dart';
+import 'package:frontend/viewmodels/user/user_secure_storage.dart';
 
 
 class UserViewModel extends ChangeNotifier {

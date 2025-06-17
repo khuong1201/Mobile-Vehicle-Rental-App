@@ -10,7 +10,7 @@ class PersonalInfoViewModel extends ChangeNotifier {
 
   String? classLicense;
   String? typeDriverLicense;
-  ImagePicker _picker = ImagePicker();
+  final ImagePicker _picker = ImagePicker();
   XFile? frontImage;
   XFile? backImage;
 
@@ -30,7 +30,7 @@ class PersonalInfoViewModel extends ChangeNotifier {
     this.gender = gender;
     this.ids = ids;
 
-    this.classLicense = classLicense;
+    classLicense = classLicense;
     this.typeDriverLicense = typeDriverLicense;
     notifyListeners();
   }

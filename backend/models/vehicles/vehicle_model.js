@@ -30,7 +30,6 @@ const VehicleSchema = new mongoose.Schema(
       required: true,
       ref: 'Brand' 
     },
-    model: String,
     yearOfManufacture: Number,
     images: [String],
     description: String,
@@ -43,7 +42,7 @@ const VehicleSchema = new mongoose.Schema(
     price: Number,
     rate: { type: Number, default: 0 },
     available: { type: Boolean, default: true },
-    status: { type: String, default: "pending" },
+    status: { type: String, default: "pending", enum: ['pending', 'rejected', 'apprroved',], require: true },
     createdAt: { type: Date, default: Date.now },
   },
   { discriminatorKey: "type", collection: "vehicles" }

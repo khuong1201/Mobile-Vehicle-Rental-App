@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/api_services/api_reponse.dart';
-import 'package:frontend/api_services/api_util.dart';
+import 'package:frontend/api_services/client/api_reponse.dart';
+import 'package:frontend/api_services/util/api_util.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
 import 'package:frontend/models/vehicles/car.dart';
 import 'package:frontend/models/vehicles/coach.dart';
 import 'package:frontend/models/vehicles/motorbike.dart';
 import 'package:frontend/models/vehicles/bike.dart';
-import 'package:frontend/viewmodels/auth_service.dart';
+import 'package:frontend/viewmodels/auth/auth_service.dart';
 
 class ApiGetAllVehicle {
   static Future<ApiResponse<List<Vehicle>>> getAllVehicle<T extends ChangeNotifier>(

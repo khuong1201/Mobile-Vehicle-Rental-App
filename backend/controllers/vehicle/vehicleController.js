@@ -1,76 +1,94 @@
 const Vehicle = require("../../models/vehicles/vehicle_model");
 const Brand = require("../../models/vehicles/brand_model");
 
-// GET /api/vehicles
-const getAllVehicles = async (req, res) => {
+const GetAllVehicles = async (req, res) => {
   try {
     const vehicles = await Vehicle.find()
       .populate("brandId")
       .populate({ path: "ownerId", select: "_id fullName email role" });
     res.status(200).json(vehicles);
   } catch (error) {
-    res.status(500).json({ message: "Lỗi khi lấy danh sách xe", error });
+    res.status(500).json({ message: "Error fetching vehicle list", error });
   }
 };
 
-// GET /api/vehicles/:id
-const getVehicleById = async (req, res) => {
+const GetVehicleById = async (req, res) => {
   try {
     const vehicle = await Vehicle.findById(req.params.id)
       .populate({ path: "brandId", select: "brandId" })
       .populate({ path: "ownerId", select: "_id fullName email role" });
-    if (!vehicle) return res.status(404).json({ message: "Không tìm thấy xe" });
+    if (!vehicle) return res.status(404).json({ message: "Vehicle not found" });
     res.status(200).json(vehicle);
   } catch (error) {
-    res.status(500).json({ message: "Lỗi khi lấy xe", error });
+    res.status(500).json({ message: "Error fetching vehicle", error });
   }
 };
 
-// POST /api/vehicles
-const createVehicle = async (req, res) => {
+const GetVehiclePending = async (req, res) => {
+  try {
+    const vehicles = await Vehicle.find({ status: "pending" });
+    res.status(200).json(vehicles);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching pending vehicles", error });
+  }
+};
+
+const ChangeVehicleStatus = async (req, res) => {
+  try {
+    const updated = await Vehicle.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    if (!updated) return res.status(404).json({ message: "Vehicle not found for update" });
+    res.status(200).json(updated);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating vehicle status", error });
+  }
+};
+
+const CreateVehicle = async (req, res) => {
   try {
     const data = req.body;
 
-    // Kiểm tra brand có tồn tại không
     const brand = await Brand.findById(data.brand);
-    if (!brand) return res.status(400).json({ message: "Brand không hợp lệ" });
+    if (!brand) return res.status(400).json({ message: "Invalid brand" });
 
     const vehicle = await Vehicle.create(data);
     res.status(201).json(vehicle);
   } catch (error) {
-    res.status(500).json({ message: "Lỗi khi tạo xe mới", error });
+    res.status(500).json({ message: "Error creating new vehicle", error });
   }
 };
 
-// PUT /api/vehicles/:id
-const updateVehicle = async (req, res) => {
+const UpdateVehicle = async (req, res) => {
   try {
     const updated = await Vehicle.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
     if (!updated)
-      return res.status(404).json({ message: "Không tìm thấy xe để cập nhật" });
+      return res.status(404).json({ message: "Vehicle not found for update" });
     res.status(200).json(updated);
   } catch (error) {
-    res.status(500).json({ message: "Lỗi khi cập nhật xe", error });
+    res.status(500).json({ message: "Error updating vehicle", error });
   }
 };
 
-// DELETE /api/vehicles/:id
-const deleteVehicle = async (req, res) => {
+const DeleteVehicle = async (req, res) => {
   try {
     const deleted = await Vehicle.findByIdAndDelete(req.params.id);
     if (!deleted)
-      return res.status(404).json({ message: "Không tìm thấy xe để xóa" });
-    res.status(200).json({ message: "Đã xóa xe thành công" });
+      return res.status(404).json({ message: "Vehicle not found for deletion" });
+    res.status(200).json({ message: "Vehicle deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Lỗi khi xóa xe", error });
+    res.status(500).json({ message: "Error deleting vehicle", error });
   }
 };
+
 module.exports = {
-  getAllVehicles,
-  getVehicleById,
-  createVehicle,
-  updateVehicle,
-  deleteVehicle,
+  GetAllVehicles,
+  GetVehicleById,
+  CreateVehicle,
+  UpdateVehicle,
+  DeleteVehicle,
+  GetVehiclePending,
+  ChangeVehicleStatus,
 };

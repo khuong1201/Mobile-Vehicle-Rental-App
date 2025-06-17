@@ -87,7 +87,7 @@ Widget _buildSvg(String pathSvg, String title) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Container(width: 24, height: 24, child: SvgPicture.asset(pathSvg)),
+      SizedBox(width: 24, height: 24, child: SvgPicture.asset(pathSvg)),
       SizedBox(width: 14),
       Text(
         title,

@@ -11,7 +11,7 @@ import 'package:frontend/views/widgets/custom_text_body_L.dart';
 
 class VehicleDetailScreen extends StatefulWidget {
   final Vehicle vehicle;
-  VehicleDetailScreen({super.key, required this.vehicle});
+  const VehicleDetailScreen({super.key, required this.vehicle});
 
   @override
   _VehicleDetailScreenState createState() => _VehicleDetailScreenState();
@@ -304,7 +304,7 @@ Widget _buildContainer(String title, String subtitle, String svgPath) {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(width: 24, height: 24, child: SvgPicture.asset(svgPath)),
+        SizedBox(width: 24, height: 24, child: SvgPicture.asset(svgPath)),
         Text(
           title,
           textAlign: TextAlign.center,

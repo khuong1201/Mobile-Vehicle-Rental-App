@@ -6,7 +6,7 @@ class CustomTextBodyMsb extends StatelessWidget {
   const CustomTextBodyMsb({
     Key? key,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:frontend/api_services/api_client.dart';
-import 'package:frontend/api_services/api_reponse.dart';
-import 'package:frontend/viewmodels/auth_service.dart';
+import 'package:frontend/api_services/client/api_client.dart';
+import 'package:frontend/api_services/client/api_reponse.dart';
+import 'package:frontend/viewmodels/auth/auth_service.dart';
 import 'package:http/http.dart' as http;
 
 Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(

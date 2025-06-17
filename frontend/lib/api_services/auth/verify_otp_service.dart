@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/api_services/api_client.dart';
-import 'package:frontend/api_services/api_reponse.dart';
+import 'package:frontend/api_services/client/api_client.dart';
+import 'package:frontend/api_services/client/api_reponse.dart';
 
 class ApiVerifyOTP {
   static Future<ApiResponse<String>> verifyOTP(String email, String otp) async {

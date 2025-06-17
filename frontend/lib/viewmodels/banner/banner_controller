@@ -1,0 +1,36 @@
+import 'package:frontend/viewmodels/auth/auth_service.dart';
+import 'package:flutter/material.dart';
+
+class BannerAppViewModel with ChangeNotifier {
+  List<BannerApp> _banners = [];
+  bool _isLoading = false;
+  String? _error;
+
+  List<BannerApp> get banners => _banners;
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+
+  Future<void> fetchBannerApp() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final response = await ApiGetAllBanner.getAllBanner(
+        this,
+        authService: authService,
+      );
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        _banners = data.map((json) => BannerApp.fromJson(json)).toList();
+      } else {
+        _error = 'Failed to load brands';
+      }
+    } catch (e) {
+      _error = 'Error: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+}

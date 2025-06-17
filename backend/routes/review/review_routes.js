@@ -12,12 +12,12 @@ const reviewLimiter = rateLimit({
     message: "You have submitted too many values, please try again later."
   });
 
-router.post("/", authMiddleware,reviewLimiter, reviewController.createReview);
+router.post("/", authMiddleware,reviewLimiter, reviewController.CreateReview);
 
-router.get("/:vehicleId", reviewController.getReviewsByVehicle);
+router.get("/:vehicleId", reviewController.GetReviewsByVehicle);
 
-router.delete("/:reviewId", authMiddleware, adminMiddleware, reviewController.deleteReview);
+router.delete("/:reviewId", authMiddleware, adminMiddleware, reviewController.DeleteReview);
 
-router.post("/report", authMiddleware,ownerMiddleware, reviewController.reportReview);
+router.post("/report", authMiddleware,ownerMiddleware, reviewController.ReportReview);
 
 module.exports = router;

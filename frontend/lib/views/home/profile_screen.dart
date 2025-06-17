@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:frontend/viewmodels/auth_viewmodel.dart';
-import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
 import 'package:frontend/views/myAcount/address_screen.dart';
 import 'package:frontend/views/myAcount/driver_license_screen.dart';
 import 'package:frontend/views/myAcount/infomation_screen.dart';
@@ -53,7 +53,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        '${authViewmodel.user?.fullName ?? gAuthViewmodel.user?.fullName ?? 'Guest'}',
+                        authViewmodel.user?.fullName ?? gAuthViewmodel.user?.fullName ?? 'Guest',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -62,7 +62,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                         ),
                       ),
                       Text(
-                        '${authViewmodel.user?.email ?? gAuthViewmodel.user?.email ?? 'Unknown'}',
+                        authViewmodel.user?.email ?? gAuthViewmodel.user?.email ?? 'Unknown',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,

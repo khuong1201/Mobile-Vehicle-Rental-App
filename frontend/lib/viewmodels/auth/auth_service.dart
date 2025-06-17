@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/viewmodels/auth_viewmodel.dart';
-import 'package:frontend/viewmodels/google_auth_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'user_secure_storage.dart';
+import '../user/user_secure_storage.dart';
 
 class AuthService {
   final BuildContext context;

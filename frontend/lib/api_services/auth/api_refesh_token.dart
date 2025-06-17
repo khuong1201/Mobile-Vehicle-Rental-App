@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:frontend/api_services/api_client.dart';
-import 'package:frontend/api_services/api_reponse.dart';
+import 'package:frontend/api_services/client/api_client.dart';
+import 'package:frontend/api_services/client/api_reponse.dart';
 
 class ApiRefresh {
   static final FlutterSecureStorage _secureStorage = FlutterSecureStorage();

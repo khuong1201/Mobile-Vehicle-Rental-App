@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/viewmodels/check_login_status.dart';
+import 'package:frontend/viewmodels/auth/check_login_status.dart';
 
 
 class SplashScreen extends StatelessWidget {

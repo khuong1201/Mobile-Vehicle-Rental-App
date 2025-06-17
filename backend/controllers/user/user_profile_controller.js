@@ -1,6 +1,6 @@
 const User = require("../../models/user_model");
 
-const updatePersonalInfo = async (req, res) => {
+const UpdatePersonalInfo = async (req, res) => {
   try {
     if (!req.body) {
       return res.status(400).json({ message: "Request body is missing" });
@@ -54,7 +54,7 @@ const updatePersonalInfo = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-const getUserProfile = async (req, res) => {
+const GetUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select(
       "-passwordHash -otp -otpExpires -refreshToken"
@@ -74,7 +74,7 @@ const getUserProfile = async (req, res) => {
         phoneNumber: user.phoneNumber,
         gender: user.gender,
         IDs: user.IDs,
-        address: user.address,
+        address: user.addresses,
         license: user.license,
         role: user.role,
         verified: user.verified,
@@ -87,6 +87,6 @@ const getUserProfile = async (req, res) => {
   }
 };
 module.exports = {
-  updatePersonalInfo,
-  getUserProfile,
+  UpdatePersonalInfo,
+  GetUserProfile,
 };
