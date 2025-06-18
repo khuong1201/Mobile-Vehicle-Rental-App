@@ -28,7 +28,7 @@ class _OtpScreenState extends State<OtpScreen> {
         height: double.infinity,
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: 16),
-        color: Color(0xffF2F2F2),
+        color: const Color(0xffFCFCFC),
         child: SafeArea(
           child: SingleChildScrollView(
             child: Column(

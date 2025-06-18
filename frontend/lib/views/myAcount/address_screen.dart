@@ -14,9 +14,10 @@ class _AddressScreen extends State<AddressScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SizedBox(
+      body: Container(
         height: double.infinity,
         width: double.infinity,
+        color: const Color(0xffFCFCFC),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,

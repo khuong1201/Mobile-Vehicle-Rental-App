@@ -44,9 +44,10 @@ class _PersonalInfoScreen extends State<PersonalInfoScreen> {
   Widget build(BuildContext context) {
     final personalInfoVM = Provider.of<PersonalInfoViewModel>(context);
     return Scaffold(
-      body: SizedBox(
+      body: Container(
         height: double.infinity,
         width: double.infinity,
+        color: const Color(0xffFCFCFC),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,

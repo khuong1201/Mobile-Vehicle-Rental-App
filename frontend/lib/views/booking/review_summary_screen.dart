@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
-import 'package:frontend/viewmodels/booking_viewmodel.dart';
+import 'package:frontend/viewmodels/booking/booking_viewmodel.dart';
+import 'package:frontend/views/booking/confirmation_screen.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
+import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_text_body_L.dart';
 import 'package:frontend/views/widgets/custom_text_body_S_sb.dart';
 import 'package:frontend/views/widgets/custom_text_body_m_sb.dart';
@@ -19,6 +21,13 @@ class ReviewSummaryScreen extends StatefulWidget {
 }
 
 class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
+  int selectedIndex = 0;
+  final List<Map<String, String>> paymentMethods = [
+    {'name': 'VTB', 'image': 'assets/images/booking/viettin.png'},
+    {'name': 'MoMo wallet', 'image': 'assets/images/booking/momo.png'},
+    {'name': 'ZaloPay', 'image': 'assets/images/booking/zalo.png'},
+  ];
+
   @override
   Widget build(BuildContext context) {
     final bookingVM = Provider.of<BookingViewModel>(context);
@@ -33,7 +42,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
               CustomAppbar(title: 'Review Summary'),
               const SizedBox(height: 28),
               Container(
-                padding: EdgeInsets.symmetric(vertical: 20 ),
+                padding: EdgeInsets.symmetric(vertical: 20),
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(width: 1, color: Color(0xffD5D7DB)),
@@ -66,7 +75,8 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                           Row(
                             children: [
                               CustomTextBodyL(
-                                title: '${widget.vehicle.brand.brandName} ${widget.vehicle.vehicleName}',
+                                title:
+                                    '${widget.vehicle.brand.brandName} ${widget.vehicle.vehicleName}',
                               ),
                               Spacer(),
                               Row(
@@ -145,7 +155,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                           ),
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -164,43 +174,53 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                       children: [
                         CustomTextBodySsb(title: 'Pick - Up Date'),
                         Spacer(),
-                        CustomTextBodyMsb(title: bookingVM.pickUpDate)
-                      ]
+                        CustomTextBodyMsb(title: bookingVM.pickUpDate),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
                         CustomTextBodySsb(title: 'Pick - Up Time'),
                         Spacer(),
-                        CustomTextBodyMsb(title: bookingVM.pickUpTime)
-                      ]
+                        CustomTextBodyMsb(title: bookingVM.pickUpTime),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
                         CustomTextBodySsb(title: 'Drop - Off Date'),
                         Spacer(),
-                        CustomTextBodyMsb(title: bookingVM.dropOffDate)
-                      ]
+                        CustomTextBodyMsb(title: bookingVM.dropOffDate),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
                         CustomTextBodySsb(title: 'Drop - Off Time'),
                         Spacer(),
-                        CustomTextBodyMsb(title: bookingVM.dropOffTime)
-                      ]
+                        CustomTextBodyMsb(title: bookingVM.dropOffTime),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
                         CustomTextBodySsb(title: 'Rent Type'),
                         Spacer(),
-                        CustomTextBodyMsb(title: 'Self Driver')
-                      ]
+                        CustomTextBodyMsb(title: 'Self Driver'),
+                      ],
                     ),
-                  ]
-                )
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        CustomTextBodySsb(title: 'Total Rental Days'),
+                        Spacer(),
+                        CustomTextBodyMsb(
+                          title: bookingVM.rentalDays.toString(),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
               Container(
@@ -217,30 +237,201 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                       children: [
                         CustomTextBodySsb(title: 'Additional Drive'),
                         Spacer(),
-                        CustomTextBodyMsb(title: '0 VNĐ')
-                      ]
+                        CustomTextBodyMsb(title: '0 VNĐ'),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
                         CustomTextBodySsb(title: 'Subtotal'),
                         Spacer(),
-                        CustomTextBodyMsb(title: bookingVM.formattedTotalPrice)
-                      ]
+                        CustomTextBodyMsb(title: bookingVM.formattedTotalPrice),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
                         CustomTextBodySsb(title: 'Tax'),
                         Spacer(),
-                        CustomTextBodyMsb(title: '0 VNĐ')
-                      ]
+                        CustomTextBodyMsb(title: '0 VNĐ'),
+                      ],
                     ),
-                  ]
-                )
+                  ],
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        CustomTextBodyMsb(title: 'Payment'),
+                        Spacer(),
+                        TextButton(
+                          onPressed: () {
+                            
+                          },
+                          child: Text(
+                            'See all',
+                            style: TextStyle(
+                              color: const Color(0xFF1976D2),
+                              fontSize: 14,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                              height: 1.21,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      height: 60,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: paymentMethods.length,
+                        itemBuilder: (context, index) {
+                          final isSelected = index == selectedIndex;
+                          final method = paymentMethods[index];
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedIndex = index;
+                              });
+                              bookingVM.setPaymentMethod(paymentMethods[index]['name']!);
+                            },
+                            child: Container(
+                              padding:EdgeInsets.all(8),
+                              margin: EdgeInsets.only(right: 16),
+                              width: 162,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color:
+                                      isSelected
+                                          ? Color(0xFF1976D2)
+                                          : Color(0XffAAACAF),
+                                  width: 2,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: AssetImage(method['image']!),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        method['name']!,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 14,
+                                          fontFamily: 'Poppins',
+                                          fontWeight: FontWeight.w600,
+                                          height: 1.21,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(width: 1, color: Color(0xffD5D7DB))),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 24,
+                      height: 24,
+                      alignment: Alignment.center,
+                      child: SvgPicture.asset(
+                        'assets/images/booking/Vector.svg',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    CustomTextBodyMsb(title: 'Promotions'),
+                  ],
+                ),
+                Spacer(),
+                Row(
+                  children: [
+                    Text(
+                      'Choose or enter code',
+                      style: TextStyle(
+                        color: const Color(0xFF808183),
+                        fontSize: 14,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                        height: 1.29,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: Color(0xff000000),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomTextBodyL(title: 'Total Rental Price'),
+                Text(
+                  bookingVM.formattedTotalPrice,
+                  style: TextStyle(
+                    color: const Color(0xFF1976D2),
+                    fontSize: 20,
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w600,
+                    height: 1.20,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            CustomButton(
+              width: double.infinity,
+              onPressed: () {
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: (context) => Confirmationscreen(vehicle: widget.vehicle))
+                );
+              },
+              title: 'Pay Now',
+            ),
+          ],
         ),
       ),
     );

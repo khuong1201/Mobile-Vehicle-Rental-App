@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class CustomTextBodyL extends StatelessWidget {
   final String title;
+  final Color? textColor;
 
-  const CustomTextBodyL({super.key, required this.title});
+  const CustomTextBodyL({super.key, required this.title, this.textColor});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,7 @@ class CustomTextBodyL extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.center,
       style: TextStyle(
-        color: Colors.black,
+        color: textColor ?? Colors.black,
         fontSize: 18,
         fontFamily: 'Inter',
         fontWeight: FontWeight.w700,

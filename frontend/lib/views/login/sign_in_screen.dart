@@ -34,7 +34,7 @@ class _SignInScreenState extends State<SignInScreen> {
       body: Container(
         height: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 12),
-        color: Color(0xffF2F2F2),
+        color: const Color(0xffFCFCFC),
         child: SafeArea(
           child: SingleChildScrollView(
             child: Column(

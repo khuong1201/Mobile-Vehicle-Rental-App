@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
 import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
+import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
 import 'package:frontend/views/myAcount/address_screen.dart';
 import 'package:frontend/views/myAcount/driver_license_screen.dart';
 import 'package:frontend/views/myAcount/infomation_screen.dart';
@@ -19,13 +20,14 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreen extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
-  final authViewmodel = Provider.of<AuthViewModel>(context);
-  final gAuthViewmodel = Provider.of<GAuthViewModel>(context);
+  final userVM = Provider.of<UserViewModel>(context);
+  final user = userVM.user;
   
     return Scaffold(
       body: Container(
         height: double.infinity,
         width: double.infinity,
+        color: Color(0xffFCFCFC),
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: SafeArea(
           child: SingleChildScrollView(
@@ -53,7 +55,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        authViewmodel.user?.fullName ?? gAuthViewmodel.user?.fullName ?? 'Guest',
+                        '${user?.fullName.isNotEmpty == true ? user!.fullName : 'Bro'}',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -62,7 +64,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                         ),
                       ),
                       Text(
-                        authViewmodel.user?.email ?? gAuthViewmodel.user?.email ?? 'Unknown',
+                        '${user?.email.isNotEmpty == true ? user!.email : 'Bro'}',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,

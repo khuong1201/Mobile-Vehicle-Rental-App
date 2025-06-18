@@ -13,9 +13,11 @@ class BookingViewModel extends ChangeNotifier {
   int rentalDays = 0;
   double totalPrice = 0;
   String formattedTotalPrice = '';
+  String? _selectedPaymentMethod;
 
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
-  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: '₫');
+  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'VNĐ');
+  String? get selectedPaymentMethod => _selectedPaymentMethod;
 
   void setBookingInfo({
     required String pickUpLocation,
@@ -51,5 +53,10 @@ class BookingViewModel extends ChangeNotifier {
     totalPrice = (price ?? 0) * rentalDays;
     formattedTotalPrice = _currencyFormat.format(totalPrice);
 
+  }
+
+  void setPaymentMethod(String method) {
+    _selectedPaymentMethod = method;
+    notifyListeners();
   }
 }

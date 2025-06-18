@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: Container(
         padding:EdgeInsets.symmetric(horizontal: 16 ),
         height: navBarHeight,
-        color: const Color(0xffD1E4F6),
+        color: const Color(0xffFCFCFC),
         child: Row(
           children: List.generate(itemCount, (index) {
             final selected = _selectedIndex == index;
