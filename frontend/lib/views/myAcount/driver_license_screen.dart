@@ -10,7 +10,7 @@ import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_dropdown_formfield.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
-import 'package:frontend/views/widgets/custom_title_textfield.dart';
+import 'package:frontend/views/widgets/custom_text_body_M_sb.dart';
 import 'package:provider/provider.dart';
 
 class DriverLicenseScreen extends StatefulWidget {
@@ -78,7 +78,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CustomTitleTextField(title: 'Name'),
+                      CustomTextBodyMsb(title: 'Name'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _nameController,
@@ -91,7 +91,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                         },
                       ),
                       const SizedBox(height: 24),
-                      CustomTitleTextField(title: "Type of Driver's License"),
+                      CustomTextBodyMsb(title: "Type of Driver's License"),
                       const SizedBox(height: 8),
                       CustomDropdownButtonFormField(
                         value: _slectedTypeDriver,
@@ -108,7 +108,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                                     : null,
                       ),
                       const SizedBox(height: 24),
-                      CustomTitleTextField(title: 'Class'),
+                      CustomTextBodyMsb(title: 'Class'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _classController,
@@ -121,7 +121,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                         },
                       ),
                       const SizedBox(height: 24),
-                      CustomTitleTextField(title: 'Images'),
+                      CustomTextBodyMsb(title: 'Images'),
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -220,38 +220,37 @@ Widget _buildImagePicker(
         color: const Color(0xfffd9d9d9),
         borderRadius: BorderRadius.circular(8),
       ),
-      child:
-          image == null
-              ? Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CustomTitleTextField(title: title),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.camera_alt_outlined,
-                        color: const Color(0xFF555658),
-                        size: 24,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Take a photo',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: const Color(0xFF555658),
-                          fontSize: 14,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w500,
-                          height: 1.29,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-              : Image.file(File(image.path), height: 80, fit: BoxFit.cover),
+      child: image == null
+      ? Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          CustomTextBodyMsb(title: title),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.camera_alt_outlined,
+                color: const Color(0xFF555658),
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Take a photo',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: const Color(0xFF555658),
+                  fontSize: 14,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w500,
+                  height: 1.29,
+                ),
+              ),
+            ],
+          ),
+        ],
+      )
+      : Image.file(File(image.path), height: 80, fit: BoxFit.cover),
     ),
     onTap:
         () =>

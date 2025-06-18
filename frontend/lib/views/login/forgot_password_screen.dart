@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
-import 'package:frontend/views/widgets/custom_title_textfield.dart';
+import 'package:frontend/views/widgets/custom_text_body_M_sb.dart';
 import 'otp_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -82,7 +82,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CustomTitleTextField(title: 'Email Address'),
+                      CustomTextBodyMsb(title: 'Email Address'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _emailController,

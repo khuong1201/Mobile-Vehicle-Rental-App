@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
+import 'package:frontend/views/booking/booking_screen.dart';
 import 'package:frontend/views/vehicle_detail/about_screen.dart';
 import 'package:frontend/views/vehicle_detail/gallery_screen.dart';
 import 'package:frontend/views/vehicle_detail/review_screen.dart';
@@ -244,9 +245,9 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                 Row(
                   children: [
                     Text(
-                      widget.vehicle.price.toString(),
+                      widget.vehicle.formattedPrice.toString(),
                       style: TextStyle(
-                        color: const Color(0xFF1976D2),
+                        color: const Color(0xFF000000),
                         fontSize: 16,
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w700,
@@ -271,6 +272,12 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
             ),
             CustomButton(
               onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BookingScreen(vehicle: widget.vehicle),
+                  ),
+                );
               },
               title: 'Rent Now',
               width: 150,

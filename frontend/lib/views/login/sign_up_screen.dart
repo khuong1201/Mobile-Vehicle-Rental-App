@@ -7,7 +7,7 @@ import 'package:frontend/views/login/otp_screen.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
-import 'package:frontend/views/widgets/custom_title_textfield.dart';
+import 'package:frontend/views/widgets/custom_text_body_M_sb.dart';
 import 'package:provider/provider.dart';
 
 import 'sign_in_screen.dart';
@@ -73,7 +73,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CustomTitleTextField(title: 'Name'),
+                      CustomTextBodyMsb(title: 'Name'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _nameController,
@@ -86,7 +86,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintText: ('Enter your name'),
                       ),
                       const SizedBox(height: 12),
-                      CustomTitleTextField(title: 'Email Address'),
+                      CustomTextBodyMsb(title: 'Email Address'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _emailController,
@@ -99,7 +99,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintText: "Enter your email",
                       ),
                       const SizedBox(height: 12),
-                      CustomTitleTextField(title: 'Password'),
+                      CustomTextBodyMsb(title: 'Password'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _passwordController,
@@ -113,7 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         hintText: "Enter your Password",
                       ),
                       const SizedBox(height: 12),
-                      CustomTitleTextField(title: 'Confirm password'),
+                      CustomTextBodyMsb(title: 'Confirm password'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _confirmPasswordController,

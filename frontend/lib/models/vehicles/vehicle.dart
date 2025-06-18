@@ -1,4 +1,8 @@
 import 'package:frontend/models/vehicles/brand.dart';
+import 'package:intl/intl.dart';
+
+final currencyFormatter = NumberFormat.currency(locale: 'vi_VN', symbol: 'VNĐ');
+
 class Location {
   final String address;
   final double lat;
@@ -79,4 +83,5 @@ class Vehicle {
       type: json['type'] ?? '',
     );
   }
+  String get formattedPrice => currencyFormatter.format(price);
 }

@@ -9,6 +9,8 @@ class CustomTextBodyL extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.center,
       style: TextStyle(
         color: Colors.black,

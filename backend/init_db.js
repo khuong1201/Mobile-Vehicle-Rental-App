@@ -161,9 +161,9 @@ const initDB = async () => {
     savedBrands.forEach(b => brandMap[b.brandName] = b._id);
 
     const vehicles = [
-      { vehicleName: 'C-Class', brandName: 'Mercedes-Benz', type: 'Car', price: 1800000 },
-      { vehicleName: 'E-Class', brandName: 'Mercedes-Benz', type: 'Car', price: 2200000 },
-      { vehicleName: 'GLC', brandName: 'Mercedes-Benz', type: 'Car', price: 2000000 },
+      { vehicleName: 'C-Class', brandName: 'Mercedes', type: 'Car', price: 1800000 },
+      { vehicleName: 'E-Class', brandName: 'Mercedes', type: 'Car', price: 2200000 },
+      { vehicleName: 'GLC', brandName: 'Mercedes', type: 'Car', price: 2000000 },
       { vehicleName: 'Q5', brandName: 'Audi', type: 'Car', price: 1800000 },
       { vehicleName: 'RX', brandName: 'Lexus', type: 'Car', price: 2500000 },
       { vehicleName: 'VF e34', brandName: 'VinFast', type: 'Car', price: 700000 },

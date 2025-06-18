@@ -7,7 +7,7 @@ import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_dropdown_formfield.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
-import 'package:frontend/views/widgets/custom_title_textfield.dart';
+import 'package:frontend/views/widgets/custom_text_body_M_sb.dart';
 import 'package:provider/provider.dart';
 
 class PersonalInfoScreen extends StatefulWidget {
@@ -70,7 +70,7 @@ class _PersonalInfoScreen extends State<PersonalInfoScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CustomTitleTextField(title: 'Name'),
+                      CustomTextBodyMsb(title: 'Name'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _nameController,
@@ -83,7 +83,7 @@ class _PersonalInfoScreen extends State<PersonalInfoScreen> {
                         },
                       ),
                       const SizedBox(height: 24),
-                      CustomTitleTextField(title: 'Date of Birth'),
+                      CustomTextBodyMsb(title: 'Date of Birth'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _dateController,
@@ -100,7 +100,7 @@ class _PersonalInfoScreen extends State<PersonalInfoScreen> {
                         },
                       ),
                       const SizedBox(height: 24),
-                      CustomTitleTextField(title: 'Phone Number'),
+                      CustomTextBodyMsb(title: 'Phone Number'),
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _phoneController,
@@ -124,7 +124,7 @@ class _PersonalInfoScreen extends State<PersonalInfoScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                CustomTitleTextField(title: 'Gender'),
+                                CustomTextBodyMsb(title: 'Gender'),
                                 const SizedBox(height: 8),
                                 CustomDropdownButtonFormField(
                                   value: _selectedGender,
@@ -149,7 +149,7 @@ class _PersonalInfoScreen extends State<PersonalInfoScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                CustomTitleTextField(title: 'IDs'),
+                                CustomTextBodyMsb(title: 'IDs'),
                                 const SizedBox(height: 8),
                                 CustomTextField(
                                   controller: _ids,

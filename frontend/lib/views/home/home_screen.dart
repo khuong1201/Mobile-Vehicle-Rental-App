@@ -444,7 +444,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            vehicle.price.toString(),
+                                            vehicle.formattedPrice.toString(),
                                             style: TextStyle(
                                               color: const Color(0xFF1976D2),
                                               fontSize: 16,

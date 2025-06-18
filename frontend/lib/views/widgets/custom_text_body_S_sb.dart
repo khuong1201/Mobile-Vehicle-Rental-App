@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 
-class CustomTitleTextField extends StatelessWidget {
+class CustomTextBodySsb extends StatelessWidget {
   final String title;
 
-  const CustomTitleTextField({
-    super.key,
+  const CustomTextBodySsb({
+    Key? key,
     required this.title,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Text(
       title,
       style: TextStyle(
-        color: Color(0xFF2B2B2C),
-        fontSize: 16,
+        color: const Color(0xFF808183),
+        fontSize: 14,
         fontFamily: 'Inter',
         fontWeight: FontWeight.w600,
-        height: 1.25,
+        height: 1.29,
       ),
     );
   }
