@@ -16,22 +16,23 @@ const VehicleSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      trim: true,
     },
     vehicleId: {
       type: String,
       unique: true,
-      default: uuidv4,
+      default: () => uuidv4(),
     },
     vehicleName: String,
     licensePlate: { type: String, required: true },
     brandId: {
-      type: String, 
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'Brand' 
+      ref: "Brand",
     },
+    model: String,
     yearOfManufacture: Number,
-    images: [String],
+    images: [String], 
+    imagePublicIds: [String], 
     description: String,
     location: LocationSchema,
     type: {
@@ -42,7 +43,12 @@ const VehicleSchema = new mongoose.Schema(
     price: Number,
     rate: { type: Number, default: 0 },
     available: { type: Boolean, default: true },
-    status: { type: String, default: "pending", enum: ['pending', 'rejected', 'apprroved',], require: true },
+    status: {
+      type: String,
+      default: "pending",
+      enum: ["pending", "rejected", "approved"],
+      required: true,
+    },
     createdAt: { type: Date, default: Date.now },
   },
   { discriminatorKey: "type", collection: "vehicles" }

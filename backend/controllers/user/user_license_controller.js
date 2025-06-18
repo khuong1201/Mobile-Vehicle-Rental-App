@@ -1,90 +1,81 @@
 const User = require("../../models/user_model");
-
-const GetDriverLicenses = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select("license");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.json({
-      message: "Driver licenses retrieved successfully",
-      licenses: user.license || [], // Return empty array if no licenses
-    });
-  } catch (err) {
-    console.error("Get driver licenses error:", err.message);
-    res.status(400).json({ message: err.message });
-  }
-};
+const { deleteFileFromCloudinary } = require("../../services/cloudinary_service");
 
 const UpdateDriverLicense = async (req, res) => {
   try {
-    if (!req.body) {
-      return res.status(400).json({ message: "Request body is missing" });
-    }
+    console.log("req.body:", req.body);
+    console.log("req.files:", req.files);
 
-    const {
-      licenseId,
-      typeOfDriverLicense,
-      classLicense,
-      licenseNumber,
-      driverLicenseFront,
-      driverLicenseBack,
-    } = req.body;
+    if (!req.body) return res.status(400).json({ message: "Yêu cầu thiếu nội dung" });
 
-    if (!typeOfDriverLicense) {
-      return res
-        .status(400)
-        .json({ message: "Type of driver license is required" });
-    } else if (!classLicense) {
-      return res.status(400).json({ message: "Class is required" });
-    } else if (!licenseNumber) {
-      return res.status(400).json({ message: "License number is required" });
-    } else if (!driverLicenseFront) {
-      return res
-        .status(400)
-        .json({ message: "Front view picture is required" });
-    } else if (!driverLicenseBack) {
-      return res.status(400).json({ message: "Back view picture is required" });
-    }
+    const { typeOfDriverLicense, classLicense, licenseNumber } = req.body;
+    const frontFile = req.files?.driverLicenseFront?.[0];
+    const backFile = req.files?.driverLicenseBack?.[0];
+
+    if (!typeOfDriverLicense || !classLicense || !licenseNumber)
+      return res.status(400).json({ message: "Thiếu các trường bắt buộc: typeOfDriverLicense, classLicense, hoặc licenseNumber" });
+
+    if (!frontFile || !backFile)
+      return res.status(400).json({ message: "Thiếu tệp giấy phép (mặt trước hoặc mặt sau)" });
+
+    if (!frontFile.path || !backFile.path)
+      return res.status(500).json({ message: "Không thể lấy URL ảnh từ Cloudinary" });
 
     const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng" });
+
+    const licenses = user.license || [];
+    const index = licenses.findIndex((l) => l.classLicense === classLicense);
+    const existing = index !== -1 ? licenses[index] : null;
+
+    // Xóa ảnh cũ trên Cloudinary nếu giấy phép đã tồn tại
+    if (existing) {
+      try {
+        if (existing.driverLicenseFrontPublicId) {
+          await deleteFileFromCloudinary(existing.driverLicenseFrontPublicId);
+          console.log(`Xóa ảnh mặt trước cũ: ${existing.driverLicenseFrontPublicId}`);
+        }
+        if (existing.driverLicenseBackPublicId) {
+          await deleteFileFromCloudinary(existing.driverLicenseBackPublicId);
+          console.log(`Xóa ảnh mặt sau cũ: ${existing.driverLicenseBackPublicId}`);
+        }
+      } catch (cloudinaryError) {
+        console.error("Lỗi xóa ảnh cũ trên Cloudinary:", cloudinaryError.message);
+        return res.status(500).json({ message: "Lỗi xóa ảnh cũ trên Cloudinary" });
+      }
     }
 
-    // Ensure license array exists
-    user.license = user.license || [];
+    const frontUrl = frontFile.path;
+    const backUrl = backFile.path;
+    const frontId = frontFile.filename;
+    const backId = backFile.filename;
 
-    // New license object
     const newLicense = {
       typeOfDriverLicense,
       classLicense,
       licenseNumber,
-      driverLicenseFront,
-      driverLicenseBack,
+      driverLicenseFront: frontUrl,
+      driverLicenseBack: backUrl,
+      driverLicenseFrontPublicId: frontId,
+      driverLicenseBackPublicId: backId,
       approved: false,
+      ...(existing && { licenseId: existing.licenseId }), // Bảo toàn licenseId
     };
 
-    if (licenseId) {
-      const licenseIndex = user.license.findIndex(
-        (lic) => lic._id.toString() === licenseId
-      );
-      if (licenseIndex === -1) {
-        return res.status(400).json({ message: "License not found" });
-      }
-      user.license[licenseIndex] = {
-        ...user.license[licenseIndex],
-        ...newLicense,
-      };
+    console.log("newLicense:", newLicense);
+
+    if (existing) {
+      Object.assign(user.license[index], newLicense);
     } else {
       user.license.push(newLicense);
     }
 
     await user.save();
 
+    console.log("Saved user license:", user.license);
+
     res.json({
-      message: "Driver license updated successfully",
+      message: "Cập nhật giấy phép lái xe thành công",
       user: {
         id: user._id,
         userId: user.userId,
@@ -94,51 +85,50 @@ const UpdateDriverLicense = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Update driver license error:", err.message);
-    res.status(400).json({ message: err.message });
+    console.error("Lỗi cập nhật giấy phép lái xe:", err.message);
+    res.status(500).json({ message: "Không thể cập nhật giấy phép lái xe: " + err.message });
   }
 };
+
 const DeleteDriverLicense = async (req, res) => {
   try {
     const { licenseId } = req.body;
 
-    // Validate input
-    if (!licenseId) {
-      return res.status(400).json({ message: "licenseId is required" });
-    }
+    if (!licenseId)
+      return res.status(400).json({ message: "Thiếu licenseId để xóa" });
 
     const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng" });
+
+    const licenses = user.license || [];
+    const index = licenses.findIndex((l) => l.licenseId === licenseId);
+    if (index === -1)
+      return res.status(404).json({ message: "Không tìm thấy giấy phép với licenseId cung cấp" });
+
+    const toDelete = licenses[index];
+    try {
+      if (toDelete.driverLicenseFrontPublicId)
+        await deleteFileFromCloudinary(toDelete.driverLicenseFrontPublicId);
+      if (toDelete.driverLicenseBackPublicId)
+        await deleteFileFromCloudinary(toDelete.driverLicenseBackPublicId);
+    } catch (cloudinaryError) {
+      console.error("Lỗi xóa ảnh trên Cloudinary:", cloudinaryError.message);
+      return res.status(500).json({ message: "Lỗi xóa ảnh trên Cloudinary" });
     }
 
-    // Check if license exists
-    const licenseExists = user.license.some(
-      (lic) => lic._id.toString() === licenseId
-    );
-    if (!licenseExists) {
-      return res.status(400).json({ message: "License not found" });
-    }
+    licenses.splice(index, 1);
+    user.license = licenses;
 
-    // Remove the license
-    user.license = user.license.filter(
-      (lic) => lic._id.toString() !== licenseId
-    );
     await user.save();
 
-    res.json({
-      message: "Driver license deleted successfully",
-      user: {
-        id: user._id,
-        userId: user.userId,
-        email: user.email,
-        fullName: user.fullName,
-        license: user.license,
-      },
-    });
+    res.json({ message: "Xóa giấy phép lái xe thành công", license: user.license });
   } catch (err) {
-    console.error("Delete driver license error:", err.message);
-    res.status(400).json({ message: err.message });
+    console.error("Lỗi xóa giấy phép lái xe:", err.message);
+    res.status(500).json({ message: "Không thể xóa giấy phép lái xe: " + err.message });
   }
 };
-module.exports = { UpdateDriverLicense, DeleteDriverLicense, GetDriverLicenses };
+
+module.exports = {
+  UpdateDriverLicense,
+  DeleteDriverLicense,
+};

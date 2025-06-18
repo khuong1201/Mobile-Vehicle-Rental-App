@@ -1,5 +1,4 @@
-import 'package:frontend/viewmodels/auth/auth_service.dart';
-import 'package:flutter/material.dart';
+
 
 class BannerAppViewModel with ChangeNotifier {
   List<BannerApp> _banners = [];
@@ -14,7 +13,7 @@ class BannerAppViewModel with ChangeNotifier {
     _isLoading = true;
     _error = null;
     notifyListeners();
-
+  
     try {
       final response = await ApiGetAllBanner.getAllBanner(
         this,

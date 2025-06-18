@@ -23,7 +23,6 @@ class DriverLicenseScreen extends StatefulWidget {
 }
 
 class _DriverLicenseScreen extends State<DriverLicenseScreen> {
-
   late TextEditingController _nameController = TextEditingController();
   final TextEditingController _classController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -41,12 +40,16 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
     super.didChangeDependencies();
     final authViewmodel = Provider.of<AuthViewModel>(context);
     final gAuthViewmodel = Provider.of<GAuthViewModel>(context);
-    _nameController.text = authViewmodel.user?.fullName ?? gAuthViewmodel.user?.fullName ?? '';
+    _nameController.text =
+        authViewmodel.user?.fullName ?? gAuthViewmodel.user?.fullName ?? '';
   }
 
   @override
   Widget build(BuildContext context) {
-    final personalInfoVM = Provider.of<PersonalInfoViewModel>(context, listen: false);
+    final personalInfoVM = Provider.of<PersonalInfoViewModel>(
+      context,
+      listen: false,
+    );
 
     return Scaffold(
       body: SizedBox(
@@ -158,14 +161,16 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
           title: 'Save',
           onPressed: () {
             if (_formKey.currentState?.validate() ?? false) {
-              if (personalInfoVM.frontImage == null || personalInfoVM.backImage == null) {
+              if (personalInfoVM.frontImage == null ||
+                  personalInfoVM.backImage == null) {
                 showDialog(
                   context: context,
-                  builder: (context) => CustomAlertDialog(
-                    title: 'Error',
-                    content: 'Please select both front and back images.',
-                    buttonText: 'OK',
-                  ),
+                  builder:
+                      (context) => CustomAlertDialog(
+                        title: 'Error',
+                        content: 'Please select both front and back images.',
+                        buttonText: 'OK',
+                      ),
                 );
                 return;
               }
@@ -173,7 +178,6 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                 name: _nameController.text,
                 typeDriverLicense: _slectedTypeDriver,
                 className: _classController.text,
-                
               );
               Navigator.push(
                 context,
@@ -182,11 +186,12 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
             } else {
               showDialog(
                 context: context,
-                builder: (context) => CustomAlertDialog(
-                  title: 'Error',
-                  content: 'Registration failed. Please try again.',
-                  buttonText: 'OK',
-                ),
+                builder:
+                    (context) => CustomAlertDialog(
+                      title: 'Error',
+                      content: 'Registration failed. Please try again.',
+                      buttonText: 'OK',
+                    ),
               );
             }
           },
@@ -196,8 +201,16 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
   }
 }
 
-Widget _buildImagePicker(BuildContext context, String title, String hintText, {required bool isFront}) {
-  final personalInfoVM = Provider.of<PersonalInfoViewModel>(context, listen: false);
+Widget _buildImagePicker(
+  BuildContext context,
+  String title,
+  String hintText, {
+  required bool isFront,
+}) {
+  final personalInfoVM = Provider.of<PersonalInfoViewModel>(
+    context,
+    listen: false,
+  );
   final image = isFront ? personalInfoVM.frontImage : personalInfoVM.backImage;
 
   return InkWell(
@@ -207,40 +220,43 @@ Widget _buildImagePicker(BuildContext context, String title, String hintText, {r
         color: const Color(0xfffd9d9d9),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: image == null
-      ? Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          CustomTitleTextField(title: title),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.camera_alt_outlined,
-                color: const Color(0xFF555658),
-                size: 24,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Take a photo',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: const Color(0xFF555658),
-                  fontSize: 14,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w500,
-                  height: 1.29,
-                ),
-              ),
-            ],
-          ),
-        ],
-      )
-      : Image.file(File(image.path), height: 80, fit: BoxFit.cover),
+      child:
+          image == null
+              ? Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CustomTitleTextField(title: title),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.camera_alt_outlined,
+                        color: const Color(0xFF555658),
+                        size: 24,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Take a photo',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: const Color(0xFF555658),
+                          fontSize: 14,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w500,
+                          height: 1.29,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+              : Image.file(File(image.path), height: 80, fit: BoxFit.cover),
     ),
-    onTap: () => isFront
-        ? personalInfoVM.pickFrontImage()
-        : personalInfoVM.pickBackImage(),
+    onTap:
+        () =>
+            isFront
+                ? personalInfoVM.pickFrontImage()
+                : personalInfoVM.pickBackImage(),
   );
 }

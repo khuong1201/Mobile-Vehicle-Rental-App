@@ -289,7 +289,6 @@ const cleanupUnverifiedUsers = async () => {
                 }))
             );
 
-            // Xóa các tài liệu khớp
             const result = await User.deleteMany({
                 verified: false,
                 otpExpires: { $lt: currentTime },

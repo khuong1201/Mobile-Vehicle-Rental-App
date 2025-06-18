@@ -1,6 +1,8 @@
 const Vehicle = require("../../models/vehicles/vehicle_model");
 const Brand = require("../../models/vehicles/brand_model");
+const { deleteFileFromCloudinary } = require("../../services/cloudinary_service");
 
+// Lấy tất cả xe
 const GetAllVehicles = async (req, res) => {
   try {
     const vehicles = await Vehicle.find()
@@ -8,78 +10,160 @@ const GetAllVehicles = async (req, res) => {
       .populate({ path: "ownerId", select: "_id fullName email role" });
     res.status(200).json(vehicles);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching vehicle list", error });
+    res.status(500).json({ message: "Lỗi khi lấy danh sách xe", error: error.message });
   }
 };
 
+// Lấy xe theo ID
 const GetVehicleById = async (req, res) => {
   try {
     const vehicle = await Vehicle.findById(req.params.id)
       .populate({ path: "brandId", select: "brandId" })
       .populate({ path: "ownerId", select: "_id fullName email role" });
-    if (!vehicle) return res.status(404).json({ message: "Vehicle not found" });
+    if (!vehicle) return res.status(404).json({ message: "Không tìm thấy xe" });
     res.status(200).json(vehicle);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching vehicle", error });
+    res.status(500).json({ message: "Lỗi khi lấy thông tin xe", error: error.message });
   }
 };
 
+// Lấy các xe chưa duyệt
 const GetVehiclePending = async (req, res) => {
   try {
     const vehicles = await Vehicle.find({ status: "pending" });
     res.status(200).json(vehicles);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching pending vehicles", error });
+    res.status(500).json({ message: "Lỗi khi lấy xe đang chờ duyệt", error: error.message });
   }
 };
 
+// Cập nhật trạng thái xe (duyệt/hủy...)
 const ChangeVehicleStatus = async (req, res) => {
   try {
-    const updated = await Vehicle.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    if (!updated) return res.status(404).json({ message: "Vehicle not found for update" });
+    const updated = await Vehicle.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updated) return res.status(404).json({ message: "Không tìm thấy xe để cập nhật" });
     res.status(200).json(updated);
   } catch (error) {
-    res.status(500).json({ message: "Error updating vehicle status", error });
+    res.status(500).json({ message: "Lỗi khi cập nhật trạng thái xe", error: error.message });
   }
 };
 
+// Tạo xe mới
 const CreateVehicle = async (req, res) => {
   try {
     const data = req.body;
 
-    const brand = await Brand.findById(data.brand);
-    if (!brand) return res.status(400).json({ message: "Invalid brand" });
+    const brand = await Brand.findById(data.brandId);
+    if (!brand) return res.status(400).json({ message: "Thương hiệu không hợp lệ" });
 
-    const vehicle = await Vehicle.create(data);
+    const images = req.files?.images
+      ? req.files.images.map((file) => ({
+          url: file.path,
+          publicId: file.filename,
+        }))
+      : [];
+
+    const vehicleData = {
+      ...data,
+      ownerId: req.user.id,
+      images: images.map((img) => img.url),
+      imagePublicIds: images.map((img) => img.publicId),
+    };
+
+    const vehicle = await Vehicle.create(vehicleData);
     res.status(201).json(vehicle);
   } catch (error) {
-    res.status(500).json({ message: "Error creating new vehicle", error });
+    res.status(500).json({ message: "Lỗi khi tạo xe mới", error: error.message });
   }
 };
 
+// Cập nhật xe
 const UpdateVehicle = async (req, res) => {
   try {
-    const updated = await Vehicle.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    if (!updated)
-      return res.status(404).json({ message: "Vehicle not found for update" });
+    const { id } = req.params;
+    const data = req.body;
+
+    const vehicle = await Vehicle.findById(id);
+    if (!vehicle) return res.status(404).json({ message: "Không tìm thấy xe" });
+
+    if (vehicle.ownerId.toString() !== req.user.id)
+      return res.status(403).json({ message: "Bạn không có quyền cập nhật xe này" });
+
+    let newImages = vehicle.images;
+    let newImagePublicIds = vehicle.imagePublicIds;
+
+    if (req.files?.images) {
+      if (vehicle.imagePublicIds?.length > 0) {
+        for (const publicId of vehicle.imagePublicIds) {
+          await deleteFileFromCloudinary(publicId);
+        }
+      }
+
+      newImages = req.files.images.map((file) => file.path);
+      newImagePublicIds = req.files.images.map((file) => file.filename);
+    }
+
+    const updated = await Vehicle.findByIdAndUpdate(
+      id,
+      {
+        ...data,
+        images: newImages,
+        imagePublicIds: newImagePublicIds,
+      },
+      { new: true }
+    );
+
     res.status(200).json(updated);
   } catch (error) {
-    res.status(500).json({ message: "Error updating vehicle", error });
+    res.status(500).json({ message: "Lỗi khi cập nhật xe", error: error.message });
   }
 };
 
+// Xóa xe
 const DeleteVehicle = async (req, res) => {
   try {
-    const deleted = await Vehicle.findByIdAndDelete(req.params.id);
-    if (!deleted)
-      return res.status(404).json({ message: "Vehicle not found for deletion" });
-    res.status(200).json({ message: "Vehicle deleted successfully" });
+    const vehicle = await Vehicle.findById(req.params.id);
+    if (!vehicle) return res.status(404).json({ message: "Không tìm thấy xe để xóa" });
+
+    if (vehicle.ownerId.toString() !== req.user.id && req.user.role !== "admin")
+      return res.status(403).json({ message: "Bạn không có quyền xóa xe này" });
+
+    if (vehicle.imagePublicIds?.length > 0) {
+      for (const publicId of vehicle.imagePublicIds) {
+        await deleteFileFromCloudinary(publicId);
+      }
+    }
+
+    await Vehicle.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Xóa xe thành công" });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting vehicle", error });
+    res.status(500).json({ message: "Lỗi khi xóa xe", error: error.message });
+  }
+};
+
+// ✅ MỚI: Lấy xe theo type
+const GetVehicleByType = async (req, res) => {
+  try {
+    const { type } = req.params;
+    const allowed = ["Car", "Motorbike", "Coach", "Bike"];
+    if (!allowed.includes(type)) {
+      return res.status(400).json({ message: "Loại xe không hợp lệ" });
+    }
+
+    const vehicles = await Vehicle.find({ type });
+    res.status(200).json(vehicles);
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi khi lấy xe theo loại", error: error.message });
+  }
+};
+
+// ✅ MỚI: Lấy xe không khả dụng (available: false)
+const GetUnavailableVehicles = async (req, res) => {
+  try {
+    const vehicles = await Vehicle.find({ available: false });
+    res.status(200).json(vehicles);
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi khi lấy xe không khả dụng", error: error.message });
   }
 };
 
@@ -91,4 +175,6 @@ module.exports = {
   DeleteVehicle,
   GetVehiclePending,
   ChangeVehicleStatus,
+  GetVehicleByType,
+  GetUnavailableVehicles,
 };

@@ -11,10 +11,9 @@ const Car = Vehicle.discriminator('Car', new mongoose.Schema({
     type: Number,
     required: true
   },
+  transmission: {type: String, enum: ['Automatic','Manual'],},
   numberOfSeats: { type: Number, required: true },
-  rentalWithDriver: {typeof: Boolean, default: false},
-  rentalWithoutDriver: {typeof: Boolean, default: true},
-  model: String,
+  rentalWithDriver: {typeof: Boolean, default: true},
 }));
 
 module.exports = Car;
