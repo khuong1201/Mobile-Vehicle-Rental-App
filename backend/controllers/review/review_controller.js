@@ -1,6 +1,6 @@
-const Review = require("../models/reviews/review_model");
-const Vehicle = require("../models/vehicles/vehicle_model");
-const ReviewReport = require("../models/reviews/report_review_model");
+const Review = require("../../models/reivews/review_model");
+const Vehicle = require("../../models/vehicles/vehicle_model");
+const ReviewReport = require("../../models/reivews/report_review_model");
 
 const bannedWords = [
   "http",
@@ -16,7 +16,7 @@ const bannedWords = [
 const CreateReview = async (req, res) => {
   try {
     const { vehicleId, rating, comment } = req.body;
-    const renterId = req.user._id;
+    const renterId = req.user.id || req.user._id;
 
     const existingReview = await Review.findOne({ vehicleId, renterId });
     if (existingReview) {

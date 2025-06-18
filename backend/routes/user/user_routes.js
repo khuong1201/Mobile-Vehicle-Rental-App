@@ -7,6 +7,8 @@ const userLicenseController = require('../../controllers/user/user_license_contr
 const userAddressController = require('../../controllers/user/user_address_controller');
 const uploadUserLicense = require('../../middlewares/multer/upload_user_license');
 const emailService = require('../../services/google_api_service');
+const { CheckOwnerMonthlyTax } = require('../../controllers/user/user_revenue_controller');
+
 router.post('/change-password', authenticateToken, userController.ChangePassword);
 
 router.put('/update-PersonalInfo', authenticateToken, userProfileController.UpdatePersonalInfo);
@@ -28,5 +30,7 @@ router.get('/get-Address', authenticateToken, userAddressController.GetAddresses
 router.put('/update-Address', authenticateToken, userAddressController.UpdateAddress);
 router.delete('/delete-Address', authenticateToken, userAddressController.DeleteAddress);
 router.post('/place/search', authenticateToken, emailService.searchPlace );
+
+router.get('/owner/:userId/monthly-tax', CheckOwnerMonthlyTax);
 
 module.exports = router;

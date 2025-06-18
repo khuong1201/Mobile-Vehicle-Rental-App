@@ -12,7 +12,7 @@ const reviewLimiter = rateLimit({
     message: "You have submitted too many values, please try again later."
   });
 
-router.post("/", authMiddleware,reviewLimiter, reviewController.CreateReview);
+router.post("/create-review", authMiddleware,reviewLimiter, reviewController.CreateReview);
 
 router.get("/:vehicleId", reviewController.GetReviewsByVehicle);
 
