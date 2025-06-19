@@ -50,8 +50,16 @@ class ApiGetAllVehicle {
         );
       }
 
-      final vehicleList = items.whereType<Map<String, dynamic>>().map(parseVehicle).toList();
-      final meta = PaginationMeta.fromJson(data);
+      final vehicleList = items
+          .whereType<Map<String, dynamic>>()
+          .map(parseVehicle)
+          .toList();
+
+      final meta = PaginationMeta(
+        currentPage: data['currentPage'] ?? 1,
+        totalPages: data['totalPages'] ?? 1,
+        totalItems: data['totalItems'] ?? vehicleList.length,
+      );
 
       return ApiResponse(
         success: true,
