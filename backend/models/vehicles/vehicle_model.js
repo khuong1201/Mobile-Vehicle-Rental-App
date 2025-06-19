@@ -24,7 +24,7 @@ const VehicleSchema = new mongoose.Schema(
     },
     vehicleName: String,
     licensePlate: { type: String, required: true },
-    brandId: {
+    brand: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "Brand",

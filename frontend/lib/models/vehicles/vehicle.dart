@@ -71,14 +71,16 @@ class Vehicle {
       vehicleName: json['vehicleName']?.toString() ?? '',
       licensePlate: json['licensePlate']?.toString() ?? '',
 
-      brand: json['_id'] is Map<String, dynamic>
-          ? Brand.fromJson(json['brandId'])
-          : Brand(id: '', brandId: '', brandName: 'Unknown'),
+      brand:
+          json['brand'] is Map<String, dynamic>
+              ? Brand.fromJson(json['brand'])
+              : Brand(id: '', brandId: '', brandName: 'Unknown'),
 
       yearOfManufacture: json['yearOfManufacture'] ?? 0,
       images: List<String>.from(json['images'] ?? []),
       description: json['description']?.toString() ?? '',
-      location: json['location'] != null ? Location.fromJson(json['location']) : null,
+      location:
+          json['location'] != null ? Location.fromJson(json['location']) : null,
       ownerId: owner?['_id']?.toString() ?? '',
       ownerEmail: owner?['email']?.toString() ?? '',
       price: (json['price'] ?? 0).toDouble(),
