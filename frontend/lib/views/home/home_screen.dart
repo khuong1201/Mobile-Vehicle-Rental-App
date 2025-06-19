@@ -21,7 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
-
+  final ScrollController _scrollController = ScrollController();
   final List<String> banners = [
     'assets/images/banners/banner1.png',
     'assets/images/banners/banner2.png',
@@ -48,6 +48,14 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }
     });
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 300) {
+        // Gần cuối -> load thêm
+        final vehicleVM = Provider.of<VehicleViewModel>(context, listen: false);
+        vehicleVM.loadMoreVehicles(context);
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         final vehicleVM = Provider.of<VehicleViewModel>(context, listen: false);
@@ -62,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _bannerController.dispose();
     _bannerTimer?.cancel();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -79,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
         width: double.infinity,
         color: Color(0xffFDFDFD),
         child: SingleChildScrollView(
+          controller: _scrollController,
           child: Column(
             children: [
               // header
@@ -266,223 +276,241 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     rentalvehicles.isEmpty
-                  ? SizedBox(
-                      child: Center(
-                        child: EmptyListScreen()
-                      ),
-                    )
-                  : GridView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 16,
-                        childAspectRatio: 0.63,
-                      ),
-                      itemCount: rentalvehicles.length,
-                      itemBuilder: (context, index) {
-                        final vehicle = rentalvehicles[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) =>
-                                        VehicleDetailScreen(vehicle: vehicle),
+                        ? SizedBox(child: Center(child: EmptyListScreen()))
+                        : GridView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 12,
+                                crossAxisSpacing: 16,
+                                childAspectRatio: 0.63,
+                              ),
+                          itemCount:
+                              rentalvehicles.length +
+                              (vehicleVM.hasMore ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            final vehicle = rentalvehicles[index];
+                            if (index >= rentalvehicles.length) {
+                              return Center(child: CircularProgressIndicator());
+                            }
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => VehicleDetailScreen(
+                                          vehicle: vehicle,
+                                        ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Color(0x33000000),
+                                      blurRadius: 9,
+                                      offset: Offset(0, 3),
+                                      spreadRadius: 0,
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: 172,
+                                      height: 172,
+                                      decoration: ShapeDecoration(
+                                        image: DecorationImage(
+                                          image: NetworkImage(
+                                            vehicle.images.isNotEmpty
+                                                ? vehicle.images[0]
+                                                : 'https://www.kia.com/content/dam/kwcms/gt/en/images/discover-kia/voice-search/parts-80-1.jpg',
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child: SvgPicture.network(
+                                                  '${vehicle.brand.brandImage}',
+                                                ),
+                                              ),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                '${vehicle.brand.brandName} ${vehicle.vehicleName}',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 12,
+                                                  fontFamily: 'Inter',
+                                                  fontWeight: FontWeight.w800,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child: SvgPicture.asset(
+                                                  'assets/images/homePage/home/address.svg',
+                                                ),
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                vehicle.location?.address ??
+                                                    'Unknown Location',
+                                                style: TextStyle(
+                                                  color: const Color(
+                                                    0xFFAAACAF,
+                                                  ),
+                                                  fontSize: 12,
+                                                  fontFamily: 'Inter',
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding:
+                                                    EdgeInsetsDirectional.all(
+                                                      2,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: Color(0xffFFF5E0),
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                  border: Border.all(
+                                                    color: Color(0xFFFFC107),
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 12,
+                                                      height: 12,
+                                                      child: SvgPicture.asset(
+                                                        'assets/images/homePage/home/star.svg',
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 3),
+                                                    Text(
+                                                      vehicle.rate.toString(),
+                                                      style: TextStyle(
+                                                        color: const Color(
+                                                          0xFF2B2B2C,
+                                                        ),
+                                                        fontSize: 10,
+                                                        fontFamily: 'Inter',
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        height: 1.20,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              SizedBox(width: 4),
+                                              Container(
+                                                width: 1,
+                                                height: 16,
+                                                color: Color(0xFF555658),
+                                              ),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                '${vehicle.rentals.toString()} rentals',
+                                                style: TextStyle(
+                                                  color: const Color(
+                                                    0xFF555658,
+                                                  ),
+                                                  fontSize: 10,
+                                                  fontFamily: 'Inter',
+                                                  fontWeight: FontWeight.w400,
+                                                  height: 1.20,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                vehicle.formattedPrice
+                                                    .toString(),
+                                                style: TextStyle(
+                                                  color: const Color(
+                                                    0xFF1976D2,
+                                                  ),
+                                                  fontSize: 16,
+                                                  fontFamily: 'Inter',
+                                                  fontWeight: FontWeight.w700,
+                                                  height: 1.25,
+                                                ),
+                                              ),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                '/ day',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: const Color(
+                                                    0xFF808183,
+                                                  ),
+                                                  fontSize: 10,
+                                                  fontFamily: 'Inter',
+                                                  fontWeight: FontWeight.w400,
+                                                  height: 1.20,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 5,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Color(0x33000000),
-                                  blurRadius: 9,
-                                  offset: Offset(0, 3),
-                                  spreadRadius: 0,
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                Container(
-                                  width: 172,
-                                  height: 172,
-                                  decoration: ShapeDecoration(
-                                    image: DecorationImage(
-                                      image: NetworkImage(
-                                        vehicle.images.isNotEmpty
-                                            ? vehicle.images[0]
-                                            : 'https://www.kia.com/content/dam/kwcms/gt/en/images/discover-kia/voice-search/parts-80-1.jpg',
-                                      ),
-                                      fit: BoxFit.cover,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 8),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                            width: 20,
-                                            height: 20,
-                                            child: SvgPicture.network(
-                                              '${vehicle.brand.brandImage}',
-                                            ),
-                                          ),
-                                          SizedBox(width: 4),
-                                          Text(
-                                            '${vehicle.brand.brandName} ${vehicle.vehicleName}',
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 12,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w800,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 4),
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                            width: 20,
-                                            height: 20,
-                                            child: SvgPicture.asset(
-                                              'assets/images/homePage/home/address.svg',
-                                            ),
-                                          ),
-                                          SizedBox(width: 8),
-                                          Text(
-                                            vehicle.location?.address ??
-                                                'Unknown Location',
-                                            style: TextStyle(
-                                              color: const Color(0xFFAAACAF),
-                                              fontSize: 12,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 4),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsetsDirectional.all(
-                                              2,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Color(0xffFFF5E0),
-                                              borderRadius:
-                                                  BorderRadius.circular(2),
-                                              border: Border.all(
-                                                color: Color(0xFFFFC107),
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                SizedBox(
-                                                  width: 12,
-                                                  height: 12,
-                                                  child: SvgPicture.asset(
-                                                    'assets/images/homePage/home/star.svg',
-                                                  ),
-                                                ),
-                                                SizedBox(width: 3),
-                                                Text(
-                                                  vehicle.rate.toString(),
-                                                  style: TextStyle(
-                                                    color: const Color(
-                                                      0xFF2B2B2C,
-                                                    ),
-                                                    fontSize: 10,
-                                                    fontFamily: 'Inter',
-                                                    fontWeight: FontWeight.w500,
-                                                    height: 1.20,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(width: 4),
-                                          Container(
-                                            width: 1,
-                                            height: 16,
-                                            color: Color(0xFF555658),
-                                          ),
-                                          SizedBox(width: 4),
-                                          Text(
-                                            '${vehicle.rentals.toString()} rentals',
-                                            style: TextStyle(
-                                              color: const Color(0xFF555658),
-                                              fontSize: 10,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w400,
-                                              height: 1.20,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 4),
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            vehicle.formattedPrice.toString(),
-                                            style: TextStyle(
-                                              color: const Color(0xFF1976D2),
-                                              fontSize: 16,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w700,
-                                              height: 1.25,
-                                            ),
-                                          ),
-                                          SizedBox(width: 4),
-                                          Text(
-                                            '/ day',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: const Color(0xFF808183),
-                                              fontSize: 10,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w400,
-                                              height: 1.20,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                        ),
                   ],
                 ),
               ),

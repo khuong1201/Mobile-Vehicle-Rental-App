@@ -16,7 +16,7 @@ router.post("/create-review", authMiddleware,reviewLimiter, reviewController.Cre
 
 router.get("/:vehicleId", reviewController.GetReviewsByVehicle);
 
-router.delete("/:reviewId", authMiddleware, adminMiddleware, reviewController.DeleteReview);
+router.delete("/:reviewId", authMiddleware, reviewController.DeleteReview);
 
 router.post("/report", authMiddleware,ownerMiddleware, reviewController.ReportReview);
 

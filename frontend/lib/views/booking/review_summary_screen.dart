@@ -13,8 +13,7 @@ import 'package:provider/provider.dart';
 class ReviewSummaryScreen extends StatefulWidget {
   final Vehicle vehicle;
 
-  const ReviewSummaryScreen({Key? key, required this.vehicle})
-    : super(key: key);
+  const ReviewSummaryScreen({super.key, required this.vehicle});
 
   @override
   _ReviewSummaryScreenState createState() => _ReviewSummaryScreenState();
@@ -286,7 +285,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    Container(
+                    SizedBox(
                       height: 60,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,

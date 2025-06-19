@@ -5,6 +5,8 @@ import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 
 class AddAddressScreen extends StatefulWidget {
+  const AddAddressScreen({super.key});
+
   @override
   State<StatefulWidget> createState() => _AddAddressScreen();
 }

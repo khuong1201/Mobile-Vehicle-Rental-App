@@ -1,31 +1,34 @@
 const Vehicle = require("../../models/vehicles/vehicle_model");
 const Brand = require("../../models/vehicles/brand_model");
 const { deleteFileFromCloudinary } = require("../../services/cloudinary_service");
+const paginate = require("../../util/paginate");
 
-// Lấy tất cả xe
+// Lấy tất cả xe (có phân trang + sort)
 const GetAllVehicles = async (req, res) => {
   try {
-    const vehicles = await Vehicle.find()
-      .populate("brandId")
-      .populate({ path: "ownerId", select: "_id fullName email role" });
-    res.status(200).json(vehicles);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const sort = req.query.sort || "-createdAt";
+
+    const result = await paginate(Vehicle, { available: true }, {
+      page,
+      limit,
+      sort,
+      populate: [
+        { path: "brandId" },
+        { path: "ownerId", select: "_id fullName email role" }
+      ]
+    });
+
+    res.status(200).json(result);
   } catch (error) {
-    res.status(500).json({ message: "Lỗi khi lấy danh sách xe", error: error.message });
+    res.status(500).json({
+      message: "Lỗi khi lấy danh sách xe",
+      error: error.message,
+    });
   }
 };
 
-// Lấy xe theo ID
-const GetVehicleById = async (req, res) => {
-  try {
-    const vehicle = await Vehicle.findById(req.params.id)
-      .populate({ path: "brandId", select: "brandId" })
-      .populate({ path: "ownerId", select: "_id fullName email role" });
-    if (!vehicle) return res.status(404).json({ message: "Không tìm thấy xe" });
-    res.status(200).json(vehicle);
-  } catch (error) {
-    res.status(500).json({ message: "Lỗi khi lấy thông tin xe", error: error.message });
-  }
-};
 
 // Lấy các xe chưa duyệt
 const GetVehiclePending = async (req, res) => {
@@ -141,7 +144,7 @@ const DeleteVehicle = async (req, res) => {
   }
 };
 
-// ✅ MỚI: Lấy xe theo type
+// Lấy xe theo type (có phân trang)
 const GetVehicleByType = async (req, res) => {
   try {
     const { type } = req.params;
@@ -150,12 +153,29 @@ const GetVehicleByType = async (req, res) => {
       return res.status(400).json({ message: "Loại xe không hợp lệ" });
     }
 
-    const vehicles = await Vehicle.find({ type });
-    res.status(200).json(vehicles);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const sort = req.query.sort || "-createdAt";
+
+    const result = await paginate(Vehicle, { type }, {
+      page,
+      limit,
+      sort,
+      populate: [
+        { path: "brandId" },
+        { path: "ownerId", select: "_id fullName email role" }
+      ]
+    });
+
+    res.status(200).json(result);
   } catch (error) {
-    res.status(500).json({ message: "Lỗi khi lấy xe theo loại", error: error.message });
+    res.status(500).json({
+      message: "Lỗi khi lấy xe theo loại",
+      error: error.message,
+    });
   }
 };
+
 
 // ✅ MỚI: Lấy xe không khả dụng (available: false)
 const GetUnavailableVehicles = async (req, res) => {
@@ -169,7 +189,6 @@ const GetUnavailableVehicles = async (req, res) => {
 
 module.exports = {
   GetAllVehicles,
-  GetVehicleById,
   CreateVehicle,
   UpdateVehicle,
   DeleteVehicle,

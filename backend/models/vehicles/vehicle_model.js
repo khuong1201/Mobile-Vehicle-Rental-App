@@ -18,7 +18,7 @@ const VehicleSchema = new mongoose.Schema(
       required: true,
     },
     vehicleId: {
-      type: String,
+      type:  String,
       unique: true,
       default: () => uuidv4(),
     },

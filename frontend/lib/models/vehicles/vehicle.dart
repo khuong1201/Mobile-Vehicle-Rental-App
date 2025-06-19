@@ -22,6 +22,7 @@ class Location {
     return {'address': address, 'lat': lat, 'lng': lng};
   }
 }
+
 class Vehicle {
   final String id;
   final String vehicleId;
@@ -65,23 +66,29 @@ class Vehicle {
     final owner = json['ownerId'] as Map<String, dynamic>?;
 
     return Vehicle(
-      id: json['_id'] ?? '',
-      vehicleId: json['vehicleId'] ?? '',
-      vehicleName: json['vehicleName'] ?? '',
-      licensePlate: json['licensePlate'] ?? '',
-      brand: Brand.fromJson(json['brandId'] ?? {}),
+      id: json['_id']?.toString() ?? '',
+      vehicleId: json['vehicleId']?.toString() ?? '',
+      vehicleName: json['vehicleName']?.toString() ?? '',
+      licensePlate: json['licensePlate']?.toString() ?? '',
+
+      brand: json['_id'] is Map<String, dynamic>
+          ? Brand.fromJson(json['brandId'])
+          : Brand(id: '', brandId: '', brandName: 'Unknown'),
+
       yearOfManufacture: json['yearOfManufacture'] ?? 0,
       images: List<String>.from(json['images'] ?? []),
-      description: json['description'] ?? '',
+      description: json['description']?.toString() ?? '',
       location: json['location'] != null ? Location.fromJson(json['location']) : null,
-      ownerId: owner?['_id'] ?? '',
-      ownerEmail: owner?['email'] ?? '',
+      ownerId: owner?['_id']?.toString() ?? '',
+      ownerEmail: owner?['email']?.toString() ?? '',
       price: (json['price'] ?? 0).toDouble(),
       rate: (json['rate'] ?? 0).toDouble(),
+      rentals: (json['rentals'] ?? 0).toDouble(),
       available: json['available'] ?? true,
-      status: json['status'] ?? 'pending',
-      type: json['type'] ?? '',
+      status: json['status']?.toString() ?? 'pending',
+      type: json['type']?.toString() ?? '',
     );
   }
+
   String get formattedPrice => currencyFormatter.format(price);
 }

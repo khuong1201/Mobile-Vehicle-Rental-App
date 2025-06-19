@@ -5,6 +5,8 @@ import 'package:frontend/views/widgets/custom_text_body_m_sb.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 
 class AddressDetailScreen extends StatefulWidget {
+  const AddressDetailScreen({super.key});
+
   @override
   State<StatefulWidget> createState() => _AddressDetailScreen();
 }

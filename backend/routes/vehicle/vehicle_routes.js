@@ -18,9 +18,6 @@ router.get("/unavailable", authenticateToken, vehicleController.GetUnavailableVe
 // Get vehicles by type (Car, Motorbike, Coach, Bike)
 router.get("/type/:type", authenticateToken, vehicleController.GetVehicleByType);
 
-// Get vehicle by ID
-router.get("/:id", authenticateToken, vehicleController.GetVehicleById);
-
 // Create a new vehicle
 router.post("/create-vehicle", authenticateToken, adminOrOwnerMiddleware, uploadVehicle, vehicleController.CreateVehicle);
 

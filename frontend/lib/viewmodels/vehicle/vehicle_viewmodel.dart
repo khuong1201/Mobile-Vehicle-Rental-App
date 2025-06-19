@@ -1,107 +1,127 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/api_services/brand/api_get_brand.dart';
-import 'package:frontend/api_services/auth/get_vehicle.dart';
-
+import 'package:frontend/api_services/vehicle/api_get_brand.dart';
+import 'package:frontend/api_services/vehicle/get_vehicle.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 
 class VehicleViewModel extends ChangeNotifier {
   final AuthService authService;
+  bool get hasMore => _currentPage < _totalPages;
   final List<Vehicle> _vehicles = [];
   final List<Brand> _brands = [];
-  bool _isLoading = false;
+
+  bool _isLoadingVehicles = false;
+  bool _isLoadingBrands = false;
+
   String? _errorMessage;
+  String? _selectedType;
+
   int _currentPage = 1;
-  bool _hasMore = true;
+  int _totalPages = 1;
 
   List<Vehicle> get vehicles => _vehicles;
   List<Brand> get brands => _brands;
-  bool get isLoading => _isLoading;
+  String? get selectedType => _selectedType;
+  bool get isLoading => _isLoadingVehicles || _isLoadingBrands;
   String? get errorMessage => _errorMessage;
-  bool get hasMore => _hasMore;
+  int get currentPage => _currentPage;
+  int get totalPages => _totalPages;
 
   VehicleViewModel(this.authService);
 
+  void changeVehicleType(String? type, BuildContext context) {
+    if (_selectedType != type) {
+      _selectedType = type;
+      _currentPage = 1;
+      _totalPages = 1;
+      fetchVehicles(context, type: type, clearBefore: true);
+    }
+  }
+
   Future<void> fetchVehicles(
     BuildContext context, {
-    bool loadMore = false,
+    String? type,
+    int page = 1,
+    int limit = 10,
+    bool clearBefore = false,
   }) async {
-    if (_isLoading || (!loadMore && _vehicles.isNotEmpty)) return;
+    if (_isLoadingVehicles) return;
 
-    _isLoading = true;
-    if (!loadMore) {
-      _currentPage = 1;
-      _vehicles.clear();
-    }
+    _isLoadingVehicles = true;
+    if (clearBefore) _vehicles.clear();
     notifyListeners();
 
     final response = await ApiGetAllVehicle.getAllVehicle(
       this,
       authService: authService,
-      page: _currentPage,
-      limit: 20,
+      page: page,
+      limit: limit,
+      type: type,
     );
 
     if (response.success) {
       _vehicles.addAll(response.data ?? []);
-      _hasMore = (response.data?.length ?? 0) == 20;
-      _currentPage++;
-    } else {
-      _errorMessage = response.message;
-      debugPrint('Failed to fetch vehicles: $_errorMessage');
-      if (_errorMessage?.contains('Token refresh failed') ??
-          false || _errorMessage!.contains('Invalid or expired token')) {
-        final logoutSuccess = await authService.logout();
-        if (logoutSuccess && context.mounted) {
-          Navigator.pushReplacementNamed(context, '/login');
-        }
+      if (response.meta != null) {
+        _currentPage = response.meta!.currentPage;
+        _totalPages = response.meta!.totalPages;
       }
+    } else {
+      _handleAuthError(response.message, context);
     }
 
-    _isLoading = false;
+    _isLoadingVehicles = false;
     notifyListeners();
   }
 
   Future<void> fetchBrands(BuildContext context) async {
-    if (_isLoading) return;
+    if (_isLoadingBrands) return;
 
-    _isLoading = true;
+    _isLoadingBrands = true;
     _brands.clear();
     notifyListeners();
 
-    final response = await ApiGetAllBrand.getAllBrand(
-      this,
-      authService: authService,
-    );
+    final response = await ApiGetAllBrand.getAllBrand(this, authService: authService);
 
     if (response.success) {
       _brands.addAll(response.data ?? []);
     } else {
-      _errorMessage = response.message;
-      debugPrint('Failed to fetch brands: $_errorMessage');
-      if (_errorMessage?.contains('Token refresh failed') ??
-          false || _errorMessage!.contains('Invalid or expired token')) {
-        final logoutSuccess = await authService.logout();
-        if (logoutSuccess && context.mounted) {
-          Navigator.pushReplacementNamed(context, '/login');
-        }
-      }
+      _handleAuthError(response.message, context);
     }
 
-    _isLoading = false;
+    _isLoadingBrands = false;
     notifyListeners();
   }
 
-  Future<void> logout(BuildContext context) async {
-    final logoutSuccess = await authService.logout();
-    if (logoutSuccess && context.mounted) {
-      Navigator.pushReplacementNamed(context, '/login');
-    }
+  void refresh(BuildContext context) {
+    _currentPage = 1;
+    _totalPages = 1;
+    fetchVehicles(context, type: _selectedType, clearBefore: true);
+    fetchBrands(context);
   }
 
-  void refresh(BuildContext context) {
-    fetchVehicles(context);
-    fetchBrands(context);
+  Future<void> loadMoreVehicles(BuildContext context) async {
+    if (_isLoadingVehicles || _currentPage >= _totalPages) return;
+
+    _currentPage += 1;
+    await fetchVehicles(
+      context,
+      type: _selectedType,
+      page: _currentPage,
+      limit: 10,
+      clearBefore: false,
+    );
+  }
+
+  void _handleAuthError(String? message, BuildContext context) async {
+    _errorMessage = message;
+    debugPrint('Error: $_errorMessage');
+    if (message?.contains('Token refresh failed') == true ||
+        message?.contains('Invalid or expired token') == true) {
+      final logoutSuccess = await authService.logout();
+      if (logoutSuccess && context.mounted) {
+        Navigator.pushReplacementNamed(context, '/login');
+      }
+    }
   }
 }

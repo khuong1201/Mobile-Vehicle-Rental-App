@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:frontend/views/widgets/custom_text_body_L.dart';
 
 class ReviewScreen extends StatelessWidget {
-  const ReviewScreen({super.key});
+  const ReviewScreen({super.key,});
 
   @override
   Widget build(BuildContext context) {

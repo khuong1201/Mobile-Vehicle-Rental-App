@@ -55,7 +55,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        '${user?.fullName.isNotEmpty == true ? user!.fullName : 'Bro'}',
+                        user?.fullName.isNotEmpty == true ? user!.fullName : 'Bro',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -64,7 +64,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                         ),
                       ),
                       Text(
-                        '${user?.email.isNotEmpty == true ? user!.email : 'Bro'}',
+                        user?.email.isNotEmpty == true ? user!.email : 'Bro',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class CustomTextBodyMsb extends StatelessWidget {
   final String title;
 
-  const CustomTextBodyMsb({
-    Key? key,
+  const CustomTextBodyMsb({super.key, 
+    // Key? key,
     required this.title,
   });
 
