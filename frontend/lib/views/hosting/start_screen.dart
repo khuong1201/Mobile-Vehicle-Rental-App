@@ -64,19 +64,22 @@ class _StartScreen extends State<StartScreen> {
                 ],
               ),
             ),
-            CustomButton(
-              width: double.infinity,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LessorHomeScreen()
-                  ),
-                );
-              },
-              title: 'Start hosting',
-            ),
           ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        margin: EdgeInsets.all(16),
+        child: CustomButton(
+          width: double.infinity,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LessorHomeScreen()
+              ),
+            );
+          },
+          title: 'Start hosting',
         ),
       ),
     );

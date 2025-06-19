@@ -72,7 +72,7 @@ class Vehicle {
       licensePlate: json['licensePlate']?.toString() ?? '',
 
       brand: json['_id'] is Map<String, dynamic>
-          ? Brand.fromJson(json['brandId'])
+          ? Brand.fromJson(json['_id'])
           : Brand(id: '', brandId: '', brandName: 'Unknown'),
 
       yearOfManufacture: json['yearOfManufacture'] ?? 0,

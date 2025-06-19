@@ -79,6 +79,9 @@ flutter:
     - assets/images/banners/
     - assets/images/error/
     - assets/images/logo/
+    - assets/images/hosting/Lessorhome/
+    - assets/images/hosting/start/
+    - assets/images/hosting/information/
     - assets/images/vehicle/car/
     - assets/images/homePage/
     - assets/images/homePage/home/

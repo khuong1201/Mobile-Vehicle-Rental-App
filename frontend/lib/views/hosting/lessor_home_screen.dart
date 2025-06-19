@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:frontend/views/hosting/list_vehicle_screen.dart';
+import 'package:frontend/views/hosting/list_vehicle.dart';
+import 'package:frontend/views/hosting/rentalInfomation/rental_information_screen.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
+import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 
 class LessorHomeScreen extends StatefulWidget {
@@ -19,28 +21,33 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
 
   final List<Map<String, String?>> navItems = [
     {'icon': null, 'label': 'All'},
-    {'icon': 'assets/images/hosting/Lessor home/car.svg', 'label': 'Car'},
-    {'icon': 'assets/images/hosting/Lessor home/coach.svg', 'label': 'Coach'},
-    {'icon': 'assets/images/hosting/Lessor home/motor.svg', 'label': 'Motor'},
-    {'icon': 'assets/images/hosting/Lessor home/bike.svg', 'label': 'Bike'},
+    {'icon': 'assets/images/hosting/Lessorhome/car.svg', 'label': 'Car'},
+    {'icon': 'assets/images/hosting/Lessorhome/coach.svg', 'label': 'Coach'},
+    {'icon': 'assets/images/hosting/Lessorhome/motor.svg', 'label': 'Motor'},
+    {'icon': 'assets/images/hosting/Lessorhome/bike.svg', 'label': 'Bike'},
   ];
 
   @override
   void initState() {
     super.initState();
     _screens = [
-      ListVehicleScreen(),
-      ListVehicleScreen(),
-      ListVehicleScreen(),
-      ListVehicleScreen(),
-      ListVehicleScreen(),
+      ListVehicle(),
+      ListVehicle(),
+      ListVehicle(),
+      ListVehicle(),
+      ListVehicle(),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      appBar: CustomAppbar(
+        title: 'List Your Vehicle',
+        textColor: Color(0xFFFFFFFF),
+        height: 80,
+        backgroundColor: Color(0xFF1976D2),
+      ),
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -48,21 +55,7 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
         child: Column(
           children: [
             Container(
-              decoration: BoxDecoration(
-                color: Color(0xFF1976D2),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(8),
-                  bottomRight: Radius.circular(8),
-                ),
-              ),
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                child: CustomAppbar(title: 'List Your Vehicle'),
-              ),
-            ),
-
-            const SizedBox(height: 14),
-            SizedBox(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               width: double.infinity,
               child: Column(
                 children: [
@@ -70,17 +63,17 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Expanded(
-                      child: CustomTextField(
-                        controller: _searchController,
-                        hintText: 'Search',
-                        prefixIcon: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: SvgPicture.asset(
-                            'assets/images/homePage/home/search.svg',
+                        child: CustomTextField(
+                          controller: _searchController,
+                          hintText: 'Search',
+                          prefixIcon: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: SvgPicture.asset(
+                              'assets/images/homePage/home/search.svg',
+                            ),
                           ),
                         ),
                       ),
-                    ),
                       //dropmenu
                     ],
                   ),
@@ -95,23 +88,30 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
                         return InkWell(
                           onTap: () => setState(() => _selectedIndex = index),
                           child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 4,
+                            ),
                             margin: EdgeInsets.symmetric(horizontal: 8),
                             decoration: BoxDecoration(
-                              color: selected ? Color(0xff145EA8) : Colors.transparent,
+                              color:
+                                  selected
+                                      ? Color(0xff145EA8)
+                                      : Colors.transparent,
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 width: 1,
                                 color:
-                                  selected
-                                    ? Color(0xff145EA8)
-                                    : Color(0xffAAACAF),
+                                    selected
+                                        ? Color(0xff145EA8)
+                                        : Color(0xffAAACAF),
                               ),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                if (index != 0 && navItems[index]['icon'] != null)
+                                if (index != 0 &&
+                                    navItems[index]['icon'] != null)
                                   SizedBox(
                                     width: 24,
                                     height: 24,
@@ -125,7 +125,7 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
                                       ),
                                     ),
                                   ),
-                                const SizedBox(width: 4),
+                                const SizedBox(width: 6),
                                 Text(
                                   navItems[index]['label']!,
                                   style: TextStyle(
@@ -150,12 +150,22 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
               ),
             ),
             Expanded(
-              child: IndexedStack(
-                index: _selectedIndex,
-                children: _screens,
-              ),
+              child: IndexedStack(index: _selectedIndex, children: _screens),
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        margin: EdgeInsets.all(16),
+        child: CustomButton(
+          title: 'Register New Vehicle',
+          width: double.infinity,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => RentalInformationScreen()),
+            );
+          },
         ),
       ),
     );
