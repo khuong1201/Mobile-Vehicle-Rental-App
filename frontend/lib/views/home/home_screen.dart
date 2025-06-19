@@ -5,6 +5,7 @@ import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
 import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
 import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
+import 'package:frontend/views/empty_screen.dart';
 import 'package:frontend/views/vehicle_detail/detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -264,7 +265,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    GridView.builder(
+                    rentalvehicles.isEmpty
+                  ? SizedBox(
+                      child: Center(
+                        child: EmptyListScreen()
+                      ),
+                    )
+                  : GridView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

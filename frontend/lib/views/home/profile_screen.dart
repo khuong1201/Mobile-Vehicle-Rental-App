@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
 import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
 import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
-import 'package:frontend/views/myAcount/address_screen.dart';
+import 'package:frontend/views/address/address_screen.dart';
 import 'package:frontend/views/myAcount/driver_license_screen.dart';
 import 'package:frontend/views/myAcount/infomation_screen.dart';
 import 'package:frontend/views/widgets/custom_text_body_L.dart';

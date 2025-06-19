@@ -1,10 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
-import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
 import 'package:frontend/viewmodels/user/personal_information_viewmodel.dart';
-import 'package:frontend/views/myAcount/address_screen.dart';
+import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
+import 'package:frontend/views/address/address_screen.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
@@ -38,10 +37,9 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final authViewmodel = Provider.of<AuthViewModel>(context);
-    final gAuthViewmodel = Provider.of<GAuthViewModel>(context);
-    _nameController.text =
-        authViewmodel.user?.fullName ?? gAuthViewmodel.user?.fullName ?? '';
+    final userVM = Provider.of<UserViewModel>(context);
+    final user = userVM.user;
+    _nameController.text = user?.fullName.isNotEmpty == true ? user!.fullName : 'Bro';
   }
 
   @override
@@ -52,6 +50,12 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
     );
 
     return Scaffold(
+      appBar: CustomAppbar(
+        backgroundColor: Color(0xff1976D2),
+        title: "Driver' s License",
+        textColor: Color(0xffFFFFFF),
+        height: 80,
+      ),
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -62,18 +66,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                decoration: BoxDecoration(color: Color(0xFF1976D2)),
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  child: CustomAppbar(
-                    title: 'Driver’ s License',
-                    textColor: Color(0xffFFFFFF),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical:  12),
                 child: Form(
                   key: _formKey,
                   child: Column(
