@@ -125,10 +125,10 @@ const initDB = async () => {
       return;
     }
 
-    await fetchAndStoreData();
+    
 
     const brands = [
-      { brandName: 'Mercedes-Benz', brandImage: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg' },
+      { brandName: 'Mercedes', brandImage: 'https://upload.wikimedia.org/wikipedia/commons/9/90/Mercedes-Logo.svg' },
       { brandName: 'Audi', brandImage: 'https://upload.wikimedia.org/wikipedia/commons/9/92/Audi_Logo_2016.svg' },
       { brandName: 'BMW', brandImage: 'https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg' },
       { brandName: 'Toyota', brandImage: 'https://upload.wikimedia.org/wikipedia/commons/3/33/Toyota_Logo.svg' },
@@ -159,7 +159,7 @@ const initDB = async () => {
     const savedBrands = await Brand.find();
     const brandMap = {};
     savedBrands.forEach(b => brandMap[b.brandName] = b._id);
-
+    
     const vehicles = [
       { vehicleName: 'C-Class', brandName: 'Mercedes', type: 'Car', price: 1800000 },
       { vehicleName: 'E-Class', brandName: 'Mercedes', type: 'Car', price: 2200000 },
@@ -179,7 +179,7 @@ const initDB = async () => {
           ownerId: adminUser._id,
           vehicleId: uuidv4(),
           vehicleName: v.vehicleName,
-          brandId: brandMap[v.brandName],
+          brand: brandMap[v.brandName],
           type: v.type,
           licensePlate,
           yearOfManufacture: 2022,
@@ -194,7 +194,7 @@ const initDB = async () => {
         console.log(`🚗 Đã thêm xe: ${v.vehicleName}`);
       }
     }
-
+    await fetchAndStoreData();
     await InitStatus.findOneAndUpdate(
       {},
       { initialized: true, locationDataInitialized: true, lastInit: new Date() },
