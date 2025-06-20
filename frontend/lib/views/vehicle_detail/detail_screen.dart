@@ -147,7 +147,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                     
                               _buildContainer(
                                 'Model',
-                                '${widget.vehicle.yearOfManufacture.toString}',
+                                '${widget.vehicle.yearOfManufacture}',
                                 'assets/images/vehicle_detail/Vector (11).svg',
                               ),
                             ],

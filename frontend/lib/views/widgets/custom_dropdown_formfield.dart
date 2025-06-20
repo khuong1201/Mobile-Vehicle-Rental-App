@@ -5,6 +5,7 @@ class CustomDropdownButtonFormField extends StatelessWidget {
   final ValueChanged<String?>? onChanged;
   final String? Function(String?)? validator;
   final List<String> items;
+  final String? hintText; 
 
   const CustomDropdownButtonFormField({
     super.key,
@@ -12,6 +13,7 @@ class CustomDropdownButtonFormField extends StatelessWidget {
     this.onChanged,
     this.validator,
     required this.items,
+    this.hintText
   });
 
   @override
@@ -19,7 +21,8 @@ class CustomDropdownButtonFormField extends StatelessWidget {
     return DropdownButtonFormField<String>(
       value: value,
       decoration: InputDecoration(
-        hintText: 'Choose',
+        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+        hintText: hintText ?? 'Choose',
         hintStyle: const TextStyle(
           color: Color(0xFFAAACAF),
           fontSize: 14,
