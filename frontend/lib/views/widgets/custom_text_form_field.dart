@@ -17,6 +17,7 @@
     final bool isPassword;
     final Widget? prefixIcon;
     final TextInputType? keyboardType;
+    final ValueChanged<String>? onChanged;
 
     const CustomTextField({
       super.key,
@@ -26,6 +27,7 @@
       this.isPassword = false,
       this.prefixIcon,
       this.keyboardType,
+      this.onChanged,
       
     });
 
@@ -78,6 +80,7 @@
           : null,
         ),
         validator: widget.validator,
+        onChanged: widget.onChanged,
       );
     }
   }

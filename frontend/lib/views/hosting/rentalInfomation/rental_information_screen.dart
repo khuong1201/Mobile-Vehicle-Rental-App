@@ -1,38 +1,98 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/hosting/rentalInfomation/image_upload_screen.dart';
 import 'package:frontend/views/hosting/rentalInfomation/rental_price_screen.dart';
 import 'package:frontend/views/hosting/rentalInfomation/vehicle_documnet_screen.dart';
 import 'package:frontend/views/hosting/rentalInfomation/vehicle_infomation.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class RentalInformationScreen extends StatefulWidget {
-  const RentalInformationScreen({super.key});
+  final String? vehicleType;
+  final List<File>? imageFiles;
+  const RentalInformationScreen({super.key, this.vehicleType, this.imageFiles});
+
   @override
   State<RentalInformationScreen> createState() => _RentalInformationScreen();
 }
 
 class _RentalInformationScreen extends State<RentalInformationScreen> {
+
   final PageController _controller = PageController();
+  
   int _selectedIndex = 0;
   int _pageIndex = 0;
-  final List<Map<String, String>> _navItems = [
-    {'icon': 'assets/images/hosting/information/info.svg', 'label': 'Vehicle Information'},
-    {'icon': 'assets/images/hosting/information/image.svg', 'label': 'Image'},
-    {'icon': 'assets/images/hosting/information/document.svg', 'label': 'Vehicle Document'},
-    {'icon': 'assets/images/hosting/information/price.svg', 'label': 'Rental Price'},
-  ];
+
+  List<Map<String, String>> get _navItems {
+    String vehicleType = widget.vehicleType ?? 'Vehicle';
+    String capitalizedType = vehicleType.isNotEmpty
+        ? '${vehicleType[0].toUpperCase()}${vehicleType.substring(1)}'
+        : 'Vehicle';
+
+    return [
+      {
+        'icon': 'assets/images/hosting/information/info.svg',
+        'label': '$capitalizedType Information'
+      },
+      {
+        'icon': 'assets/images/hosting/information/image.svg',
+        'label': 'Image'
+      },
+      {
+        'icon': 'assets/images/hosting/information/document.svg',
+        'label': '$capitalizedType Document'
+      },
+      {
+        'icon': 'assets/images/hosting/information/price.svg',
+        'label': 'Rental Price'
+      },
+    ];
+  }
 
   void _onPageChanged(int index) {
-  setState(() {
-    _pageIndex = index;
-    _selectedIndex = index;
-  });
-}
+    setState(() {
+      _pageIndex = index;
+      _selectedIndex = index;
+    });
+  }
+  Map<String, dynamic> _collectedData = {};
+
+  void _updateData(String page, Map<String, dynamic> data) {
+    setState(() {
+      _collectedData[page] = data;
+    });
+  }
+
+  Future<void> _submitData() async {
+    if (_pageIndex == _navItems.length - 1) { 
+      final viewModel = Provider.of<VehicleViewModel>(context, listen: false);
+      final Map<String, dynamic> data = {
+        ...(_collectedData['VehicleInfomationScreen'] ?? {}),
+        ...(_collectedData['ImageUploadScreen'] ?? {}),
+        ...(_collectedData['VehicleDocumentScreen'] ?? {}),
+        ...(_collectedData['RentalPriceScreen'] ?? {}),
+        'type': widget.vehicleType ?? 'vehicle',
+      };
+
+      // Truy xuất 'images' và chuyển đổi XFile? thành List<File>
+      final Map<String, dynamic>? imagesData = _collectedData['ImageUploadScreen']?['images'] as Map<String, dynamic>?;
+      final List<File> imageFiles = imagesData != null
+        ? imagesData.values.whereType<XFile>().map((xFile) => File(xFile.path)).toList()
+        : (widget.imageFiles ?? []);
+
+      await viewModel.createVehicle(context, data, imageFiles );
+      Navigator.pop(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // print('Received vehicle type: ${widget.vehicleType}');
     final int itemCount = _navItems.length;
     return Scaffold(
       appBar: CustomAppbar(
@@ -53,7 +113,7 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
               children: List.generate(itemCount * 2 - 1, (index) {
                 if (index.isEven) {
                   final stepIndex = index ~/ 2;
-                  final selected = _selectedIndex == stepIndex;
+                  final isBeforeOrCurrent = stepIndex <= _selectedIndex;
                   final item = _navItems[stepIndex];
                   return Container(
                     width: 60,
@@ -65,12 +125,11 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
                           height: 40,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: selected ? Color(0xff1976D2) : Color(0xffD5D7DB),
+                            color: isBeforeOrCurrent ? Color(0xff1976D2) : Color(0xffD5D7DB),
                           ),
                           padding: EdgeInsets.all(8),
                           child: SvgPicture.asset(
                             item['icon']!,
-                            color: Colors.white,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -86,10 +145,17 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
                     ),
                   );
                 } else {
+                  final stepIndex = index ~/ 2 + 1;
+                  final isBeforeOrCurrent = stepIndex <= _selectedIndex;
                   return Expanded(
-                    child: Container(
-                      height: 0.2,
-                      color: Colors.grey[400],
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 1,
+                          color: isBeforeOrCurrent ? Color(0xff1976D2) : Colors.grey[400],
+                        ),
+                        const SizedBox(height: 30,)
+                      ],
                     ),
                   );
                 }
@@ -102,10 +168,20 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
                 onPageChanged: _onPageChanged,
                 physics: NeverScrollableScrollPhysics(),
                 children: [
-                  VehicleInfomationScreen(),
-                  ImageUploadScreen(),
-                  VehicleDocumentScreen(),
-                  RentalPriceScreen(),
+                  VehicleInfomationScreen(
+                    vehicleType: widget.vehicleType,
+                    onDataChanged: (data) => _updateData('VehicleInfomationScreen', data),
+                  ),
+                  ImageUploadScreen(
+                    vehicleType: widget.vehicleType,
+                    onDataChanged: (data) => _updateData('ImageUploadScreen', data),
+                  ),
+                  // VehicleDocumentScreen(
+                  //   onDataChanged: (data) => _updateData('VehicleDocumentScreen', data),
+                  // ),
+                  // RentalPriceScreen(
+                  //   onDataChanged: (data) => _updateData('RentalPriceScreen', data),
+                  // ),
                 ],
               ),
             )
@@ -166,10 +242,14 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
               child: CustomButton(
                 title: 'Continues',
                 onPressed: (){
-                  _controller.nextPage(
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
+                  if(_pageIndex < 3){
+                     _controller.nextPage(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  } else {
+                    _submitData;
+                  }
                 },
               ),
             )
