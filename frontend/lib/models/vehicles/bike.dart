@@ -13,6 +13,7 @@ class Bike extends Vehicle {
     required super.images,
     required super.description,
     required super.location,
+    required super.model,
     required super.ownerId,
     required super.ownerEmail,
     required super.price,
@@ -35,6 +36,7 @@ class Bike extends Vehicle {
       images: vehicle.images,
       description: vehicle.description,
       location: vehicle.location,
+      model: vehicle.model,
       ownerId: vehicle.ownerId,
       ownerEmail: vehicle.ownerEmail,
       price: vehicle.price,
@@ -44,5 +46,11 @@ class Bike extends Vehicle {
       type: vehicle.type,
       typeOfBike: json['typeOfBike'] ?? '',
     );
+  }
+  @override
+  Map<String, dynamic> toJson() {
+    final json = super.toJson();
+    json['typeOfBike'] = typeOfBike;
+    return json;
   }
 }

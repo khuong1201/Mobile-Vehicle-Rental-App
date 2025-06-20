@@ -15,6 +15,7 @@ class Coach extends Vehicle {
     required super.images,
     required super.description,
     required super.location,
+    required super.model,
     required super.ownerId,
     required super.ownerEmail,
     required super.price,
@@ -39,6 +40,7 @@ class Coach extends Vehicle {
       images: vehicle.images,
       description: vehicle.description,
       location: vehicle.location,
+      model: vehicle.model,
       ownerId: vehicle.ownerId,
       ownerEmail: vehicle.ownerEmail,
       price: vehicle.price,
@@ -50,5 +52,15 @@ class Coach extends Vehicle {
       fuelConsumption: (json['fuelConsumption'] ?? 0).toDouble(),
       numberOfSeats: json['numberOfSeats'] ?? 0,
     );
+  }
+  @override
+  Map<String, dynamic> toJson() {
+    final json = super.toJson();
+    json.addAll({
+      'fuelType': fuelType,
+      'fuelConsumption': fuelConsumption,
+      'numberOfSeats': numberOfSeats,
+    });
+    return json;
   }
 }
