@@ -11,7 +11,7 @@ const { CheckOwnerMonthlyTax } = require('../../controllers/user/user_revenue_co
 
 router.post('/change-password', authenticateToken, userController.ChangePassword);
 
-router.put('/update-PersonalInfo', authenticateToken, userProfileController.UpdatePersonalInfo);
+router.put('/update-personal-info', authenticateToken, userProfileController.UpdatePersonalInfo);
 router.get('/get-user-profile', authenticateToken, userProfileController.GetUserProfile);
 
 router.delete(

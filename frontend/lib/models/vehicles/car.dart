@@ -4,8 +4,6 @@ class Car extends Vehicle {
   final String fuelType;
   final double fuelConsumption;
   final int numberOfSeats;
-  final bool rentalWithDriver;
-  final bool rentalWithoutDriver;
 
   Car({
     required super.id,
@@ -17,6 +15,7 @@ class Car extends Vehicle {
     required super.images,
     required super.description,
     required super.location,
+    required super.model,
     required super.ownerId,
     required super.ownerEmail,
     required super.price,
@@ -27,8 +26,6 @@ class Car extends Vehicle {
     required this.fuelType,
     required this.fuelConsumption,
     required this.numberOfSeats,
-    required this.rentalWithDriver,
-    required this.rentalWithoutDriver,
   });
 
   factory Car.fromJson(Map<String, dynamic> json) {
@@ -43,6 +40,7 @@ class Car extends Vehicle {
       images: vehicle.images,
       description: vehicle.description,
       location: vehicle.location,
+      model: vehicle.model,
       ownerId: vehicle.ownerId,
       ownerEmail: vehicle.ownerEmail,
       price: vehicle.price,
@@ -53,8 +51,16 @@ class Car extends Vehicle {
       fuelType: json['fuelType'] ?? '',
       fuelConsumption: (json['fuelConsumption'] ?? 0).toDouble(),
       numberOfSeats: json['numberOfSeats'] ?? 0,
-      rentalWithDriver: json['rentalWithDriver'] ?? false,
-      rentalWithoutDriver: json['rentalWithoutDriver'] ?? true,
     );
+  }
+  @override
+  Map<String, dynamic> toJson() {
+    final json = super.toJson();
+    json.addAll({
+      'fuelType': fuelType,
+      'fuelConsumption': fuelConsumption,
+      'numberOfSeats': numberOfSeats,
+    });
+    return json;
   }
 }

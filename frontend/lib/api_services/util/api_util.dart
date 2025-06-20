@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/client/api_client.dart';
 import 'package:frontend/api_services/client/api_reponse.dart';
@@ -11,88 +12,99 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
   required AuthService authService,
   String method = 'GET',
   Map<String, dynamic>? body,
+  Map<String, String>? fields,
+  Map<String, List<File>>? files,
+  bool isMultipart = false,
 }) async {
   try {
     final accessToken = await authService.getAccessToken();
     if (accessToken == null) {
-      return ApiResponse(success: false, message: 'No access token available');
+      return ApiResponse(success: false, message: 'Không có access token');
     }
-
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $accessToken',
-    };
 
     final uri = Uri.parse('${ApiClient.baseUrl}$endpoint');
+    final client = ApiClient().client;
 
-    Future<http.Response> makeRequest(Map<String, String> headers) async {
-      final client = ApiClient().client;
+    Future<http.Response> sendJsonRequest(String token) async {
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
       switch (method.toUpperCase()) {
         case 'POST':
-          return await client
-              .post(uri, headers: headers, body: body != null ? jsonEncode(body) : null)
-              .timeout(const Duration(seconds: 30));
+          return await client.post(uri, headers: headers, body: jsonEncode(body));
         case 'PUT':
-          return await client
-              .put(uri, headers: headers, body: body != null ? jsonEncode(body) : null)
-              .timeout(const Duration(seconds: 30));
+          return await client.put(uri, headers: headers, body: jsonEncode(body));
         case 'DELETE':
-          return await client
-              .delete(uri, headers: headers, body: body != null ? jsonEncode(body) : null)
-              .timeout(const Duration(seconds: 30));
+          return await client.delete(uri, headers: headers, body: jsonEncode(body));
         case 'GET':
         default:
-          return await client.get(uri, headers: headers).timeout(const Duration(seconds: 30));
+          return await client.get(uri, headers: headers);
       }
     }
 
-    ApiResponse<dynamic> handleResponse(http.Response response) {
-      switch (response.statusCode) {
-        case 200:
-          return ApiResponse(
-            success: true,
-            data: jsonDecode(response.body),
-            message: 'API call successful',
-          );
-        case 400:
-          return ApiResponse(
-            success: false,
-            message: response.body.isNotEmpty ? response.body : 'Bad request',
-          );
-        default:
-          return ApiResponse(
-            success: false,
-            message: response.body.isNotEmpty ? response.body : 'API call failed: ${response.statusCode}',
-          );
+    Future<http.Response> sendMultipartRequest(String token) async {
+      final request = http.MultipartRequest(method.toUpperCase(), uri);
+      request.headers['Authorization'] = 'Bearer $token';
+      if (fields != null) request.fields.addAll(fields);
+
+      if (files != null) {
+        for (final entry in files.entries) {
+          for (final file in entry.value) {
+            final fileStream = http.MultipartFile.fromBytes(
+              entry.key,
+              await file.readAsBytes(),
+              filename: file.path.split('/').last,
+            );
+            request.files.add(fileStream);
+          }
+        }
+      }
+
+      final streamed = await request.send();
+      return await http.Response.fromStream(streamed);
+    }
+
+    Future<http.Response> makeRequest(String token) async {
+      return isMultipart
+          ? await sendMultipartRequest(token)
+          : await sendJsonRequest(token);
+    }
+
+    Future<ApiResponse> handleResponse(http.Response response) async {
+      final body = response.body.isNotEmpty ? jsonDecode(response.body) : null;
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return ApiResponse(success: true, data: body, message: body?['message'] ?? 'Thành công');
+      } else {
+        return ApiResponse(success: false, message: body?['message'] ?? 'Lỗi: ${response.statusCode}');
       }
     }
 
-    var response = await makeRequest(headers);
-    if (response.statusCode == 200) {
-      return handleResponse(response);
-    } else if (response.statusCode == 401 || response.statusCode == 403) {
-      final refreshSuccess = await authService.refreshToken();
-      if (!refreshSuccess) {
+    // Step 1: Try request
+    http.Response response = await makeRequest(accessToken);
+
+    // Step 2: Handle token expired
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      final refreshed = await authService.refreshToken();
+      if (!refreshed) {
         await authService.logout();
-        return ApiResponse(success: false, message: 'Token refresh failed');
+        return ApiResponse(success: false, message: 'Token hết hạn, vui lòng đăng nhập lại');
       }
 
       final newAccessToken = await authService.getAccessToken();
       if (newAccessToken == null) {
         await authService.logout();
-        return ApiResponse(success: false, message: 'Failed to refresh token');
+        return ApiResponse(success: false, message: 'Không thể lấy lại token mới');
       }
 
-      final retryResponse = await makeRequest({
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $newAccessToken',
-      });
-
-      return handleResponse(retryResponse);
+      response = await makeRequest(newAccessToken);
     }
 
-    return handleResponse(response);
+    // Step 3: Trả về kết quả
+    return await handleResponse(response);
   } catch (e) {
-    return ApiResponse(success: false, message: 'Error: $e');
+    debugPrint('❌ Lỗi gọi API: $e');
+    return ApiResponse(success: false, message: 'Lỗi ngoại lệ: $e');
   }
 }

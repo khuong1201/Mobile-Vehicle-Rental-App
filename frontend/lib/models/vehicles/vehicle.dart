@@ -19,7 +19,11 @@ class Location {
   }
 
   Map<String, dynamic> toJson() {
-    return {'address': address, 'lat': lat, 'lng': lng};
+    return {
+      'address': address,
+      'lat': lat,
+      'lng': lng,
+    };
   }
 }
 
@@ -33,6 +37,7 @@ class Vehicle {
   final List<String> images;
   final String description;
   final Location? location;
+  final String model;
   final String ownerId;
   final String ownerEmail;
   final double price;
@@ -52,6 +57,7 @@ class Vehicle {
     required this.images,
     required this.description,
     required this.location,
+    required this.model,
     required this.ownerId,
     required this.ownerEmail,
     required this.price,
@@ -70,15 +76,16 @@ class Vehicle {
       vehicleId: json['vehicleId']?.toString() ?? '',
       vehicleName: json['vehicleName']?.toString() ?? '',
       licensePlate: json['licensePlate']?.toString() ?? '',
-      brand:
-          json['brand'] is Map<String, dynamic>
-              ? Brand.fromJson(json['brand'])
-              : Brand(id: '', brandId: '', brandName: 'Unknown'),
+      brand: json['brand'] is Map<String, dynamic>
+          ? Brand.fromJson(json['brand'])
+          : Brand(id: '', brandId: '', brandName: 'Unknown'),
       yearOfManufacture: json['yearOfManufacture'] ?? 0,
       images: List<String>.from(json['images'] ?? []),
       description: json['description']?.toString() ?? '',
-      location:
-          json['location'] != null ? Location.fromJson(json['location']) : null,
+      location: json['location'] != null
+          ? Location.fromJson(json['location'])
+          : null,
+      model: json['model']?.toString() ?? '',
       ownerId: owner?['_id']?.toString() ?? '',
       ownerEmail: owner?['email']?.toString() ?? '',
       price: (json['price'] ?? 0).toDouble(),
@@ -88,6 +95,26 @@ class Vehicle {
       status: json['status']?.toString() ?? 'pending',
       type: json['type']?.toString() ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'vehicleId': vehicleId,
+      'vehicleName': vehicleName,
+      'licensePlate': licensePlate,
+      'brand': brand.toJson(),
+      'model': model,
+      'yearOfManufacture': yearOfManufacture,
+      'images': images,
+      'description': description,
+      'location': location?.toJson(),
+      'price': price,
+      'rate': rate,
+      'rentals': rentals,
+      'available': available,
+      'status': status,
+      'type': type,
+    };
   }
 
   String get formattedPrice => currencyFormatter.format(price);

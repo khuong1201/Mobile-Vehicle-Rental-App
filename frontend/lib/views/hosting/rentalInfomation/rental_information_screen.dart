@@ -9,7 +9,7 @@ class RentalInformationScreen extends StatefulWidget {
 }
 
 class _RentalInformationScreen extends State<RentalInformationScreen> {
-  int _selectedIndex = 0;
+  final int _selectedIndex = 0;
   final List<Map<String, String>> _navItems = [
     {'icon': '', 'label': ''},
     {'icon': '', 'label': ''},
