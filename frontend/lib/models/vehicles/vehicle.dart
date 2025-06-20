@@ -70,12 +70,10 @@ class Vehicle {
       vehicleId: json['vehicleId']?.toString() ?? '',
       vehicleName: json['vehicleName']?.toString() ?? '',
       licensePlate: json['licensePlate']?.toString() ?? '',
-
       brand:
           json['brand'] is Map<String, dynamic>
               ? Brand.fromJson(json['brand'])
               : Brand(id: '', brandId: '', brandName: 'Unknown'),
-
       yearOfManufacture: json['yearOfManufacture'] ?? 0,
       images: List<String>.from(json['images'] ?? []),
       description: json['description']?.toString() ?? '',
