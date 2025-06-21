@@ -6,7 +6,7 @@ const createBooking = async (req, res) => {
     const {
       vehicleId,
       renterId,
-      onwerId,
+      ownerId, 
       pickupLocation,
       dropoffLocation,
       pickupDate,
@@ -21,14 +21,14 @@ const createBooking = async (req, res) => {
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
 
-    const taxRate = await getTaxRateByOwner(onwerId, month, year);
+    const taxRate = await getTaxRateByOwner(ownerId, month, year);
     const taxAmount = basePrice * taxRate;
     const totalPrice = basePrice + taxAmount;
 
     const booking = new Booking({
       vehicleId,
       renterId,
-      onwerId,
+      ownerId,
       pickupLocation,
       dropoffLocation,
       pickupDate,
@@ -43,29 +43,48 @@ const createBooking = async (req, res) => {
     });
 
     await booking.save();
-    res.status(201).json({ message: 'Booking created', booking });
+
+    res.status(201).json({
+      message: 'Booking created successfully',
+      booking: booking.toJSON(), 
+    });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating booking', error: err.message });
+    res.status(500).json({
+      message: 'Error creating booking',
+      error: err.message
+    });
   }
 };
 
 const getBookingsByOwner = async (req, res) => {
   try {
     const { ownerId } = req.params;
-    const bookings = await Booking.find({ onwerId: ownerId }).populate('renterId vehicleId');
-    res.status(200).json(bookings);
+    const bookings = await Booking.find({ ownerId })
+      .populate('renterId', '_id fullName email')
+      .populate('vehicleId');
+
+    res.status(200).json(bookings.map((b) => b.toJSON()));
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching bookings by owner', error: err.message });
+    res.status(500).json({
+      message: 'Error fetching bookings by owner',
+      error: err.message
+    });
   }
 };
 
 const getBookingsByRenter = async (req, res) => {
   try {
     const { renterId } = req.params;
-    const bookings = await Booking.find({ renterId }).populate('vehicleId onwerId');
-    res.status(200).json(bookings);
+    const bookings = await Booking.find({ renterId })
+      .populate('vehicleId')
+      .populate('ownerId', '_id fullName email');
+
+    res.status(200).json(bookings.map((b) => b.toJSON()));
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching bookings by renter', error: err.message });
+    res.status(500).json({
+      message: 'Error fetching bookings by renter',
+      error: err.message
+    });
   }
 };
 

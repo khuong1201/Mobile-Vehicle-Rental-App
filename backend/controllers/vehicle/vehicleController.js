@@ -14,7 +14,9 @@ const GetAllVehicles = async (req, res) => {
 
     const result = await paginate(
       Vehicle,
-      { available: true,status: { $nin: ["pending", "rejected"] }, },
+      { available: true,
+        status: { $nin: ["pending", "rejected"] }, 
+      },
       {
         page,
         limit,

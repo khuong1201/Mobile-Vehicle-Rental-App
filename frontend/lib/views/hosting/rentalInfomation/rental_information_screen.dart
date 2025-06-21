@@ -55,7 +55,7 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
                   final stepIndex = index ~/ 2;
                   final selected = _selectedIndex == stepIndex;
                   final item = _navItems[stepIndex];
-                  return Container(
+                  return SizedBox(
                     width: 60,
                     height: 72,
                     child: Column(
