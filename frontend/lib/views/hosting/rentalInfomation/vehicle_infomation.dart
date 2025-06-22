@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/vehicles/brand.dart';
+import 'package:frontend/models/vehicles/vehicle.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
+import 'package:frontend/views/hosting/rentalInfomation/location/location_screen.dart';
 import 'package:frontend/views/widgets/custom_dropdown_formfield.dart';
 import 'package:frontend/views/widgets/custom_text_body_L.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
@@ -22,7 +24,6 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
   final TextEditingController _licensePlateController = TextEditingController();
   final TextEditingController _modelController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
   String? _vehicleType;
@@ -30,6 +31,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
   String? _numberSeats;
   String? _typeFuel;
   String? _fuelConsumption;
+  Location? _location;
 
   @override
   void initState() {
@@ -48,7 +50,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
       'licensePlate': _licensePlateController.text,
       'model': _modelController.text,
       'yearOfManufacture': int.tryParse(_yearController.text),
-      'location': _locationController.text,
+      'location': _location?.toJson(),
       'description': _descriptionController.text,
       'brand': _selectedBrand?.brandName,
       'numberSeats': _numberSeats,
@@ -129,6 +131,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                       CustomTextBodyL(title: 'Year of Manufacture'),
                       const SizedBox(height: 8),
                       CustomTextField(
+                        keyboardType: TextInputType.numberWithOptions(),
                         hintText: 'Year',
                         controller: _yearController,
                         validator: (value) {
@@ -215,7 +218,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                         CustomTextBodyL(title: 'Fuel Consumption'),
                         const SizedBox(height: 8),
                         CustomDropdownButtonFormField(
-                          value: _numberSeats,
+                          value: _fuelConsumption,
                           onChanged: (value) {
                             setState(() {
                               _numberSeats == value;
@@ -240,13 +243,26 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
             CustomTextBodyL(title: 'Car Location'),
             CustomTextField(
               hintText: 'Enter the Car Location',
-              controller: _locationController,
+              controller: TextEditingController(text: _location?.address ?? ''),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter Location';
                 }
                 return null;
               },
+              suffixIcon: IconButton(
+                onPressed: (){
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => LocationScreen())
+                  );
+                }, 
+                icon: Icon(
+                  Icons.arrow_forward_ios,
+                  color: Color(0xff2B2B2C),
+                  size: 18
+                )
+              ),
               onChanged: (_) => _saveData(),
             ),
             const SizedBox(height: 16),

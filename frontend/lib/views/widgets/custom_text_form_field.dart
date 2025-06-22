@@ -18,6 +18,8 @@
     final Widget? prefixIcon;
     final TextInputType? keyboardType;
     final ValueChanged<String>? onChanged;
+    final Widget? suffixIcon;
+    
 
     const CustomTextField({
       super.key,
@@ -28,6 +30,7 @@
       this.prefixIcon,
       this.keyboardType,
       this.onChanged,
+      this.suffixIcon,
       
     });
 
@@ -65,19 +68,20 @@
               width: 1,
             ),
           ),
-          suffixIcon: widget.isPassword
-          ? IconButton(
-              icon: Icon(
-                _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                color: Color(0xFF808183),
-              ),
-              onPressed: () {
-                setState(() {
-                  _obscurePassword = !_obscurePassword;
-                });
-              },
-            )
-          : null,
+          suffixIcon: widget.suffixIcon ??
+            (widget.isPassword
+              ? IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    color: Color(0xFF808183),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                )
+              : null),
         ),
         validator: widget.validator,
         onChanged: widget.onChanged,

@@ -176,12 +176,12 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
                     vehicleType: widget.vehicleType,
                     onDataChanged: (data) => _updateData('ImageUploadScreen', data),
                   ),
-                  // VehicleDocumentScreen(
-                  //   onDataChanged: (data) => _updateData('VehicleDocumentScreen', data),
-                  // ),
-                  // RentalPriceScreen(
-                  //   onDataChanged: (data) => _updateData('RentalPriceScreen', data),
-                  // ),
+                  DocumentScreen(
+                    onDataChanged: (data) => _updateData('VehicleDocumentScreen', data),
+                  ),
+                  RentalPriceScreen(
+                    onDataChanged: (data) => _updateData('RentalPriceScreen', data),
+                  ),
                 ],
               ),
             )
@@ -248,7 +248,7 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
                       curve: Curves.easeInOut,
                     );
                   } else {
-                    _submitData;
+                    _submitData();
                   }
                 },
               ),
