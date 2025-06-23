@@ -12,7 +12,7 @@ class LocationApi {
 
   // Tỉnh/Thành
   static Future<ApiResponse<List<Province>>> getAllProvinces() async {
-    final url = Uri.parse('${ApiClient.baseUrl}/api/location/provinces');
+    final url = Uri.parse('${ApiClient.baseUrl}/api/locations/provinces');
     return _handleResponse<List<Province>>(
       () => _client.get(url),
       (data) => data.map((e) => Province.fromJson(e)).toList(),
@@ -22,7 +22,7 @@ class LocationApi {
 
   // Quận/Huyện theo provinceCode
   static Future<ApiResponse<List<District>>> getDistrictsByProvince(int provinceCode) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/api/location/districts/$provinceCode');
+    final url = Uri.parse('${ApiClient.baseUrl}/api/locations/districts/$provinceCode');
     return _handleResponse<List<District>>(
       () => _client.get(url),
       (data) => data.map((e) => District.fromJson(e)).toList(),
@@ -32,7 +32,7 @@ class LocationApi {
 
   // Phường/Xã theo districtCode
   static Future<ApiResponse<List<Ward>>> getWardsByDistrict(int districtCode) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/api/location/wards/$districtCode');
+    final url = Uri.parse('${ApiClient.baseUrl}/api/locations/wards/$districtCode');
     return _handleResponse<List<Ward>>(
       () => _client.get(url),
       (data) => data.map((e) => Ward.fromJson(e)).toList(),
@@ -42,7 +42,7 @@ class LocationApi {
 
   // POST: Quận/Huyện theo provinceCode
   static Future<ApiResponse<List<District>>> postDistrictsByProvince(int provinceCode) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/api/location/districts');
+    final url = Uri.parse('${ApiClient.baseUrl}/api/locations/districts');
     return _handleResponse<List<District>>(
       () => _client.post(
         url,
@@ -56,7 +56,7 @@ class LocationApi {
 
   // POST: Phường/Xã theo districtCode
   static Future<ApiResponse<List<Ward>>> postWardsByDistrict(int districtCode) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/api/location/wards');
+    final url = Uri.parse('${ApiClient.baseUrl}/api/locations/wards');
     return _handleResponse<List<Ward>>(
       () => _client.post(
         url,

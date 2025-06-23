@@ -1,31 +1,8 @@
+import 'package:frontend/models/location/location.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:intl/intl.dart';
 
 final currencyFormatter = NumberFormat.currency(locale: 'vi_VN', symbol: 'VNĐ');
-
-class Location {
-  final String address;
-  final double lat;
-  final double lng;
-
-  Location({required this.address, required this.lat, required this.lng});
-
-  factory Location.fromJson(Map<String, dynamic> json) {
-    return Location(
-      address: json['address'] ?? '',
-      lat: (json['lat'] ?? 0).toDouble(),
-      lng: (json['lng'] ?? 0).toDouble(),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'address': address,
-      'lat': lat,
-      'lng': lng,
-    };
-  }
-}
 
 class Vehicle {
   final String id;
@@ -36,7 +13,7 @@ class Vehicle {
   final int yearOfManufacture;
   final List<String> images;
   final String description;
-  final Location? location;
+  final Locations? location;
   final String model;
   final String ownerId;
   final String ownerEmail;
@@ -83,7 +60,7 @@ class Vehicle {
       images: List<String>.from(json['images'] ?? []),
       description: json['description']?.toString() ?? '',
       location: json['location'] != null
-          ? Location.fromJson(json['location'])
+          ? Locations.fromJson(json['location'])
           : null,
       model: json['model']?.toString() ?? '',
       ownerId: owner?['_id']?.toString() ?? '',

@@ -392,7 +392,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ),
                                                 SizedBox(width: 8),
                                                 Text(
-                                                  vehicle.location?.address ??
+                                                  vehicle.location?.toString() ?? ''
                                                       'Unknown Location',
                                                   style: TextStyle(
                                                     color: const Color(
