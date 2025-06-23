@@ -6,11 +6,11 @@ import 'package:frontend/models/location/province.dart';
 import 'package:frontend/models/location/ward.dart';
 import 'package:http/http.dart' as http;
 
-
 class LocationApi {
   static final _client = ApiClient().client;
   static const _headers = {'Content-Type': 'application/json'};
 
+  // Tỉnh/Thành
   static Future<ApiResponse<List<Province>>> getAllProvinces() async {
     final url = Uri.parse('${ApiClient.baseUrl}/api/location/provinces');
     return _handleResponse<List<Province>>(
@@ -20,6 +20,7 @@ class LocationApi {
     );
   }
 
+  // Quận/Huyện theo provinceCode
   static Future<ApiResponse<List<District>>> getDistrictsByProvince(int provinceCode) async {
     final url = Uri.parse('${ApiClient.baseUrl}/api/location/districts/$provinceCode');
     return _handleResponse<List<District>>(
@@ -29,6 +30,7 @@ class LocationApi {
     );
   }
 
+  // Phường/Xã theo districtCode
   static Future<ApiResponse<List<Ward>>> getWardsByDistrict(int districtCode) async {
     final url = Uri.parse('${ApiClient.baseUrl}/api/location/wards/$districtCode');
     return _handleResponse<List<Ward>>(
@@ -38,21 +40,31 @@ class LocationApi {
     );
   }
 
+  // POST: Quận/Huyện theo provinceCode
   static Future<ApiResponse<List<District>>> postDistrictsByProvince(int provinceCode) async {
     final url = Uri.parse('${ApiClient.baseUrl}/api/location/districts');
     return _handleResponse<List<District>>(
-      () => _client.post(url, headers: _headers, body: jsonEncode({'provinceCode': provinceCode})),
+      () => _client.post(
+        url,
+        headers: _headers,
+        body: jsonEncode({'provinceCode': provinceCode}),
+      ),
       (data) => data.map((e) => District.fromJson(e)).toList(),
-      errorMsg: 'Lỗi khi lấy quận/huyện',
+      errorMsg: 'Lỗi khi lấy quận/huyện (POST)',
     );
   }
 
+  // POST: Phường/Xã theo districtCode
   static Future<ApiResponse<List<Ward>>> postWardsByDistrict(int districtCode) async {
     final url = Uri.parse('${ApiClient.baseUrl}/api/location/wards');
     return _handleResponse<List<Ward>>(
-      () => _client.post(url, headers: _headers, body: jsonEncode({'districtCode': districtCode})),
+      () => _client.post(
+        url,
+        headers: _headers,
+        body: jsonEncode({'districtCode': districtCode}),
+      ),
       (data) => data.map((e) => Ward.fromJson(e)).toList(),
-      errorMsg: 'Lỗi khi lấy phường/xã',
+      errorMsg: 'Lỗi khi lấy phường/xã (POST)',
     );
   }
 

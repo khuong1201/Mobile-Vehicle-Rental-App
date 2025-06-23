@@ -1,15 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/views/widgets/customs_box_image.dart';
+import 'package:image_picker/image_picker.dart';
 
-class VehicleDocumentScreen extends StatefulWidget {
-  const VehicleDocumentScreen({super.key});
+class DocumentScreen extends StatefulWidget {
+  final String? vehicleType;
+  final Function(Map<String, dynamic>) onDataChanged;
+  const DocumentScreen({super.key, this.vehicleType, required this.onDataChanged});
 
   @override
-  State<VehicleDocumentScreen> createState() => _VehicleDocumentScreenState();
+  State<DocumentScreen> createState() => _DocumentScreenState();
 }
 
-class _VehicleDocumentScreenState extends State<VehicleDocumentScreen> {
+class _DocumentScreenState extends State<DocumentScreen> {
+  final ImagePicker _picker = ImagePicker();
+
+  XFile? _documentPicture;
+
+  Future<void> _pickImage(String type) async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _documentPicture = image;
+      });
+      _saveData();
+    }
+  }
+
+  void _saveData() {  
+    final data = {
+      'imagesRegistration': _documentPicture != null ? {'document': _documentPicture} : {},
+      'vehicleType': widget.vehicleType ?? 'vehicle',
+    };
+    widget.onDataChanged(data);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+        'Vehicle Registration',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w700,
+            height: 1.25,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: CustomBoxImage(
+            title: '',
+            hintText: 'Task a photo',
+            onPickImage:() => _pickImage,
+            image: _documentPicture,
+          )
+        )
+      ],
+    );
   }
 }

@@ -19,7 +19,7 @@ class GalleryScreen extends StatelessWidget {
                   image: DecorationImage(
                     image: NetworkImage(
                       vehicle.images.isNotEmpty
-                          ? vehicle.images[0]
+                          ? vehicle.images[1]
                           : 'https://www.kia.com/content/dam/kwcms/gt/en/images/discover-kia/voice-search/parts-80-1.jpg',
                     ),
                     fit: BoxFit.cover,
@@ -39,7 +39,7 @@ class GalleryScreen extends StatelessWidget {
                   image: DecorationImage(
                     image: NetworkImage(
                       vehicle.images.isNotEmpty
-                          ? vehicle.images[0]
+                          ? vehicle.images[2]
                           : 'https://www.kia.com/content/dam/kwcms/gt/en/images/discover-kia/voice-search/parts-80-1.jpg',
                     ),
                     fit: BoxFit.cover,
@@ -63,7 +63,7 @@ class GalleryScreen extends StatelessWidget {
                   image: DecorationImage(
                     image: NetworkImage(
                       vehicle.images.isNotEmpty
-                          ? vehicle.images[0]
+                          ? vehicle.images[3]
                           : 'https://www.kia.com/content/dam/kwcms/gt/en/images/discover-kia/voice-search/parts-80-1.jpg',
                     ),
                     fit: BoxFit.cover,
@@ -83,7 +83,7 @@ class GalleryScreen extends StatelessWidget {
                   image: DecorationImage(
                     image: NetworkImage(
                       vehicle.images.isNotEmpty
-                          ? vehicle.images[0]
+                          ? vehicle.images[4]
                           : 'https://www.kia.com/content/dam/kwcms/gt/en/images/discover-kia/voice-search/parts-80-1.jpg',
                     ),
                     fit: BoxFit.cover,

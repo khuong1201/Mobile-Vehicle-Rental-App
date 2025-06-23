@@ -1,9 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/vehicle/api_get_brand.dart';
 import 'package:frontend/api_services/vehicle/get_vehicle.dart';
+import 'package:frontend/models/vehicles/bike.dart';
+import 'package:frontend/models/vehicles/car.dart';
+import 'package:frontend/models/vehicles/coach.dart';
+import 'package:frontend/models/vehicles/motorbike.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
+import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
+import 'package:provider/provider.dart';
+import 'package:frontend/api_services/vehicle/get_create_vehicle.dart';
 
 class VehicleViewModel extends ChangeNotifier {
   final AuthService authService;
@@ -49,7 +58,7 @@ class VehicleViewModel extends ChangeNotifier {
     if (_isLoadingVehicles) return;
 
     _isLoadingVehicles = true;
-    if (clearBefore) _vehicles.clear();
+    if (clearBefore) _vehicles.clear(); 
     notifyListeners();
 
     final response = await ApiGetAllVehicle.getAllVehicle(
@@ -124,4 +133,169 @@ class VehicleViewModel extends ChangeNotifier {
       }
     }
   }
+
+  Future<void> createVehicle(
+    BuildContext context,
+    Map<String, dynamic> data, // Dữ liệu từ các màn hình
+    List<File> imageFiles, 
+  ) async {
+    _isLoadingVehicles = true;
+    notifyListeners();
+
+    try {
+      final userViewModel = Provider.of<UserViewModel>(context, listen: false);
+      final user = userViewModel.user;
+      
+      // Chuyển đổi data['brand'] từ Map sang Brand
+      final brandData = data['brand'] as Map<String, dynamic>? ?? {'brandName': 'Unknown'};
+      final brand = Brand(
+        id: brandData['_id']?.toString() ?? '',
+        brandId: brandData['brandId']?.toString() ?? '',
+        brandName: brandData['brandName']?.toString() ?? 'Unknown',
+        brandImage: brandData['brandImage']?.toString(),
+      );
+
+      Vehicle vehicle;
+      switch (data['vehicleType']?.toLowerCase()) {
+        case 'car':
+          vehicle = Car(
+            id: '', 
+            vehicleId: '',
+            vehicleName: data['vehicleName'] ?? 'Default Car',
+            licensePlate: data['licensePlate'] ?? '',
+            brand: brand,
+            yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
+            images: imageFiles.map((file) => file.path).toList(),
+            description: data['description'] ?? 'Default description',
+            location: data['location'] ?? {'address': 'Default address', 'lat': 0.0, 'lng': 0.0},
+            model: data['model'] ?? '',
+            ownerId: user?.id ?? 'user123',
+            ownerEmail: user?.email ?? 'user@example.com',
+            price: data['price'] as double? ?? 0.0,
+            rate: 0.0,
+            available: true,
+            status: 'pending',
+            type: data['vehicleType'] ?? 'vehicle',
+            fuelType: data['fuelType'] as String? ?? '', 
+            fuelConsumption: (data['fuelConsumption'] as num?)?.toDouble() ?? 0.0,
+            numberOfSeats: int.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
+          );
+          break;
+        case 'motor':
+        case 'motorbike':
+          vehicle = Motor(
+            id: '',
+            vehicleId: '',
+            vehicleName: data['vehicleName'] ?? 'Default Motor',
+            licensePlate: data['licensePlate'] ?? '',
+            brand: brand,
+            yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
+            images: imageFiles.map((file) => file.path).toList(),
+            description: data['description'] ?? 'Default description',
+            location: data['location'] ?? {'address': 'Default address', 'lat': 0.0, 'lng': 0.0},
+            model: data['model'] ?? '',
+            ownerId: user?.id ?? 'user123',
+            ownerEmail: user?.email ?? 'user@example.com',
+            price: data['price'] as double? ?? 0.0,
+            rate: 0.0,
+            available: true,
+            status: 'pending',
+            type: data['vehicleType'] ?? 'vehicle',
+            fuelType: data['fuelType'] as String? ?? '',
+            fuelConsumption: (data['fuelConsumption'] as num?)?.toDouble() ?? 0.0,
+          );
+          break;
+        case 'coach':
+          vehicle = Coach(
+            id: '',
+            vehicleId: '',
+            vehicleName: data['vehicleName'] ?? 'Default Coach',
+            licensePlate: data['licensePlate'] ?? '',
+            brand: brand,
+            yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
+            images: imageFiles.map((file) => file.path).toList(),
+            description: data['description'] ?? 'Default description',
+            location: data['location'] ?? {'address': 'Default address', 'lat': 0.0, 'lng': 0.0},
+            model: data['model'] ?? '',
+            ownerId: user?.id ?? 'user123',
+            ownerEmail: user?.email ?? 'user@example.com',
+            price: data['price'] as double? ?? 0.0,
+            rate: 0.0,
+            available: true,
+            status: 'pending',
+            type: data['vehicleType'] ?? 'vehicle',
+            fuelType: data['fuelType'] as String? ?? '',
+            fuelConsumption: (data['fuelConsumption'] as num?)?.toDouble() ?? 0.0,
+            numberOfSeats: int.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
+          );
+          break;
+        case 'bike':
+          vehicle = Bike(
+            id: '',
+            vehicleId: '',
+            vehicleName: data['vehicleName'] ?? 'Default Bike',
+            licensePlate: data['licensePlate'] ?? '',
+            brand: brand,
+            yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
+            images: imageFiles.map((file) => file.path).toList(),
+            description: data['description'] ?? 'Default description',
+            location: data['location'] ?? {'address': 'Default address', 'lat': 0.0, 'lng': 0.0},
+            model: data['model'] ?? '',
+            ownerId: user?.id ?? 'user123',
+            ownerEmail: user?.email ?? 'user@example.com',
+            price: data['price'] as double? ?? 0.0,
+            rate: 0.0,
+            available: true,
+            status: 'pending',
+            type: data['vehicleType'] ?? 'vehicle',
+            typeOfBike: data['typeOfBike'] as String? ?? '',
+          );
+          break;
+        default:
+          vehicle = Vehicle(
+            id: '',
+            vehicleId: '',
+            vehicleName: data['vehicleName'] ?? 'Default Vehicle',
+            licensePlate: data['licensePlate'] ?? '',
+            brand: brand,
+            yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
+            images: imageFiles.map((file) => file.path).toList(),
+            description: data['description'] ?? 'Default description',
+            location: data['location'] ?? {'address': 'Default address', 'lat': 0.0, 'lng': 0.0},
+            model: data['model'] ?? '',
+            ownerId: user?.id ?? 'user123',
+            ownerEmail: user?.email ?? 'user@example.com',
+            price: data['price'] as double? ?? 0.0,
+            rate: 0.0,
+            available: true,
+            status: 'pending',
+            type: data['vehicleType'] ?? 'vehicle',
+          );
+          break;
+      }
+
+      // Gọi API để tạo xe
+      final response = await ApiCreatVehicle.createVehicle(
+        this,
+        authService: authService,
+        vehicle: vehicle,
+        imageFiles: imageFiles,
+      );
+
+      if (response.success && response.data != null) {
+        _vehicles.insert(0, response.data!); 
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response.message ?? 'Vehicle created successfully!')),
+        );
+      } else {
+        _handleAuthError(response.message ?? 'Failed to create vehicle', context);
+      }
+    } catch (e) {
+      _handleAuthError('Error creating vehicle: $e', context);
+    } finally {
+      _isLoadingVehicles = false;
+      notifyListeners();
+    }
+  }
+  
 }

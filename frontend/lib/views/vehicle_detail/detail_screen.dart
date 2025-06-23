@@ -37,9 +37,10 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
   Widget build(BuildContext context) {
     final int itemCount = _navItems.length;
     return Scaffold(
-      body: SizedBox(
+      body: Container(
         height: double.infinity,
         width: double.infinity,
+        color: const Color(0xffFCFCFC),
         child: SingleChildScrollView(
           child: Column(
             children: [

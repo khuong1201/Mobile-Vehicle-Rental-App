@@ -16,6 +16,8 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   int _selectedIndex = 0;
+  String? _selectedVehicleType;
+  bool _showDropdown = false;
 
   late List<Widget> _screens;
 
@@ -37,6 +39,27 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
       ListVehicle(),
       ListVehicle(),
     ];
+  }
+
+  void _toggleDropdown() {
+    setState(() {
+      _showDropdown = !_showDropdown;
+    });
+  }
+
+  void _navigateToRentalInfo() {
+    if (_selectedVehicleType != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RentalInformationScreen(vehicleType: _selectedVehicleType),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select a vehicle type')),
+      );
+    }
   }
 
   @override
@@ -156,18 +179,57 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
         ),
       ),
       bottomNavigationBar: Container(
-        margin: EdgeInsets.all(16),
-        child: CustomButton(
-          title: 'Register New Vehicle',
-          width: double.infinity,
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => RentalInformationScreen()),
-            );
-          },
-        ),
+      margin: EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_showDropdown)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: DropdownButton<String>(
+                      value: _selectedVehicleType,
+                      hint: Text('Select Vehicle Type'),
+                      items: navItems
+                          .where((item) => item['label'] != 'All')
+                          .map((item) => DropdownMenuItem<String>(
+                                value: item['label']!.toLowerCase(),
+                                child: Text(item['label']!),
+                              ))
+                          .toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedVehicleType = newValue;
+                        });
+                      },
+                      isExpanded: true,
+                      underline: SizedBox(),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: _toggleDropdown, // Đóng dropdown khi nhấn nút close
+                  ),
+                ],
+              ),
+            ),
+          CustomButton(
+            title: 'Register New Vehicle',
+            width: double.infinity,
+            onPressed: () {
+              if (!_showDropdown) {
+                _toggleDropdown(); // Hiển thị dropdown khi nhấn nút
+              } else if (_selectedVehicleType != null) {
+                _navigateToRentalInfo(); // Điều hướng nếu đã chọn type
+              }
+            },
+          ),
+        ],
       ),
+    ),
     );
   }
 }
