@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:frontend/models/location/location.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
@@ -29,7 +30,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
   final TextEditingController _modelController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController(); 
+  final TextEditingController _locationController = TextEditingController();
 
   String? _vehicleType;
   Brand? _selectedBrand;
@@ -57,7 +58,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
       'yearOfManufacture': int.tryParse(_yearController.text),
       'location': _location?.toJson(),
       'description': _descriptionController.text,
-      'brand': _selectedBrand?.brandName,
+      'brand': _selectedBrand?.toJson(),
       'numberSeats': _numberSeats,
       'fuelType': _typeFuel,
       'fuelConsumption': _fuelConsumption,
@@ -91,25 +92,31 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
             const SizedBox(height: 16),
             CustomTextBodyL(title: 'Brand'),
             const SizedBox(height: 8),
-            CustomDropdownButtonFormField(
-              value: _selectedBrand?.brandName,
+            CustomDropdownButtonFormField<Brand>(
+              value: _selectedBrand,
               onChanged: (value) {
                 setState(() {
-                  _selectedBrand = brands.firstWhere(
-                    (b) => b.brandName == value,
-                  );
+                  _selectedBrand = value;
                   _saveData();
                 });
               },
-              items: brands.map((b) => b.brandName).toList(),
+              items: brands,
               hintText: 'Choose Car Brand',
+              itemBuilder:
+                  (brand) => Row(
+                    children: [
+                      if (brand.brandImage != null)
+                        SvgPicture.network(brand.brandImage!, width: 24, height: 24),
+                      SizedBox(width: 8),
+                      Text(brand.brandName),
+                    ],
+                  ),
               validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please select';
-                }
+                if (value == null) return 'Please select';
                 return null;
               },
             ),
+
             const SizedBox(height: 16),
             CustomTextBodyL(title: 'Model'),
             const SizedBox(height: 8),

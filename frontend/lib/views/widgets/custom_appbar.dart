@@ -5,6 +5,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   final Color? textColor;
   final Color? backgroundColor;
   final double height;
+  final Widget? leading;
 
   const CustomAppbar({
     super.key,
@@ -12,13 +13,15 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
     this.textColor,
     this.backgroundColor,
     this.height = kToolbarHeight,
+    this.leading
   });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: backgroundColor ?? Color(0xffFCFCFC),
-      leading: IconButton(
+      leading: leading ??
+       IconButton(
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         padding: EdgeInsets.only(top: 24),

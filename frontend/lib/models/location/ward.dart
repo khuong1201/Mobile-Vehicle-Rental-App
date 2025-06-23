@@ -23,15 +23,15 @@ class Ward {
 
   factory Ward.fromJson(Map<String, dynamic> json) {
     return Ward(
-      id: json['_id'] as String,
-      code: json['code'] as String,
-      name: json['name'] as String,
-      fullName: json['full_name'] as String,
-      fullNameEn: json['full_name_en'] as String,
-      divisionType: json['division_type'] as String,
-      shortCodename: json['short_codename'] as String,
-      codename: json['codename'] as String,
-      districtCode: json['district_code'] as String,
+      id: json['_id'] as String? ?? '',
+      code: json['code'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      fullName: json['full_name'] as String? ?? '',
+      fullNameEn: json['full_name_en'] as String? ?? '',
+      divisionType: json['division_type'] as String? ?? '',
+      shortCodename: json['short_codename'] as String? ?? '',
+      codename: json['codename'] as String? ?? '',
+      districtCode: json['district_code'] as String? ?? '',
     );
   }
 

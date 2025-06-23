@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-class CustomDropdownButtonFormField extends StatelessWidget {
-  final String? value;
-  final ValueChanged<String?>? onChanged;
-  final String? Function(String?)? validator;
-  final List<String> items;
-  final String? hintText; 
+class CustomDropdownButtonFormField<T> extends StatelessWidget {
+  final T? value;
+  final ValueChanged<T?>? onChanged;
+  final String? Function(T?)? validator;
+  final List<T> items;
+  final String? hintText;
+  final Widget Function(T item)? itemBuilder;
 
   const CustomDropdownButtonFormField({
     super.key,
@@ -13,39 +14,23 @@ class CustomDropdownButtonFormField extends StatelessWidget {
     this.onChanged,
     this.validator,
     required this.items,
-    this.hintText
+    this.hintText,
+    this.itemBuilder,
   });
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
+    return DropdownButtonFormField<T>(
       value: value,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
         hintText: hintText ?? 'Choose',
-        hintStyle: const TextStyle(
-          color: Color(0xFFAAACAF),
-          fontSize: 14,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.w400,
-          height: 1.29,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(
-            color: Color(0xFF808183),
-            width: 1,
-          ),
-        ),
-        
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       ),
       items: items
-          .map((item) => DropdownMenuItem(
+          .map((item) => DropdownMenuItem<T>(
                 value: item,
-                child: Text(item),
+                child: itemBuilder != null ? itemBuilder!(item) : Text(item.toString()),
               ))
           .toList(),
       onChanged: onChanged,
