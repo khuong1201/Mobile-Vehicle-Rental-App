@@ -9,16 +9,16 @@ import 'package:frontend/models/vehicles/motorbike.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 
-class ApiGetAllVehicle {
+class ApiCreateVehicle {
   static Future<ApiResponse<Vehicle>> createVehicle<T extends ChangeNotifier>(
     T viewModel, {
     required AuthService authService,
     required Vehicle vehicle,
-    required List<File> imageFiles, // danh sách ảnh truyền vào
+    required List<File> imageFiles, 
   }) async {
     try {
       final fields = vehicle.toJson()
-        ..remove('images') // xoá vì gửi qua multipart
+        ..remove('images') 
         ..remove('imagePublicIds');
 
       final response = await callProtectedApi<T>(
