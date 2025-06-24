@@ -60,7 +60,7 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
       _selectedIndex = index;
     });
   }
-  Map<String, dynamic> _collectedData = {};
+  final Map<String, dynamic> _collectedData = {};
 
   void _updateData(String page, Map<String, dynamic> data) {
     setState(() {
