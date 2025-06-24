@@ -69,7 +69,7 @@ class LocationViewModel with ChangeNotifier {
     _districts.clear();
     notifyListeners();
 
-    final response = await LocationApi.getDistrictsByProvince(provinceCode);
+    final response = await LocationApi.postDistrictsByProvince(provinceCode);
     if (response.success && response.data != null) {
       _districts = response.data!;
     }
@@ -84,7 +84,7 @@ class LocationViewModel with ChangeNotifier {
     _wards.clear();
     notifyListeners();
 
-    final response = await LocationApi.getWardsByDistrict(districtCode);
+    final response = await LocationApi.postWardsByDistrict(districtCode);
     if (response.success && response.data != null) {
       _wards = response.data!;
     }

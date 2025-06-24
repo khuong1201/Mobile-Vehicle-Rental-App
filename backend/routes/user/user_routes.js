@@ -7,13 +7,14 @@ const userLicenseController = require('../../controllers/user/user_license_contr
 const userAddressController = require('../../controllers/user/user_address_controller');
 const uploadUserLicense = require('../../middlewares/multer/upload_user_license');
 const emailService = require('../../services/google_api_service');
+const userUpdateRoleController = require('../../controllers/user/user_update_role_controller');
 const { CheckOwnerMonthlyTax } = require('../../controllers/user/user_revenue_controller');
 
 router.post('/change-password', authenticateToken, userController.ChangePassword);
 
 router.put('/update-personal-info', authenticateToken, userProfileController.UpdatePersonalInfo);
 router.get('/get-user-profile', authenticateToken, userProfileController.GetUserProfile);
-
+router.put('/update-role', authenticateToken, userUpdateRoleController.UpdateUserRole);
 router.delete(
     '/delete-license',
     authenticateToken,

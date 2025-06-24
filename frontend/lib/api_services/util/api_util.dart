@@ -73,11 +73,34 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
     }
 
     Future<ApiResponse> handleResponse(http.Response response) async {
-      final body = response.body.isNotEmpty ? jsonDecode(response.body) : null;
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        return ApiResponse(success: true, data: body, message: body?['message'] ?? 'Thành công');
-      } else {
-        return ApiResponse(success: false, message: body?['message'] ?? 'Lỗi: ${response.statusCode}');
+      if (response.body.isEmpty) {
+        return ApiResponse(
+          success: response.statusCode >= 200 && response.statusCode < 300,
+          message: response.statusCode >= 200 && response.statusCode < 300
+              ? 'Phản hồi rỗng từ server'
+              : 'Lỗi: ${response.statusCode} - Phản hồi rỗng',
+        );
+      }
+
+      try {
+        final body = jsonDecode(response.body);
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          return ApiResponse(
+            success: true,
+            data: body,
+            message: body is Map<String, dynamic> ? body['message'] ?? 'Thành công' : 'Thành công',
+          );
+        } else {
+          return ApiResponse(
+            success: false,
+            message: body is Map<String, dynamic> ? body['message'] ?? 'Lỗi: ${response.statusCode}' : 'Lỗi: ${response.statusCode}',
+          );
+        }
+      } catch (e) {
+        return ApiResponse(
+          success: false,
+          message: 'Lỗi phân tích JSON: $e',
+        );
       }
     }
 

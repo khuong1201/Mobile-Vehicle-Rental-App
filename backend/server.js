@@ -13,7 +13,7 @@ const bannerRoutes = require("./routes/banner/banner_routes");
 const locationRoutes = require("./routes/location/location_routes");
 const googleMapsRoutes = require("./routes/location/google_map_routes");
 const reviewRoutes = require("./routes/review/review_routes");
-
+const adminRoutes = require("./routes/admin/admin_routes");
 const { connectDB } = require("./config/database");
 const { initializePassport } = require("./config/passport");
 const initDB = require("./init_db");
@@ -43,6 +43,7 @@ app.use('api/banners',bannerRoutes);
 app.use('/api/locations', locationRoutes);
 app.use('/api/google', googleMapsRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Initialize Passport
 initializePassport();

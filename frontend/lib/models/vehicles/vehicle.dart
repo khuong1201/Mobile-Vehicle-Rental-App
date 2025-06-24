@@ -1,4 +1,4 @@
-import 'package:frontend/models/location/location.dart';
+import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:intl/intl.dart';
 
@@ -13,7 +13,7 @@ class Vehicle {
   final int yearOfManufacture;
   final List<String> images;
   final String description;
-  final Locations? location;
+  final LocationForVehicle? locationForVehicle;
   final String model;
   final String ownerId;
   final String ownerEmail;
@@ -33,7 +33,7 @@ class Vehicle {
     required this.yearOfManufacture,
     required this.images,
     required this.description,
-    required this.location,
+    required this.locationForVehicle,
     required this.model,
     required this.ownerId,
     required this.ownerEmail,
@@ -59,9 +59,9 @@ class Vehicle {
       yearOfManufacture: json['yearOfManufacture'] ?? 0,
       images: List<String>.from(json['images'] ?? []),
       description: json['description']?.toString() ?? '',
-      location: json['location'] != null
-          ? Locations.fromJson(json['location'])
-          : null,
+      locationForVehicle: json['location'] is Map<String, dynamic>
+        ? LocationForVehicle.fromJson(json['location'] as Map<String, dynamic>)
+        : null,
       model: json['model']?.toString() ?? '',
       ownerId: owner?['_id']?.toString() ?? '',
       ownerEmail: owner?['email']?.toString() ?? '',
@@ -84,7 +84,7 @@ class Vehicle {
       'yearOfManufacture': yearOfManufacture,
       'images': images,
       'description': description,
-      'location': location?.toJson(),
+      'location': locationForVehicle?.toJson(),
       'price': price,
       'rate': rate,
       'rentals': rentals,

@@ -8,7 +8,7 @@ const authenticateToken = require('../../middlewares/auth_middleware');
 router.delete('/delete-account', authenticateToken,adminMiddleware, adminController.DeleteAccount);
 router.get('/get-all-user', authenticateToken, adminMiddleware, adminController.GetAllUsers);
 router.get('/get-users-with-unapproved-licenses', authenticateToken, adminMiddleware, adminController.GetUsersWithUnapprovedLicenses);
-router.post('/approve-license', authenticateToken, adminMiddleware, adminController.approveLicense);
+router.post('/approve-license', authenticateToken, adminMiddleware, adminController.ApproveLicense);
 router.post('/reject-license', authenticateToken, adminMiddleware, adminController.RejectLicense);
 router.get('/get-user-profile', authenticateToken, adminMiddleware, adminController.GetUser);
 

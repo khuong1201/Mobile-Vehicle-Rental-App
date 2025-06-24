@@ -20,7 +20,7 @@ module.exports = async function authenticateToken(req, res, next) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    req.user = decoded; 
+    req.user = user; 
     next();
   } catch (err) {
     console.error('JWT Verify Error:', err.name, err.message);

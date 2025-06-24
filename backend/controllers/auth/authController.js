@@ -43,17 +43,28 @@ const Refresh = async (req, res) => {
         res.status(401).json({ message: err.message });
     }
 };
-const GoogleLoginEndPoint = async (req, res) => {
-    try {
-      const { googleId, email, fullName } = req.body;
-      if (!googleId || !email || !fullName) {
-        return res.status(400).json({ message: 'Google ID, email, and full name are required' });
-      }
-      const result = await authService.googleLoginEndPoint({ googleId, email, fullName });
-      res.json(result);
-    } catch (err) {
-      res.status(400).json({ message: err.message });
+const GoogleLoginEndPoint = async ({ googleId, email, fullName }) => {
+    let user = await User.findOne({ googleId });
+  
+    if (user) {
+      return {
+        message: 'Login successful',
+        user,
+      };
     }
+  
+    user = new User({
+      googleId,
+      email,
+      fullName,
+    });
+  
+    await user.save();
+  
+    return {
+      message: 'Account created and login successful',
+      user,
+    };
   };
 const GoogleLogin = async (req, res) => {
     try {

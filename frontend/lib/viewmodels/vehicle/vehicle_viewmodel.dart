@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/vehicle/api_get_brand.dart';
 import 'package:frontend/api_services/vehicle/get_vehicle.dart';
-import 'package:frontend/models/location/location.dart';
+import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/models/vehicles/bike.dart';
 import 'package:frontend/models/vehicles/car.dart';
 import 'package:frontend/models/vehicles/coach.dart';
@@ -67,7 +67,6 @@ class VehicleViewModel extends ChangeNotifier {
       authService: authService,
       page: page,
       limit: limit,
-      type: type,
     );
 
     if (response.success) {
@@ -147,11 +146,11 @@ class VehicleViewModel extends ChangeNotifier {
       final userViewModel = Provider.of<UserViewModel>(context, listen: false);
       final user = userViewModel.user;
       final locationData = data['location'];
-      final Locations? location = 
-      locationData is Locations
+      final LocationForVehicle? location = 
+      locationData is LocationForVehicle
           ? locationData
           : locationData is Map<String, dynamic>
-              ? Locations.fromJson(locationData)
+              ? LocationForVehicle.fromJson(locationData)
               : null;
             
       // Chuyển đổi data['brand'] từ Map sang Brand
@@ -172,7 +171,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            location: location,
+            locationForVehicle: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',
@@ -197,7 +196,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            location: location,
+            locationForVehicle: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',
@@ -220,7 +219,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            location: location,
+            locationForVehicle: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',
@@ -244,7 +243,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            location: location,
+            locationForVehicle: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',
@@ -266,7 +265,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            location: location,
+            locationForVehicle: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',

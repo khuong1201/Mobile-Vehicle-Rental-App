@@ -15,12 +15,12 @@ class ApiGetAllVehicle {
     required AuthService authService,
     int page = 1,
     int limit = 10,
-    String? type,
+
   }) async {
     final queryParams = {
       'page': page.toString(),
       'limit': limit.toString(),
-      if (type != null) 'type': type,
+      'sort': '-createdAt',
     };
 
     final queryString = Uri(queryParameters: queryParams).query;
