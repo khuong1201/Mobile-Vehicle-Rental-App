@@ -91,6 +91,8 @@ class Vehicle {
       'available': available,
       'status': status,
       'type': type,
+      'ownerId': ownerId,
+      'ownerEmail': ownerEmail,
     };
   }
 

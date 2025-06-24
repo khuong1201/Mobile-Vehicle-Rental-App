@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/vehicle/api_get_brand.dart';
 import 'package:frontend/api_services/vehicle/get_vehicle.dart';
+import 'package:frontend/models/location/location.dart';
 import 'package:frontend/models/vehicles/bike.dart';
 import 'package:frontend/models/vehicles/car.dart';
 import 'package:frontend/models/vehicles/coach.dart';
@@ -145,15 +146,19 @@ class VehicleViewModel extends ChangeNotifier {
     try {
       final userViewModel = Provider.of<UserViewModel>(context, listen: false);
       final user = userViewModel.user;
-      
+      final locationData = data['location'];
+      final Locations? location = 
+      locationData is Locations
+          ? locationData
+          : locationData is Map<String, dynamic>
+              ? Locations.fromJson(locationData)
+              : null;
+            
       // Chuyển đổi data['brand'] từ Map sang Brand
-      final brandData = data['brand'] as Map<String, dynamic>? ?? {'brandName': 'Unknown'};
-      final brand = Brand(
-        id: brandData['_id']?.toString() ?? '',
-        brandId: brandData['brandId']?.toString() ?? '',
-        brandName: brandData['brandName']?.toString() ?? 'Unknown',
-        brandImage: brandData['brandImage']?.toString(),
-      );
+      final brandData = data['brand'];
+      final brand = brandData is Map<String, dynamic>
+          ? Brand.fromJson(brandData)
+          : Brand(id: '', brandId: '', brandName: 'Unknown');
 
       Vehicle vehicle;
       switch (data['vehicleType']?.toLowerCase()) {
@@ -167,7 +172,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            location: data['location'] ?? {'address': 'Default address', 'lat': 0.0, 'lng': 0.0},
+            location: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',
@@ -192,7 +197,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            location: data['location'] ?? {'address': 'Default address', 'lat': 0.0, 'lng': 0.0},
+            location: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',
@@ -215,7 +220,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            location: data['location'] ?? {'address': 'Default address', 'lat': 0.0, 'lng': 0.0},
+            location: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',
@@ -239,7 +244,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            location: data['location'] ?? {'address': 'Default address', 'lat': 0.0, 'lng': 0.0},
+            location: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',
@@ -261,7 +266,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            location: data['location'] ?? {'address': 'Default address', 'lat': 0.0, 'lng': 0.0},
+            location: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',
@@ -281,11 +286,11 @@ class VehicleViewModel extends ChangeNotifier {
         vehicle: vehicle,
         imageFiles: imageFiles,
       );
-
+      print("Dữ liệu brand gửi lên: ${data['brand']}");
       if (response.success && response.data != null) {
         _vehicles.insert(0, response.data!); 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.message ?? 'Vehicle created successfully!')),
+          SnackBar(content: Text(response.message ?? 'Vehicle ${data['vehicleType']} created successfully!')),
         );
       } else {
         _handleAuthError(response.message ?? 'Failed to create vehicle', context);

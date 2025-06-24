@@ -23,6 +23,10 @@ class LocationViewModel with ChangeNotifier {
   bool _isLoadingWards = false;
   String? _errorMessage;
 
+  // Lưu provinceCode và districtCode
+  String? _currentProvinceCode;
+  String? _currentDistrictCode;
+
   List<Province> get provinces => _filteredProvinces;
   List<District> get districts => _districts;
   List<Ward> get wards => _wards;
@@ -31,6 +35,9 @@ class LocationViewModel with ChangeNotifier {
   bool get isLoadingDistricts => _isLoadingDistricts;
   bool get isLoadingWards => _isLoadingWards;
   String? get errorMessage => _errorMessage;
+
+  String? get currentProvinceCode => _currentProvinceCode;
+  String? get currentDistrictCode => _currentDistrictCode;
 
   Future<void> fetchProvinces() async {
     _setLoadingProvinces(true);
@@ -42,12 +49,10 @@ class LocationViewModel with ChangeNotifier {
         _errorMessage = null;
       } else {
         _allProvinces = [];
-        _filteredProvinces = [];
+        _filteredProvinces = List.from(_allProvinces);
         _errorMessage = response.message ?? 'Không tìm thấy tỉnh/thành phố nào';
       }
     } catch (e) {
-      _allProvinces = [];
-      _filteredProvinces = [];
       _errorMessage = 'Lỗi khi lấy tỉnh/thành: $e';
       if (kDebugMode) print(_errorMessage);
     } finally {
@@ -59,13 +64,9 @@ class LocationViewModel with ChangeNotifier {
     if (query.isEmpty) {
       _filteredProvinces = List.from(_allProvinces);
     } else {
-      _filteredProvinces =
-          _allProvinces
-              .where(
-                (province) =>
-                    province.name.toLowerCase().contains(query.toLowerCase()),
-              )
-              .toList();
+      _filteredProvinces = _allProvinces
+          .where((province) => province.name.toLowerCase().contains(query.toLowerCase()))
+          .toList();
     }
     notifyListeners();
   }
@@ -76,28 +77,53 @@ class LocationViewModel with ChangeNotifier {
     selectedWard = null;
     _districts = [];
     _wards = [];
+    _currentProvinceCode = province.code; // Lưu provinceCode khi chọn tỉnh
+    _currentDistrictCode = null;
 
     _setLoadingDistricts(true);
-    final res = await LocationApi.getDistrictsByProvince(
-      int.parse(province.code),
-    );
-    if (res.success && res.data != null) {
-      _districts = res.data!;
+    try {
+      final provinceCode = int.tryParse(province.code) ?? 0;
+      print('Fetching districts for provinceCode: $provinceCode, Province.code: ${province.code}');
+      final res = await LocationApi.postDistrictsByProvince(provinceCode);
+      if (res.success && res.data != null) {
+        _districts = res.data!;
+        _errorMessage = null;
+      } else {
+        _districts = [];
+        _errorMessage = res.message ?? 'Không tìm thấy quận/huyện nào';
+      }
+    } catch (e) {
+      _errorMessage = 'Lỗi khi lấy quận/huyện: $e';
+      if (kDebugMode) print(_errorMessage);
+    } finally {
+      _setLoadingDistricts(false);
     }
-    _setLoadingDistricts(false);
   }
 
   Future<void> selectDistrict(District district) async {
     selectedDistrict = district;
     selectedWard = null;
     _wards = [];
+    _currentDistrictCode = district.code; // Lưu districtCode khi chọn quận
 
     _setLoadingWards(true);
-    final res = await LocationApi.getWardsByDistrict(int.parse(district.code));
-    if (res.success && res.data != null) {
-      _wards = res.data!;
+    try {
+      final districtCode = int.tryParse(district.code) ?? 0;
+      print('Fetching wards for districtCode: $districtCode, District.code: ${district.code}');
+      final res = await LocationApi.postWardsByDistrict(districtCode);
+      if (res.success && res.data != null) {
+        _wards = res.data!;
+        _errorMessage = null;
+      } else {
+        _wards = [];
+        _errorMessage = res.message ?? 'Không tìm thấy phường/xã nào';
+      }
+    } catch (e) { 
+      _errorMessage = 'Lỗi khi lấy phường/xã: $e';
+      if (kDebugMode) print(_errorMessage);
+    } finally {
+      _setLoadingWards(false);
     }
-    _setLoadingWards(false);
   }
 
   void selectWard(Ward ward) {
@@ -121,6 +147,8 @@ class LocationViewModel with ChangeNotifier {
     selectedProvince = null;
     selectedDistrict = null;
     selectedWard = null;
+    _currentProvinceCode = null;
+    _currentDistrictCode = null;
     _isLoadingProvinces = false;
     _isLoadingDistricts = false;
     _isLoadingWards = false;
@@ -152,13 +180,11 @@ class LocationViewModel with ChangeNotifier {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Kiểm tra dịch vụ vị trí có bật không
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       throw Exception('Dịch vụ vị trí chưa được bật');
     }
 
-    // Kiểm tra quyền
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -171,7 +197,6 @@ class LocationViewModel with ChangeNotifier {
       throw Exception('Quyền vị trí bị từ chối vĩnh viễn');
     }
 
-    // Lấy vị trí hiện tại
     return await Geolocator.getCurrentPosition(
       // ignore: deprecated_member_use
       desiredAccuracy: LocationAccuracy.high,

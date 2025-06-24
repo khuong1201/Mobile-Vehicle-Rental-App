@@ -13,15 +13,20 @@ class LocationScreen extends StatefulWidget {
 }
 
 class _LocationScreenState extends State<LocationScreen> {
+  
   final TextEditingController _searchController = TextEditingController();
+  final PageController _pageController = PageController();
+  final ValueNotifier<int> _pageNotifier = ValueNotifier<int>(0);
   String? _currentAddress;
 
   @override
   void initState() {
     super.initState();
+    _pageController.addListener(() {
+      _pageNotifier.value = _pageController.page?.round() ?? 0;
+    });
     final vm = Provider.of<LocationViewModel>(context, listen: false);
     vm.fetchProvinces();
-
     _searchController.addListener(() {
       vm.searchProvinces(_searchController.text);
     });
@@ -30,7 +35,17 @@ class _LocationScreenState extends State<LocationScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _pageController.dispose();
     super.dispose();
+  }
+
+  void _goToNextPage() {
+    if (_pageController.page! < 2) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   @override
@@ -40,9 +55,38 @@ class _LocationScreenState extends State<LocationScreen> {
     return Scaffold(
       appBar: CustomAppbar(
         title: 'Select location',
-        textColor: Color(0xFFFFFFFF),
+        textColor: Colors.white,
         height: 80,
-        backgroundColor: Color(0xFF1976D2),
+        backgroundColor: const Color(0xFF1976D2),
+        leading: ValueListenableBuilder<int>(
+          valueListenable: _pageNotifier,
+          builder: (context, pageIndex, _) {
+            return IconButton(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              padding: EdgeInsets.only(top: 24),
+              onPressed: () {
+                if(pageIndex <= 0) {
+                  Navigator.pop(context);
+                } else {
+                  _pageController.previousPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                }
+                
+              },
+              icon: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xffD1E4F6),
+                  shape: BoxShape.circle,
+                ),
+                padding: EdgeInsets.all(4),
+                child: Icon(Icons.arrow_back, color: Color(0xff1976D2)),
+              ),
+            );
+          },
+        ),
       ),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -141,120 +185,115 @@ class _LocationScreenState extends State<LocationScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            if (vm.isLoadingProvinces)
-              const Expanded(child: Center(child: CircularProgressIndicator()))
-            else if (vm.errorMessage != null)
-              Expanded(
-                child: Center(
-                  child: Text(
-                    vm.errorMessage!,
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                ),
-              )
-            else
-              Expanded(
-                child: Column(
-                  children: [
-                    // Provinces
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: vm.provinces.length,
-                        itemBuilder: (context, index) {
-                          final province = vm.provinces[index];
-                          return ListTile(
-                            title: Text(province.name),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () {
-                              vm.selectProvince(province);
-                            },
-                          );
-                        },
-                      ),
-                    ),
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  _buildProvinceList(vm),
 
-                    // Districts
-                    if (vm.selectedProvince != null)
-                      Expanded(
-                        child: Column(
-                          children: [
-                            const Divider(thickness: 1),
-                            Text(
-                              'Quận/Huyện của: ${vm.selectedProvince!.name}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Expanded(
-                              child:
-                                  vm.isLoadingDistricts
-                                      ? const Center(
-                                        child: CircularProgressIndicator(),
-                                      )
-                                      : ListView.builder(
-                                        itemCount: vm.districts.length,
-                                        itemBuilder: (context, index) {
-                                          final district = vm.districts[index];
-                                          return ListTile(
-                                            title: Text(district.name),
-                                            trailing: const Icon(
-                                              Icons.chevron_right,
-                                            ),
-                                            onTap: () {
-                                              vm.selectDistrict(district);
-                                            },
-                                          );
-                                        },
-                                      ),
-                            ),
-                          ],
-                        ),
-                      ),
+                  _buildDistrictList(vm),
 
-                    // Wards
-                    if (vm.selectedDistrict != null)
-                      Expanded(
-                        child: Column(
-                          children: [
-                            const Divider(thickness: 1),
-                            Text(
-                              'Phường/Xã của: ${vm.selectedDistrict!.name}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Expanded(
-                              child:
-                                  vm.isLoadingWards
-                                      ? const Center(
-                                        child: CircularProgressIndicator(),
-                                      )
-                                      : ListView.builder(
-                                        itemCount: vm.wards.length,
-                                        itemBuilder: (context, index) {
-                                          final ward = vm.wards[index];
-                                          return ListTile(
-                                            title: Text(ward.name),
-                                            onTap: () {
-                                              vm.selectWard(ward);
-                                              Navigator.pop(
-                                                context,
-                                                vm.getFullLocation(),
-                                              );
-                                            },
-                                          );
-                                        },
-                                      ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
+                  _buildWardList(vm),
+                ],
               ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildProvinceList(LocationViewModel vm) {
+    if (vm.isLoadingProvinces) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (vm.errorMessage != null) {
+      return Center(
+        child: Text(
+          vm.errorMessage!,
+          style: const TextStyle(color: Colors.red),
+        ),
+      );
+    } else {
+      return ListView.builder(
+        itemCount: vm.provinces.length,
+        itemBuilder: (context, index) {
+          final province = vm.provinces[index];
+          return ListTile(
+            title: Text(province.name),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () async {
+              await vm.selectProvince(province);
+              _goToNextPage();
+            },
+          );
+        },
+      );
+    }
+  }
+
+  Widget _buildDistrictList(LocationViewModel vm) {
+    if (vm.isLoadingDistricts) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (vm.districts.isEmpty) {
+      return const Center(child: Text("Không có quận/huyện nào"));
+    } else {
+      return Column(
+        children: [
+          Text(
+            'Quận/Huyện của: ${vm.selectedProvince?.name ?? ''}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: vm.districts.length,
+              itemBuilder: (context, index) {
+                final district = vm.districts[index];
+                return ListTile(
+                  title: Text(district.name),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () async {
+                    await vm.selectDistrict(district);
+                    _goToNextPage();
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      );
+    }
+  }
+
+  Widget _buildWardList(LocationViewModel vm) {
+    if (vm.isLoadingWards) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (vm.wards.isEmpty) {
+      return const Center(child: Text("Không có phường/xã nào"));
+    } else {
+      return Column(
+        children: [
+          Text(
+            'Phường/Xã của: ${vm.selectedDistrict?.name ?? ''}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: vm.wards.length,
+              itemBuilder: (context, index) {
+                final ward = vm.wards[index];
+                return ListTile(
+                  title: Text(ward.name),
+                  onTap: () {
+                    vm.selectWard(ward);
+                    Navigator.pop(context, vm.getFullLocation());
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      );
+    }
   }
 }
