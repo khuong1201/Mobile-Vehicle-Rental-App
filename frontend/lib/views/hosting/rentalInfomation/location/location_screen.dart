@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/viewmodels/location_viewmodel.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:frontend/viewmodels/location/location_viewmodel.dart';
+import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 
@@ -12,15 +14,16 @@ class LocationScreen extends StatefulWidget {
 
 class _LocationScreenState extends State<LocationScreen> {
   final TextEditingController _searchController = TextEditingController();
+  String? _currentAddress;
 
   @override
   void initState() {
     super.initState();
-    final locationVM = Provider.of<LocationViewModel>(context, listen: false);
-    locationVM.fetchProvinces();
+    final vm = Provider.of<LocationViewModel>(context, listen: false);
+    vm.fetchProvinces();
 
     _searchController.addListener(() {
-      locationVM.searchProvinces(_searchController.text);
+      vm.searchProvinces(_searchController.text);
     });
   }
 
@@ -32,91 +35,221 @@ class _LocationScreenState extends State<LocationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final locationVM = Provider.of<LocationViewModel>(context);
+    final vm = Provider.of<LocationViewModel>(context);
 
     return Scaffold(
+      appBar: CustomAppbar(
+        title: 'Select location',
+        textColor: Color(0xFFFFFFFF),
+        height: 80,
+        backgroundColor: Color(0xFF1976D2),
+      ),
       body: Container(
-        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         height: double.infinity,
-        color: const Color(0xffFCFCFC),
+        width: double.infinity,
+        color: Color(0xffFDFDFD),
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: Container(
-                      decoration: const BoxDecoration(
-                        color: Color(0xff1976D2),
-                        shape: BoxShape.circle,
-                      ),
-                      padding: const EdgeInsets.all(4),
-                      child: const Icon(Icons.arrow_back, color: Colors.white),
+            CustomTextField(
+              controller: _searchController,
+              hintText: 'Search',
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon:
+                  _searchController.text.isNotEmpty
+                      ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          vm.searchProvinces('');
+                        },
+                      )
+                      : null,
+            ),
+            const SizedBox(height: 16),
+            InkWell(
+              onLongPress: () async {
+                final locationVM = Provider.of<LocationViewModel>(
+                  context,
+                  listen: false,
+                );
+                try {
+                  final position = await locationVM.getCurrentLocation();
+                  final placemark = await locationVM.getAddressFromCoordinates(
+                    position.latitude,
+                    position.longitude,
+                  );
+
+                  if (placemark != null) {
+                    await locationVM.autoSelectLocationFromCoordinates(
+                      position.latitude,
+                      position.longitude,
+                    );
+
+                    final location = locationVM.getFullLocation();
+                    Navigator.pop(context, location);
+                    setState(() {
+                      _currentAddress = location.toString();
+                    });
+                  } else {
+                    throw Exception('Không tìm thấy địa chỉ từ tọa độ');
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Không lấy được vị trí: $e')),
+                  );
+                }
+              },
+
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x14000000),
+                      blurRadius: 8,
+                      offset: Offset(0, 0),
+                      spreadRadius: 0,
                     ),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: CustomTextField(
-                      controller: _searchController,
-                      hintText: 'Tìm kiếm tỉnh/thành phố',
-                      prefixIcon: const Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Icon(Icons.search, color: Colors.grey),
-                      ),
-                      suffixIcon: _searchController.text.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear, color: Colors.grey),
-                              onPressed: () {
-                                _searchController.clear();
-                                locationVM.searchProvinces('');
-                              },
-                            )
-                          : null,
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/images/hosting/information/location.svg',
+                      width: 24,
+                      height: 24,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Text(
+                      _currentAddress ?? 'Use My Current Location',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                        height: 1.29,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
             ),
-            if (locationVM.isLoadingProvinces)
-              const Center(child: CircularProgressIndicator())
-            else if (locationVM.errorMessage != null)
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  locationVM.errorMessage!,
-                  style: const TextStyle(color: Colors.red),
-                ),
-              )
-            else if (locationVM.provinces.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                  'Không có tỉnh/thành phố nào để hiển thị',
-                  style: TextStyle(color: Colors.grey),
-                  textAlign: TextAlign.center,
+            const SizedBox(height: 16),
+            if (vm.isLoadingProvinces)
+              const Expanded(child: Center(child: CircularProgressIndicator()))
+            else if (vm.errorMessage != null)
+              Expanded(
+                child: Center(
+                  child: Text(
+                    vm.errorMessage!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ),
               )
             else
               Expanded(
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: locationVM.provinces.length,
-                  separatorBuilder: (_, __) => const Divider(color: Color(0xffD5D7DB), height: 1),
-                  itemBuilder: (context, index) {
-                    final province = locationVM.provinces[index];
-                    return ListTile(
-                      title: Text(
-                        province['name'] ?? 'Không xác định',
-                        style: const TextStyle(fontWeight: FontWeight.w500),
+                child: Column(
+                  children: [
+                    // Provinces
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: vm.provinces.length,
+                        itemBuilder: (context, index) {
+                          final province = vm.provinces[index];
+                          return ListTile(
+                            title: Text(province.name),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () {
+                              vm.selectProvince(province);
+                            },
+                          );
+                        },
                       ),
-                      onTap: () {
-                        _searchController.text = province['name'] ?? '';
-                        Navigator.pop(context, province);
-                      },
-                    );
-                  },
+                    ),
+
+                    // Districts
+                    if (vm.selectedProvince != null)
+                      Expanded(
+                        child: Column(
+                          children: [
+                            const Divider(thickness: 1),
+                            Text(
+                              'Quận/Huyện của: ${vm.selectedProvince!.name}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Expanded(
+                              child:
+                                  vm.isLoadingDistricts
+                                      ? const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                      : ListView.builder(
+                                        itemCount: vm.districts.length,
+                                        itemBuilder: (context, index) {
+                                          final district = vm.districts[index];
+                                          return ListTile(
+                                            title: Text(district.name),
+                                            trailing: const Icon(
+                                              Icons.chevron_right,
+                                            ),
+                                            onTap: () {
+                                              vm.selectDistrict(district);
+                                            },
+                                          );
+                                        },
+                                      ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // Wards
+                    if (vm.selectedDistrict != null)
+                      Expanded(
+                        child: Column(
+                          children: [
+                            const Divider(thickness: 1),
+                            Text(
+                              'Phường/Xã của: ${vm.selectedDistrict!.name}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Expanded(
+                              child:
+                                  vm.isLoadingWards
+                                      ? const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                      : ListView.builder(
+                                        itemCount: vm.wards.length,
+                                        itemBuilder: (context, index) {
+                                          final ward = vm.wards[index];
+                                          return ListTile(
+                                            title: Text(ward.name),
+                                            onTap: () {
+                                              vm.selectWard(ward);
+                                              Navigator.pop(
+                                                context,
+                                                vm.getFullLocation(),
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
               ),
           ],

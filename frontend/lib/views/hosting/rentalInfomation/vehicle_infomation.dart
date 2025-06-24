@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/location/location.dart';
 import 'package:frontend/models/vehicles/brand.dart';
-import 'package:frontend/models/vehicles/vehicle.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/hosting/rentalInfomation/location/location_screen.dart';
 import 'package:frontend/views/widgets/custom_dropdown_formfield.dart';
@@ -11,7 +11,11 @@ import 'package:provider/provider.dart';
 class VehicleInfomationScreen extends StatefulWidget {
   final String? vehicleType;
   final Function(Map<String, dynamic>) onDataChanged;
-  const VehicleInfomationScreen({super.key, this.vehicleType, required this.onDataChanged});
+  const VehicleInfomationScreen({
+    super.key,
+    this.vehicleType,
+    required this.onDataChanged,
+  });
 
   @override
   State<VehicleInfomationScreen> createState() =>
@@ -25,13 +29,14 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
   final TextEditingController _modelController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController(); 
 
   String? _vehicleType;
   Brand? _selectedBrand;
   String? _numberSeats;
   String? _typeFuel;
   String? _fuelConsumption;
-  Location? _location;
+  Locations? _location;
 
   @override
   void initState() {
@@ -58,7 +63,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
       'fuelConsumption': _fuelConsumption,
       'vehicleType': widget.vehicleType ?? 'vehicle',
     };
-    widget.onDataChanged(data); 
+    widget.onDataChanged(data);
   }
 
   @override
@@ -104,7 +109,6 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                 }
                 return null;
               },
-              
             ),
             const SizedBox(height: 16),
             CustomTextBodyL(title: 'Model'),
@@ -158,11 +162,11 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                           value: _numberSeats,
                           onChanged: (value) {
                             setState(() {
-                              _numberSeats == value;
+                              _numberSeats = value;
                               _saveData();
                             });
                           },
-                          items: ['4','5','7','9','16','30'],
+                          items: ['4', '5', '7', '9', '16', '30'],
                           hintText: 'Number',
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -193,7 +197,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                           value: _typeFuel,
                           onChanged: (value) {
                             setState(() {
-                              _typeFuel == value;
+                              _typeFuel = value;
                               _saveData();
                             });
                           },
@@ -221,7 +225,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                           value: _fuelConsumption,
                           onChanged: (value) {
                             setState(() {
-                              _numberSeats == value;
+                              _numberSeats = value;
                               _saveData();
                             });
                           },
@@ -241,30 +245,42 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
               ),
             const SizedBox(height: 16),
             CustomTextBodyL(title: 'Car Location'),
-            CustomTextField(
-              hintText: 'Enter the Car Location',
-              controller: TextEditingController(text: _location?.address ?? ''),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter Location';
+            GestureDetector(
+              onTap: () async {
+                final result = await Navigator.push<Locations?>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LocationScreen(),
+                  ),
+                );
+
+                if (result != null) {
+                  setState(() {
+                    _location = result;
+                    _locationController.text = result.toString();
+                    _saveData();
+                  });
                 }
-                return null;
               },
-              suffixIcon: IconButton(
-                onPressed: (){
-                  Navigator.push(
-                    context, 
-                    MaterialPageRoute(builder: (context) => LocationScreen())
-                  );
-                }, 
-                icon: Icon(
-                  Icons.arrow_forward_ios,
-                  color: Color(0xff2B2B2C),
-                  size: 18
-                )
+              child: AbsorbPointer(
+                child: CustomTextField(
+                  hintText: 'Select car location',
+                  controller: _locationController,
+                  suffixIcon: const Icon(
+                    Icons.arrow_forward_ios,
+                    size: 18,
+                    color: Color(0xff2B2B2C),
+                  ),
+                  validator: (value) {
+                    if (_location == null) {
+                      return 'Please select location';
+                    }
+                    return null;
+                  },
+                ),
               ),
-              onChanged: (_) => _saveData(),
             ),
+
             const SizedBox(height: 16),
             CustomTextBodyL(title: 'Description'),
             CustomTextField(
