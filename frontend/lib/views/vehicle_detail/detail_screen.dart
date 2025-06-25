@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
+import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/booking/booking_screen.dart';
 import 'package:frontend/views/vehicle_detail/about_screen.dart';
 import 'package:frontend/views/vehicle_detail/gallery_screen.dart';
@@ -8,6 +10,7 @@ import 'package:frontend/views/vehicle_detail/review_screen.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_text_body_L.dart';
+import 'package:provider/provider.dart';
 
 class VehicleDetailScreen extends StatefulWidget {
   final Vehicle vehicle;
@@ -36,6 +39,11 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final int itemCount = _navItems.length;
+    final brands = Provider.of<VehicleViewModel>(context).brands;
+    final Brand? brand = brands.firstWhere(
+      (b) => b.id == widget.vehicle.brand,
+      orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
+    );
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -74,7 +82,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                             children: [
                               CustomTextBodyL(
                                 title:
-                                    '${widget.vehicle.brand.brandName} ${widget.vehicle.vehicleName}',
+                                    '${brand?.brandName} ${widget.vehicle.vehicleName}',
                               ),
                               Spacer(),
                               Row(
@@ -108,12 +116,12 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                                 width: 28,
                                 height: 28,
                                 child: SvgPicture.network(
-                                  '${widget.vehicle.brand.brandImage}',
+                                  '${brand?.brandImage}',
                                 ),
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                widget.vehicle.brand.brandName,
+                                brand!.brandName,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 12,

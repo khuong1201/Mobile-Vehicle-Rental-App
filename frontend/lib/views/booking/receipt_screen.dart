@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
 import 'package:frontend/viewmodels/booking/booking_viewmodel.dart';
 import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
+import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_text_body_L.dart';
@@ -18,6 +20,11 @@ class ReceiptScreen extends StatelessWidget {
     final bookingVM = Provider.of<BookingViewModel>(context);
     final userVM = Provider.of<UserViewModel>(context);
     final user = userVM.user;
+    final brands = Provider.of<VehicleViewModel>(context).brands;
+    final Brand? brand = brands.firstWhere(
+      (b) => b.id == vehicle.brand,
+      orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
+    );
     return Scaffold(
       appBar: CustomAppbar(title: 'E - Receipt'),
       body: Container(
@@ -69,7 +76,7 @@ class ReceiptScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       _buildInfoRow(
                         'Car',
-                        '${vehicle.brand.brandName} ${vehicle.vehicleName}',
+                        '${brand?.brandName} ${vehicle.vehicleName}',
                       ),
                       const SizedBox(height: 16),
                       _buildInfoRow('Seats', '07'),

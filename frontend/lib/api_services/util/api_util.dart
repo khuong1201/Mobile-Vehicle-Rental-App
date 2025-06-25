@@ -45,6 +45,7 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
     }
 
     Future<http.Response> sendMultipartRequest(String token) async {
+      debugPrint('📦 Multipart fields: $fields');
       final request = http.MultipartRequest(method.toUpperCase(), uri);
       request.headers['Authorization'] = 'Bearer $token';
       if (fields != null) request.fields.addAll(fields);

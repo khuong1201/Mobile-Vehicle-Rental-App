@@ -9,8 +9,8 @@ class Vehicle {
   final String vehicleId;
   final String vehicleName;
   final String licensePlate;
-  final Brand brand;
-  final int yearOfManufacture;
+  final String brand;
+  final String yearOfManufacture;
   final List<String> images;
   final String description;
   final LocationForVehicle? locationForVehicle;
@@ -54,8 +54,8 @@ class Vehicle {
       vehicleName: json['vehicleName']?.toString() ?? '',
       licensePlate: json['licensePlate']?.toString() ?? '',
       brand: json['brand'] is Map<String, dynamic>
-          ? Brand.fromJson(json['brand'])
-          : Brand(id: '', brandId: '', brandName: 'Unknown'),
+        ? Brand.fromJson(json['brand'] as Map<String, dynamic>).id
+        : json['brand']?.toString() ?? '',
       yearOfManufacture: json['yearOfManufacture'] ?? 0,
       images: List<String>.from(json['images'] ?? []),
       description: json['description']?.toString() ?? '',
@@ -79,7 +79,7 @@ class Vehicle {
       'vehicleId': vehicleId,
       'vehicleName': vehicleName,
       'licensePlate': licensePlate,
-      'brand': brand.toJson(),
+      'brand': brand,
       'model': model,
       'yearOfManufacture': yearOfManufacture,
       'images': images,

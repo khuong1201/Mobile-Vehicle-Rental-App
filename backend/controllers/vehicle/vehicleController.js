@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Vehicle = require("../../models/vehicles/vehicle_model");
 const Brand = require("../../models/vehicles/brand_model");
 const {
@@ -15,8 +15,9 @@ const GetAllVehicles = async (req, res) => {
 
     const result = await paginate(
       Vehicle,
-      { available: true,
-        // status: { $nin: ["pending", "rejected"] }, 
+      {
+        available: true,
+        // status: { $nin: ["pending", "rejected"] },
       },
       {
         page,
@@ -60,12 +61,10 @@ const ChangeVehicleStatus = async (req, res) => {
       return res.status(404).json({ message: "Không tìm thấy xe để cập nhật" });
     res.status(200).json(updated);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Lỗi khi cập nhật trạng thái xe",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Lỗi khi cập nhật trạng thái xe",
+      error: error.message,
+    });
   }
 };
 
@@ -73,27 +72,24 @@ const ChangeVehicleStatus = async (req, res) => {
 const CreateVehicle = async (req, res) => {
   try {
     const data = req.body;
+    console.log("Dữ liệu xe mới:", data);
+    console.log(typeof data.brand, data.brand);
+    const brandId = data.brand;
 
-    // const brand = await Brand.findById(data.brandId);
-    // if (!brand)
-    //   return res.status(400).json({ message: "Thương hiệu không hợp lệ" });
-
-   let brandId = data.brandId;
-
-    // Nếu brand là một object, lấy _id từ đó
-    if (data.brand && data.brand._id) {
-      brandId = data.brand._id;
-      console.log("Parsed brandId:", brandId);
-    }
-
-    brandId = String(brandId);
-    if (!mongoose.Types.ObjectId.isValid(brandId)) {
+    if (
+      !brandId ||
+      typeof brandId !== "string" ||
+      !mongoose.Types.ObjectId.isValid(brandId)
+    ) {
       return res.status(400).json({ message: "ID thương hiệu không hợp lệ" });
     }
+
     const brand = await Brand.findById(brandId);
     if (!brand) {
       return res.status(400).json({ message: "Thương hiệu không tồn tại" });
     }
+
+    console.log("✅ Parsed brand:", brand._id);
 
     const images = req.files?.images
       ? req.files.images.map((file) => ({
@@ -104,7 +100,7 @@ const CreateVehicle = async (req, res) => {
 
     const vehicleData = {
       ...data,
-      brand: brand._id,
+      brand: brand._id, // ← đã có object brand
       ownerId: req.user.id,
       images: images.map((img) => img.url),
       imagePublicIds: images.map((img) => img.publicId),
@@ -113,13 +109,14 @@ const CreateVehicle = async (req, res) => {
     const vehicle = await Vehicle.create(vehicleData);
     res.status(201).json(vehicle);
   } catch (error) {
-    // res
-    //   .status(500)
-    //   .json({ message: "Lỗi khi tạo xe mới", error: error.message });
-    console.error("🔥 Lỗi khi tạo xe mới:", error); // THÊM DÒNG NÀY
-    res.status(500).json({ message: "Lỗi khi tạo xe mới", error: error.message });
+    console.error("🔥 Lỗi khi tạo xe mới:", error);
+    res.status(500).json({
+      message: "Lỗi khi tạo xe mới",
+      error: error.message,
+    });
   }
 };
+
 
 // Cập nhật xe
 const UpdateVehicle = async (req, res) => {
@@ -205,9 +202,7 @@ const GetVehicleByType = async (req, res) => {
 
     const result = await paginate(
       Vehicle,
-      { type,
-        available: true,
-        status: { $nin: ["pending", "rejected"] } },
+      { type, available: true, status: { $nin: ["pending", "rejected"] } },
       {
         page,
         limit,

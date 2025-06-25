@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
 import 'package:frontend/viewmodels/booking/booking_viewmodel.dart';
+import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/booking/review_summary_screen.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
@@ -42,6 +44,11 @@ class _BookingScreenState extends State<BookingScreen> {
   @override
   Widget build(BuildContext context) {
     final bookingVM = Provider.of<BookingViewModel>(context);
+    final brands = Provider.of<VehicleViewModel>(context).brands;
+    final Brand? brand = brands.firstWhere(
+      (b) => b.id == widget.vehicle.brand,
+      orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
+    );
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -80,7 +87,7 @@ class _BookingScreenState extends State<BookingScreen> {
                             children: [
                               CustomTextBodyL(
                                 title:
-                                    '${widget.vehicle.brand.brandName} ${widget.vehicle.vehicleName}',
+                                    '${brand?.brandName} ${widget.vehicle.vehicleName}',
                               ),
                               Spacer(),
                               Row(
@@ -114,12 +121,12 @@ class _BookingScreenState extends State<BookingScreen> {
                                 width: 28,
                                 height: 28,
                                 child: SvgPicture.network(
-                                  '${widget.vehicle.brand.brandImage}',
+                                  '${brand?.brandImage}',
                                 ),
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                widget.vehicle.brand.brandName,
+                                brand!.brandName,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 12,

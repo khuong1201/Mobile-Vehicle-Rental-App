@@ -30,7 +30,7 @@ const VehicleSchema = new mongoose.Schema(
       ref: "Brand",
     },
     model: String,
-    yearOfManufacture: Number,
+    yearOfManufacture: String,
     images: [String], 
     imagePublicIds: [String], 
     description: String,

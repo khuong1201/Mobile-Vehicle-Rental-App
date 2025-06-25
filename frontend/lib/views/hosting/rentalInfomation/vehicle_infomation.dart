@@ -55,14 +55,15 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
     final data = {
       'licensePlate': _licensePlateController.text,
       'model': _modelController.text,
-      'yearOfManufacture': int.tryParse(_yearController.text),
+      'yearOfManufacture': _yearController.text,
       'location': _location?.toJson(),
       'description': _descriptionController.text,
-      'brand': _selectedBrand?.toJson(),
+      'brand': _selectedBrand?.id ?? '',
       'numberSeats': _numberSeats,
       'fuelType': _typeFuel,
       'fuelConsumption': _fuelConsumption,
       'vehicleType': widget.vehicleType ?? 'vehicle',
+      
     };
     widget.onDataChanged(data);
   }
@@ -157,7 +158,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                   ),
                 ),
                 SizedBox(width: 24),
-                if (_vehicleType == 'car' || _vehicleType == 'coach')
+                if (_vehicleType == 'Car' || _vehicleType == 'Coach')
                   Expanded(
                     flex: 1,
                     child: Column(
@@ -190,7 +191,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
             const SizedBox(height: 16),
             CustomTextBodyL(title: 'Drivetrain'),
             const SizedBox(height: 16),
-            if (_vehicleType == 'car' || _vehicleType == 'coach')
+            if (_vehicleType == 'Car' || _vehicleType == 'Coach')
               Row(
                 children: [
                   Expanded(

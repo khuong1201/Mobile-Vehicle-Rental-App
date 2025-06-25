@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
 import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
 import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
@@ -82,6 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final userVM = Provider.of<UserViewModel>(context);
     final user = userVM.user;
     final rentalvehicles = vehicleVM.vehicles;
+    final brands = Provider.of<VehicleViewModel>(context).brands;
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -130,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                               ),
                             ),
-          
+
                             SizedBox(width: 10),
                             Column(
                               children: [
@@ -196,7 +198,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 36),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   SvgIconTextButton(
                                     assetPath:
@@ -239,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-          
+
                 //banner
                 Container(
                   margin: EdgeInsets.symmetric(vertical: 29),
@@ -264,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                 ),
-          
+
                 //view
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -297,8 +300,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                 (vehicleVM.hasMore ? 1 : 0),
                             itemBuilder: (context, index) {
                               final vehicle = rentalvehicles[index];
+                              final brand = brands.firstWhere(
+                                (b) => b.id == vehicle.brand,
+                                orElse:
+                                    () => Brand(
+                                      id: '',
+                                      brandId: '',
+                                      brandName: 'Unknown',
+                                      brandImage: null,
+                                    ),
+                              );
                               if (index >= rentalvehicles.length) {
-                                return Center(child: CircularProgressIndicator());
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
                               }
                               return GestureDetector(
                                 onTap: () {
@@ -363,14 +378,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   width: 20,
                                                   height: 20,
                                                   child: SvgPicture.network(
-                                                    '${vehicle.brand.brandImage}',
+                                                    '${brand.brandImage}',
                                                   ),
                                                 ),
                                                 SizedBox(width: 4),
                                                 Text(
-                                                  '${vehicle.brand.brandName} ${vehicle.vehicleName}',
+                                                  '${brand.brandName} ${vehicle.vehicleName}',
                                                   maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   style: TextStyle(
                                                     color: Colors.black,
                                                     fontSize: 12,
@@ -392,8 +408,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ),
                                                 SizedBox(width: 8),
                                                 Text(
-                                                  vehicle.locationForVehicle?.toString() ?? ''
-                                                      'Unknown Location',
+                                                  vehicle.locationForVehicle
+                                                          ?.toString() ??
+                                                      ''
+                                                          'Unknown Location',
                                                   style: TextStyle(
                                                     color: const Color(
                                                       0xFFAAACAF,
@@ -416,7 +434,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   decoration: BoxDecoration(
                                                     color: Color(0xffFFF5E0),
                                                     borderRadius:
-                                                        BorderRadius.circular(2),
+                                                        BorderRadius.circular(
+                                                          2,
+                                                        ),
                                                     border: Border.all(
                                                       color: Color(0xFFFFC107),
                                                       width: 1,
@@ -424,7 +444,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   ),
                                                   child: Row(
                                                     crossAxisAlignment:
-                                                        CrossAxisAlignment.center,
+                                                        CrossAxisAlignment
+                                                            .center,
                                                     children: [
                                                       SizedBox(
                                                         width: 12,

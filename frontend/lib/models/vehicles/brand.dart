@@ -15,6 +15,7 @@ class Brand {
 
   factory Brand.fromJson(Map<String, dynamic> json) {
     debugPrint('Parsing brand JSON: $json');
+    
     return Brand(
       id: json['_id']?.toString() ?? '',
       brandId: json['brandId']?.toString() ?? '',

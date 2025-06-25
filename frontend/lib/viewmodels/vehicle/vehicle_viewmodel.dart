@@ -136,7 +136,7 @@ class VehicleViewModel extends ChangeNotifier {
 
   Future<void> createVehicle(
     BuildContext context,
-    Map<String, dynamic> data, // Dữ liệu từ các màn hình
+    Map<String, dynamic> data,
     List<File> imageFiles, 
   ) async {
     _isLoadingVehicles = true;
@@ -153,22 +153,24 @@ class VehicleViewModel extends ChangeNotifier {
               ? LocationForVehicle.fromJson(locationData)
               : null;
             
-      // Chuyển đổi data['brand'] từ Map sang Brand
+      // Chuyển đổi data['brand']
       final brandData = data['brand'];
       final brand = brandData is Map<String, dynamic>
           ? Brand.fromJson(brandData)
-          : Brand(id: '', brandId: '', brandName: 'Unknown');
+          : brandData is String && brandData.isNotEmpty
+              ? Brand(id: brandData, brandId: brandData, brandName: 'Unknown') // Sử dụng ID từ String
+              : Brand(id: '', brandId: '', brandName: 'Unknown');
 
       Vehicle vehicle;
       switch (data['vehicleType']?.toLowerCase()) {
-        case 'car':
+        case 'Car':
           vehicle = Car(
             id: '', 
             vehicleId: '',
             vehicleName: data['vehicleName'] ?? 'Default Car',
             licensePlate: data['licensePlate'] ?? '',
-            brand: brand,
-            yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
+            brand: brand.id,
+            yearOfManufacture: data['yearOfManufacture'],
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
             locationForVehicle: location,
@@ -185,15 +187,15 @@ class VehicleViewModel extends ChangeNotifier {
             numberOfSeats: int.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
           );
           break;
-        case 'motor':
+        case 'Motor':
         case 'motorbike':
           vehicle = Motor(
             id: '',
             vehicleId: '',
             vehicleName: data['vehicleName'] ?? 'Default Motor',
             licensePlate: data['licensePlate'] ?? '',
-            brand: brand,
-            yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
+            brand: brand.id,
+            yearOfManufacture: data['yearOfManufacture'],
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
             locationForVehicle: location,
@@ -209,14 +211,14 @@ class VehicleViewModel extends ChangeNotifier {
             fuelConsumption: (data['fuelConsumption'] as num?)?.toDouble() ?? 0.0,
           );
           break;
-        case 'coach':
+        case 'Coach':
           vehicle = Coach(
             id: '',
             vehicleId: '',
             vehicleName: data['vehicleName'] ?? 'Default Coach',
             licensePlate: data['licensePlate'] ?? '',
-            brand: brand,
-            yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
+            brand: brand.id,
+            yearOfManufacture: data['yearOfManufacture'],
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
             locationForVehicle: location,
@@ -233,14 +235,14 @@ class VehicleViewModel extends ChangeNotifier {
             numberOfSeats: int.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
           );
           break;
-        case 'bike':
+        case 'Bike':
           vehicle = Bike(
             id: '',
             vehicleId: '',
             vehicleName: data['vehicleName'] ?? 'Default Bike',
             licensePlate: data['licensePlate'] ?? '',
-            brand: brand,
-            yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
+            brand: brand.id,
+            yearOfManufacture: data['yearOfManufacture'],
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
             locationForVehicle: location,
@@ -261,8 +263,8 @@ class VehicleViewModel extends ChangeNotifier {
             vehicleId: '',
             vehicleName: data['vehicleName'] ?? 'Default Vehicle',
             licensePlate: data['licensePlate'] ?? '',
-            brand: brand,
-            yearOfManufacture: data['yearOfManufacture'] as int? ?? 0,
+            brand: brand.id,
+            yearOfManufacture: data['yearOfManufacture'],
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
             locationForVehicle: location,
@@ -285,7 +287,6 @@ class VehicleViewModel extends ChangeNotifier {
         vehicle: vehicle,
         imageFiles: imageFiles,
       );
-      print("Dữ liệu brand gửi lên: ${data['brand']}");
       if (response.success && response.data != null) {
         _vehicles.insert(0, response.data!); 
         ScaffoldMessenger.of(context).showSnackBar(
