@@ -85,29 +85,62 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
   }
 
   Future<void> _submitData() async {
-    if (_pageIndex == _navItems.length - 1) {
-      final viewModel = Provider.of<VehicleViewModel>(context, listen: false);
-      final Map<String, dynamic> data = {
-        ...(_collectedData['VehicleInfomationScreen'] ?? {}),
-        ...(_collectedData['ImageUploadScreen'] ?? {}),
-        ...(_collectedData['VehicleDocumentScreen'] ?? {}),
-        ...(_collectedData['RentalPriceScreen'] ?? {}),
-        'type': widget.vehicleType ?? 'vehicle',
-      };
+    final viewModel = Provider.of<VehicleViewModel>(context, listen: false);
 
-      // Truy xuất 'images' và chuyển đổi XFile? thành List<File>
-      final Map<String, dynamic>? imagesData =
-          _collectedData['ImageUploadScreen']?['images']
-              as Map<String, dynamic>?;
-      final List<File> imageFiles =
-          imagesData != null
-              ? imagesData.values
-                  .whereType<XFile>()
-                  .map((xFile) => File(xFile.path))
-                  .toList()
-              : (widget.imageFiles ?? []);
-      await viewModel.createVehicle(context, data, imageFiles);
-      Navigator.pop(context);
+    final Map<String, dynamic> data = {
+      ...(_collectedData['VehicleInformationScreen'] ?? {}),
+      ...(_collectedData['ImageUploadScreen'] ?? {}),
+      ...(_collectedData['DocumentScreen'] ?? {}),
+      ...(_collectedData['RentalPriceScreen'] ?? {}),
+      'type': widget.vehicleType ?? 'vehicle',
+    };
+
+    final Map<String, dynamic>? imagesData =
+        _collectedData['ImageUploadScreen']?['images'] as Map<String, dynamic>?;
+
+    final List<File> imageFiles =
+        imagesData != null
+            ? imagesData.values
+                .whereType<XFile>()
+                .map((xFile) => File(xFile.path))
+                .where((file) => file.existsSync())
+                .toList()
+            : (widget.imageFiles ?? []);
+
+    await viewModel.createVehicle(context, data, imageFiles);
+    Navigator.pop(context);
+  }
+
+  void _onNext() {
+    if (_validateCurrentPage()) {
+      if (_pageIndex < _navItems.length - 1) {
+        _controller.nextPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else {
+        _submitData();
+      }
+    } else {
+      showDialog(
+        context: context,
+        builder:
+            (context) => CustomAlertDialog(
+              title: 'Error',
+              content:
+                  'Please try again.',
+              buttonText: 'OK',
+            ),
+      );
+    }
+  }
+
+  void _onBack() {
+    if (_pageIndex > 0) {
+      _controller.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
 
@@ -212,6 +245,8 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
                     formKey: _docFormKey,
                   ),
                   RentalPriceScreen(
+                    vehicleType: widget.vehicleType,
+                    formKey: _priceFormKey,
                     onDataChanged:
                         (data) => _updateData('RentalPriceScreen', data),
                   ),

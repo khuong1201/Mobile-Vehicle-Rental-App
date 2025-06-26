@@ -112,7 +112,7 @@ class _LocationScreenState extends State<LocationScreen> {
             ),
             const SizedBox(height: 16),
             InkWell(
-              onLongPress: () async {
+              onTap: () async {
                 final locationVM = Provider.of<LocationViewModel>(
                   context,
                   listen: false,
