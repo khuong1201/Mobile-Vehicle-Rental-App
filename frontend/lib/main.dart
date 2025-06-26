@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
               ),
         ),
         ChangeNotifierProvider(create: (_) => PersonalInfoViewModel()),
-        ChangeNotifierProvider(create: (_) => ReviewViewModel(
+        ChangeNotifierProvider(create: (context) => ReviewViewModel(
           Provider.of<AuthService>(context, listen: false),
         )),
         ChangeNotifierProvider(create: (_) => BookingViewModel()),
