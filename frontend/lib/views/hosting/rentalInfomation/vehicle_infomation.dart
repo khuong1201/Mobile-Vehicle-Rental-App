@@ -162,7 +162,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                   ),
                 ),
                 const SizedBox(width: 24),
-                if (_vehicleType == 'Car' || _vehicleType == 'Coach')
+                if (_vehicleType == 'car' || _vehicleType == 'coach')
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,8 +218,17 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
 
             const SizedBox(height: 16),
             CustomTextBodyL(title: 'Location'),
-            GestureDetector(
-              onTap: () async {
+            CustomTextField(
+              controller: _locationController,
+              hintText: 'Select car location',
+              validator: (value) {
+                if (_location == null) {
+                  return 'Please select location';
+                }
+                return null;
+              },
+              suffixIcon: IconButton(
+                onPressed: () async {
                 final result = await Navigator.push<Locations?>(
                   context,
                   MaterialPageRoute(
@@ -235,20 +244,40 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                   });
                 }
               },
-              child: AbsorbPointer(
-                child: CustomTextField(
-                  controller: _locationController,
-                  hintText: 'Select car location',
-                  validator: (value) {
-                    if (_location == null) {
-                      return 'Please select location';
-                    }
-                    return null;
-                  },
-                  suffixIcon: const Icon(Icons.arrow_forward_ios, size: 18),
-                ),
-              ),
+                icon: Icon(Icons.arrow_forward_ios, size: 18)
+              )
             ),
+            // GestureDetector(
+            //   onTap: () async {
+            //     final result = await Navigator.push<Locations?>(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) => const LocationScreen(),
+            //       ),
+            //     );
+            //     if (result != null) {
+            //       setState(() {
+            //         _location = result;
+                    
+            //         _locationController.text = result.toString();
+            //         _saveData();
+            //       });
+            //     }
+            //   },
+            //   child: AbsorbPointer(
+            //     child: CustomTextField(
+            //       controller: _locationController,
+            //       hintText: 'Select car location',
+            //       validator: (value) {
+            //         if (_location == null) {
+            //           return 'Please select location';
+            //         }
+            //         return null;
+            //       },
+            //       suffixIcon: const Icon(Icons.arrow_forward_ios, size: 18),
+            //     ),
+            //   ),
+            // ),
 
             const SizedBox(height: 16),
             CustomTextBodyL(title: 'Description'),
