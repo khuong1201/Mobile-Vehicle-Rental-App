@@ -35,11 +35,6 @@ const VehicleSchema = new mongoose.Schema(
     imagePublicIds: [String], 
     description: String,
     location: LocationSchema,
-    type: {
-      type: String,
-      enum: ['Car', 'car', 'Motor', 'motor', 'Coach', 'coach', 'Bike', 'bike'],
-      required: true,
-    },
     price: Number,
     rate: { type: Number, default: 0 },
     available: { type: Boolean, default: true },

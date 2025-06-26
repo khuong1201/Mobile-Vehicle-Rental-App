@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Vehicle = require('./vehicle.model');
+const Vehicle = require('./vehicle_model');
 
 const Car = Vehicle.discriminator('Car', new mongoose.Schema({
   fuelType: {

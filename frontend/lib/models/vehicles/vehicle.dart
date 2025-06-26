@@ -17,7 +17,6 @@ class Vehicle {
   final String model;
   final String ownerId;
   final String ownerEmail;
-  
   final double price;
   final double rate;
   final double rentals;

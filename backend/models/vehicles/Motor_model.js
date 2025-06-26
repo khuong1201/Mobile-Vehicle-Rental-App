@@ -1,4 +1,4 @@
-const Vehicle = require('./base.model');
+const Vehicle = require('./vehicle_model');
 const mongoose = require('mongoose');
 
 const MotorSchema = new mongoose.Schema({

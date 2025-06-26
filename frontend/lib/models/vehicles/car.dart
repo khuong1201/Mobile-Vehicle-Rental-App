@@ -47,7 +47,7 @@ class Car extends Vehicle {
       status: vehicle.status,
       type: vehicle.type,
       fuelType: json['fuelType'] ?? '',
-      numberOfSeats: json['numberOfSeats'] ?? 0,
+      numberOfSeats: (json['numberOfSeats'] as num?)?.toDouble() ?? 0.0,
     );
   }
   @override

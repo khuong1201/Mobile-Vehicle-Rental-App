@@ -1,5 +1,10 @@
 const mongoose = require("mongoose");
 const Vehicle = require("../../models/vehicles/vehicle_model");
+const Car = require("../../models/vehicles/car_model");
+const Motor = require("../../models/vehicles/motor_model");
+const Coach = require("../../models/vehicles/coach_model");
+const Bike = require("../../models/vehicles/bike_model");
+
 const Brand = require("../../models/vehicles/brand_model");
 const {
   deleteFileFromCloudinary,
@@ -68,19 +73,20 @@ const ChangeVehicleStatus = async (req, res) => {
   }
 };
 
-// Tạo xe mới
 const CreateVehicle = async (req, res) => {
   try {
     const data = req.body;
-    console.log("Dữ liệu xe mới:", data);
-    console.log(typeof data.brand, data.brand);
-    const brandId = data.brand;
+    console.log("📥 Dữ liệu xe mới:", data);
 
-    if (
-      !brandId ||
-      typeof brandId !== "string" ||
-      !mongoose.Types.ObjectId.isValid(brandId)
-    ) {
+    // Lấy và chuẩn hóa type
+    const rawType = (data.type || '').toLowerCase();
+    if (!['car', 'motor', 'coach', 'bike'].includes(rawType)) {
+      return res.status(400).json({ message: "Loại xe không hợp lệ" });
+    }
+
+    // Kiểm tra brand
+    const brandId = data.brand;
+    if (!brandId || !mongoose.Types.ObjectId.isValid(brandId)) {
       return res.status(400).json({ message: "ID thương hiệu không hợp lệ" });
     }
 
@@ -89,54 +95,87 @@ const CreateVehicle = async (req, res) => {
       return res.status(400).json({ message: "Thương hiệu không tồn tại" });
     }
 
-    let parsedLocation = undefined;
-
+    // Parse location
+    let parsedLocation;
     try {
-      if (typeof data.location === "string") {
-        parsedLocation = JSON.parse(data.location);
-      } else if (typeof data.location === "object") {
-        parsedLocation = data.location;
-      }
-      if (
-        !parsedLocation ||
-        (!parsedLocation.address &&
-          (parsedLocation.lat === undefined ||
-            parsedLocation.lng === undefined))
-      ) {
-        parsedLocation = undefined;
-      }
+      parsedLocation = typeof data.location === 'string' ? JSON.parse(data.location) : data.location;
     } catch (err) {
       console.warn("⚠️ Lỗi khi parse location:", err.message);
       parsedLocation = undefined;
     }
 
-    const images = req.files?.images
-      ? req.files.images.map((file) => ({
-          url: file.path,
-          publicId: file.filename,
-        }))
-      : [];
+    // Xử lý ảnh
+    const images = req.files?.images || [];
+    const imageInfos = images.map(file => ({
+      url: file.path,
+      publicId: file.filename,
+    }));
 
-    const vehicleData = {
-      ...data,
+    // Dữ liệu dùng chung cho tất cả các loại xe
+    const baseVehicleData = {
+      vehicleName: data.vehicleName || "Default Vehicle",
+      licensePlate: data.licensePlate,
       brand: brand._id,
+      model: data.model,
+      yearOfManufacture: data.yearOfManufacture,
+      images: imageInfos.map(i => i.url),
+      imagePublicIds: imageInfos.map(i => i.publicId),
+      description: data.description,
       location: parsedLocation,
+      price: parseFloat(data.price || 0),
+      rate: parseFloat(data.rate || 0),
+      available: data.available === 'true' || data.available === true,
+      status: data.status || 'pending',
       ownerId: req.user.id,
-      images: images.map((img) => img.url),
-      imagePublicIds: images.map((img) => img.publicId),
+      ownerEmail: req.user.email,
     };
 
-    const vehicle = await Vehicle.create(vehicleData);
-    res.status(201).json(vehicle);
+    let vehicle;
+
+    // Tạo từng loại xe theo type
+    switch (rawType) {
+      case 'car':
+        vehicle = await Car.create({
+          ...baseVehicleData,
+          fuelType: data.fuelType || '',
+          transmission: data.transmission || 'Automatic',
+          numberOfSeats: parseFloat(data.numberOfSeats || 4),
+        });
+        break;
+
+      case 'motor':
+        vehicle = await Motor.create({
+          ...baseVehicleData,
+          fuelType: data.fuelType || '',
+        });
+        break;
+
+      case 'coach':
+        vehicle = await Coach.create({
+          ...baseVehicleData,
+          fuelType: data.fuelType || '',
+          transmission: data.transmission || 'Manual',
+          numberOfSeats: parseFloat(data.numberOfSeats || 16),
+        });
+        break;
+
+      case 'bike':
+        vehicle = await Bike.create(baseVehicleData);
+        break;
+
+      default:
+        return res.status(400).json({ message: "Loại xe không hợp lệ" });
+    }
+
+    return res.status(201).json(vehicle);
   } catch (error) {
     console.error("🔥 Lỗi khi tạo xe mới:", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Lỗi khi tạo xe mới",
       error: error.message,
     });
   }
 };
-
 // Cập nhật xe
 const UpdateVehicle = async (req, res) => {
   try {
