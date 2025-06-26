@@ -42,8 +42,8 @@ class ReviewModel {
       'comment': comment,
       'rating': rating,
       'reviewCount': reviewCount,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt?.toIso8601String(),
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
       'renterId': renter.toJson(),
     };
   }
@@ -52,16 +52,19 @@ class ReviewModel {
 class RenterInfo {
   final String id;
   final String email;
+  final String fullname;
 
   RenterInfo({
     required this.id,
     required this.email,
+    required this.fullname,
   });
 
   factory RenterInfo.fromJson(Map<String, dynamic> json) {
     return RenterInfo(
       id: json['_id'] ?? '',
       email: json['email'] ?? '',
+      fullname: json['fullname'] ?? '',
     );
   }
 
@@ -69,6 +72,7 @@ class RenterInfo {
     return {
       '_id': id,
       'email': email,
+      'fullname': fullname,
     };
   }
 }

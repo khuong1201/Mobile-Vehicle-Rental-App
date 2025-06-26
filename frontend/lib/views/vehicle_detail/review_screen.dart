@@ -1,21 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frontend/models/vehicles/vehicle.dart';
+import 'package:frontend/viewmodels/auth/auth_service.dart';
+import 'package:frontend/viewmodels/vehicle/review_viewmodel.dart';
 import 'package:frontend/views/widgets/custom_text_body_L.dart';
+import 'package:provider/provider.dart';
 
 class ReviewScreen extends StatelessWidget {
-  const ReviewScreen({super.key,});
+  final Vehicle vehicle;
+  const ReviewScreen({super.key, required this.vehicle});
 
   @override
   Widget build(BuildContext context) {
+    final authServiceViewModel = AuthService;
+    final reviewViewModel = Provider.of<ReviewViewModel>(context,listen: false);
+
+    Future.microtask(() {
+      reviewViewModel.fetchReviews(
+        context,
+        vehicleId: vehicle.id,
+        page: 1,
+        limit: 10,
+        clearBefore: true,
+      );
+    });
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CustomTextBodyL(title: 'Review'),
-        ListView.builder(
+         reviewViewModel.isLoading
+        ? const Center(child: CircularProgressIndicator())
+        :ListView.builder(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
-          itemCount: 3,
+          itemCount: reviewViewModel.reviews.length,
           itemBuilder: (context, index) {
+            final review = reviewViewModel.reviews[index];
+
             return Container(
               margin:EdgeInsets.only(bottom: 8),
               decoration: BoxDecoration(
@@ -52,7 +73,7 @@ class ReviewScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 12),
                             Text(
-                              'Laura Master',
+                              review.renter.fullname,
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 14,
@@ -78,7 +99,7 @@ class ReviewScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '30 March 2025',
+                              "${review.createdAt}",
                               style: TextStyle(
                                 color: const Color(0xFF808183),
                                 fontSize: 14,
@@ -94,7 +115,7 @@ class ReviewScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'The Ford Everest Platinum 2025 is the highest-end version of the 7-seat Ford Everest SUV lineup, officially distributed in Vietnam. Positioned as the most versatile 7-seat SUV in its segment, the vehicle inherits the strengths of its predecessors, including a solid chassis, thick bodywork, excellent sound insulation, and an authentic driving feel.',
+                    review.comment,
                     style: TextStyle(
                       color: const Color(0xFF808183),
                       fontSize: 14,

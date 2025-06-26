@@ -40,7 +40,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     _screens = [
       AboutScreen(vehicle: widget.vehicle),
       GalleryScreen(vehicle: widget.vehicle),
-      ReviewScreen(),
+      ReviewScreen(vehicle: widget.vehicle),
     ];
   }
 
