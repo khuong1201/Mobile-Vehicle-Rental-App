@@ -2,7 +2,6 @@ import 'package:frontend/models/vehicles/vehicle.dart';
 
 class Motor extends Vehicle {
   final String fuelType;
-  final double fuelConsumption;
 
   Motor({
     required super.id,
@@ -23,7 +22,6 @@ class Motor extends Vehicle {
     required super.status,
     required super.type,
     required this.fuelType,
-    required this.fuelConsumption,
   });
 
   factory Motor.fromJson(Map<String, dynamic> json) {
@@ -47,7 +45,6 @@ class Motor extends Vehicle {
       status: vehicle.status,
       type: vehicle.type,
       fuelType: json['fuelType'] ?? '',
-      fuelConsumption: (json['fuelConsumption'] ?? 0).toDouble(),
     );
   }
   @override
@@ -55,7 +52,6 @@ class Motor extends Vehicle {
     final json = super.toJson();
     json.addAll({
       'fuelType': fuelType,
-      'fuelConsumption': fuelConsumption,
     });
     return json;
   }
