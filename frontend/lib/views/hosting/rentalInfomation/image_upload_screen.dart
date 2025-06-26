@@ -5,7 +5,8 @@ import 'package:image_picker/image_picker.dart';
 class ImageUploadScreen extends StatefulWidget {
   final String? vehicleType;
   final Function(Map<String, dynamic>) onDataChanged;
-  const ImageUploadScreen({super.key, this.vehicleType, required this.onDataChanged});
+  final GlobalKey<FormState> formKey;
+  const ImageUploadScreen({super.key, this.vehicleType, required this.onDataChanged, required this.formKey});
 
   @override
   State<ImageUploadScreen> createState() => _ImageUploadScreenState();
@@ -62,71 +63,78 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          flex: 2,
-          child: Container(
-            child: CustomBoxImage(
-              hintText: 'Take a photo',
-              title: 'Profile picture',
-              image: _profilePicture,
+    return Form(
+      key: widget.formKey,
+      child: Column(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Container(
+              child: CustomBoxImage(
+                hintText: 'Take a photo',
+                title: 'Profile picture',
+                image: _profilePicture,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Expanded(
-          flex: 1,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: CustomBoxImage(
-                  title: 'Front view picture',
-                  hintText: 'Take a photo',
-                  image: _frontViewPicture,
-                  onPickImage: () => _pickImage('front'),
+          const SizedBox(height: 16),
+          Expanded(
+            flex: 1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: CustomBoxImage(
+                    title: 'Front view picture',
+                    hintText: 'Take a photo',
+                    image: _frontViewPicture,
+                    onPickImage: () => _pickImage('front'),
+                    validator: (image) => image == null ? 'Image is required' : null,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: CustomBoxImage(
-                  title: 'Back view picture',
-                  hintText: 'Take a photo',
-                  image: _backViewPicture,
-                  onPickImage: () => _pickImage('back'),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: CustomBoxImage(
+                    title: 'Back view picture',
+                    hintText: 'Take a photo',
+                    image: _backViewPicture,
+                    onPickImage: () => _pickImage('back'),
+                    validator: (image) => image == null ? 'Image is required' : null,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Expanded(
-          flex: 1,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: CustomBoxImage(
-                  title: 'Left view picture',
-                  hintText: 'Take a photo',
-                  image: _leftViewPicture,
-                  onPickImage: () => _pickImage('left'),
+          const SizedBox(height: 16),
+          Expanded(
+            flex: 1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: CustomBoxImage(
+                    title: 'Left view picture',
+                    hintText: 'Take a photo',
+                    image: _leftViewPicture,
+                    onPickImage: () => _pickImage('left'),
+                    validator: (image) => image == null ? 'Image is required' : null,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: CustomBoxImage(
-                  title: 'Right view picture',
-                  hintText: 'Take a photo',
-                  image: _rightViewPicture,
-                  onPickImage: () => _pickImage('right'),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: CustomBoxImage(
+                    title: 'Right view picture',
+                    hintText: 'Take a photo',
+                    image: _rightViewPicture,
+                    onPickImage: () => _pickImage('right'),
+                    validator: (image) => image == null ? 'Image is required' : null,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

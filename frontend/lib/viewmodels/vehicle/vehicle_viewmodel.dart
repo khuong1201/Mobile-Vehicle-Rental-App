@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/vehicle/api_get_brand.dart';
+import 'package:frontend/api_services/vehicle/api_get_vehicle_by_type.dart';
 import 'package:frontend/api_services/vehicle/get_vehicle.dart';
 import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/models/vehicles/bike.dart';
@@ -62,12 +63,21 @@ class VehicleViewModel extends ChangeNotifier {
     if (clearBefore) _vehicles.clear(); 
     notifyListeners();
 
-    final response = await ApiGetAllVehicle.getAllVehicle(
-      this,
-      authService: authService,
-      page: page,
-      limit: limit,
-    );
+    // thêm lấy vehicle theo type
+    final response = type == null || type == 'all'
+        ? await ApiGetAllVehicle.getAllVehicle(
+            this,
+            authService: authService,
+            page: page,
+            limit: limit,
+          )
+        : await ApiVehicleService.getVehiclesByType(
+            this,
+            authService: authService,
+            type: type,
+            page: page,
+            limit: limit,
+          );
 
     if (response.success) {
       _vehicles.addAll(response.data ?? []);

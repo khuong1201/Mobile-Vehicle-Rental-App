@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frontend/models/vehicles/vehicle.dart';
 import 'package:frontend/views/widgets/custom_text_body_L.dart';
 
 class AboutScreen extends StatelessWidget {
-  const AboutScreen({super.key});
+  final Vehicle vehicle;
+  const AboutScreen({super.key, required this.vehicle});
 
   @override
   Widget build(BuildContext context) {

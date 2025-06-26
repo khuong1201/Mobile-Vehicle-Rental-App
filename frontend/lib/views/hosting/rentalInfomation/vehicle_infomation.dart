@@ -12,20 +12,20 @@ import 'package:provider/provider.dart';
 class VehicleInfomationScreen extends StatefulWidget {
   final String? vehicleType;
   final Function(Map<String, dynamic>) onDataChanged;
+  final GlobalKey<FormState> formKey;
+
   const VehicleInfomationScreen({
     super.key,
     this.vehicleType,
     required this.onDataChanged,
+    required this.formKey,
   });
 
   @override
-  State<VehicleInfomationScreen> createState() =>
-      _VehicleInfomationScreenState();
+  State<VehicleInfomationScreen> createState() => _VehicleInfomationScreenState();
 }
 
 class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
-  final _formKey = GlobalKey<FormState>();
-
   final TextEditingController _licensePlateController = TextEditingController();
   final TextEditingController _modelController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
@@ -44,10 +44,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
     super.initState();
     _vehicleType = widget.vehicleType;
     Future.microtask(() {
-      Provider.of<VehicleViewModel>(
-        context,
-        listen: false,
-      ).fetchBrands(context);
+      Provider.of<VehicleViewModel>(context, listen: false).fetchBrands(context);
     });
   }
 
@@ -63,7 +60,6 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
       'fuelType': _typeFuel,
       'fuelConsumption': _fuelConsumption,
       'vehicleType': widget.vehicleType ?? 'vehicle',
-      
     };
     widget.onDataChanged(data);
   }
@@ -71,9 +67,10 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
   @override
   Widget build(BuildContext context) {
     final brands = Provider.of<VehicleViewModel>(context).brands;
+
     return SingleChildScrollView(
       child: Form(
-        key: _formKey,
+        key: widget.formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -91,6 +88,8 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
               onChanged: (_) => _saveData(),
             ),
             const SizedBox(height: 16),
+
+            // Brand
             CustomTextBodyL(title: 'Brand'),
             const SizedBox(height: 8),
             CustomDropdownButtonFormField<Brand>(
@@ -103,15 +102,14 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
               },
               items: brands,
               hintText: 'Choose Car Brand',
-              itemBuilder:
-                  (brand) => Row(
-                    children: [
-                      if (brand.brandImage != null)
-                        SvgPicture.network(brand.brandImage!, width: 24, height: 24),
-                      SizedBox(width: 8),
-                      Text(brand.brandName),
-                    ],
-                  ),
+              itemBuilder: (brand) => Row(
+                children: [
+                  if (brand.brandImage != null)
+                    SvgPicture.network(brand.brandImage!, width: 24, height: 24),
+                  const SizedBox(width: 8),
+                  Text(brand.brandName),
+                ],
+              ),
               validator: (value) {
                 if (value == null) return 'Please select';
                 return null;
@@ -132,23 +130,27 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
               },
               onChanged: (_) => _saveData(),
             ),
+
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
-                  flex: 1,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomTextBodyL(title: 'Year of Manufacture'),
                       const SizedBox(height: 8),
                       CustomTextField(
-                        keyboardType: TextInputType.numberWithOptions(),
-                        hintText: 'Year',
                         controller: _yearController,
+                        hintText: 'Year',
+                        keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter year';
+                            return 'Vui lòng nhập năm sản xuất';
+                          }
+                          final year = int.tryParse(value);
+                          if (year == null || year < 1900 || year > DateTime.now().year) {
+                            return 'Năm sản xuất không hợp lệ';
                           }
                           return null;
                         },
@@ -157,20 +159,19 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                     ],
                   ),
                 ),
-                SizedBox(width: 24),
+                const SizedBox(width: 24),
                 if (_vehicleType == 'Car' || _vehicleType == 'Coach')
                   Expanded(
-                    flex: 1,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CustomTextBodyL(title: 'Numbers of Seats'),
+                        CustomTextBodyL(title: 'Number of Seats'),
                         const SizedBox(height: 8),
                         CustomDropdownButtonFormField(
                           value: _numberSeats,
                           onChanged: (value) {
                             setState(() {
-                              _numberSeats = value;
+                              _numberSeats == value;
                               _saveData();
                             });
                           },
@@ -188,71 +189,33 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                   ),
               ],
             ),
+
             const SizedBox(height: 16),
             CustomTextBodyL(title: 'Drivetrain'),
+
+            const SizedBox(height: 8),
+            CustomTextBodyL(title: 'Fuel Type'),
+            const SizedBox(height: 8),
+            CustomDropdownButtonFormField(
+              value: _typeFuel,
+              onChanged: (value) {
+                setState(() {
+                  _typeFuel = value;
+                  _saveData();
+                });
+              },
+              items: ['Gasoline', 'Diesel', 'Electric'],
+              hintText: 'Type',
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please choose type';
+                }
+                return null;
+              },
+            ),
+
             const SizedBox(height: 16),
-            if (_vehicleType == 'Car' || _vehicleType == 'Coach')
-              Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomTextBodyL(title: 'Fuel'),
-                        const SizedBox(height: 8),
-                        CustomDropdownButtonFormField(
-                          value: _typeFuel,
-                          onChanged: (value) {
-                            setState(() {
-                              _typeFuel = value;
-                              _saveData();
-                            });
-                          },
-                          items: [],
-                          hintText: 'Type',
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please choose type';
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 24),
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomTextBodyL(title: 'Fuel Consumption'),
-                        const SizedBox(height: 8),
-                        CustomDropdownButtonFormField(
-                          value: _fuelConsumption,
-                          onChanged: (value) {
-                            setState(() {
-                              _numberSeats = value;
-                              _saveData();
-                            });
-                          },
-                          items: [],
-                          hintText: 'L/km',
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter number seats';
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            const SizedBox(height: 16),
-            CustomTextBodyL(title: 'Car Location'),
+            CustomTextBodyL(title: 'Location'),
             GestureDetector(
               onTap: () async {
                 final result = await Navigator.push<Locations?>(
@@ -261,7 +224,6 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                     builder: (context) => const LocationScreen(),
                   ),
                 );
-
                 if (result != null) {
                   setState(() {
                     _location = result;
@@ -272,28 +234,25 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
               },
               child: AbsorbPointer(
                 child: CustomTextField(
-                  hintText: 'Select car location',
                   controller: _locationController,
-                  suffixIcon: const Icon(
-                    Icons.arrow_forward_ios,
-                    size: 18,
-                    color: Color(0xff2B2B2C),
-                  ),
+                  hintText: 'Select car location',
                   validator: (value) {
                     if (_location == null) {
                       return 'Please select location';
                     }
                     return null;
                   },
+                  suffixIcon: const Icon(Icons.arrow_forward_ios, size: 18),
                 ),
               ),
             ),
 
             const SizedBox(height: 16),
             CustomTextBodyL(title: 'Description'),
+            const SizedBox(height: 8),
             CustomTextField(
-              hintText: 'Enter the description of your car',
               controller: _descriptionController,
+              hintText: 'Description about your car',
               onChanged: (_) => _saveData(),
             ),
           ],

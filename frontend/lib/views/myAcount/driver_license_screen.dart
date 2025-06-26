@@ -183,7 +183,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                 builder:
                     (context) => CustomAlertDialog(
                       title: 'Error',
-                      content: 'Registration failed. Please try again.',
+                      content: 'Please try again.',
                       buttonText: 'OK',
                     ),
               );

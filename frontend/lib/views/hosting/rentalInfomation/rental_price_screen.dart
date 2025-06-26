@@ -8,108 +8,164 @@ import 'package:frontend/views/widgets/custom_text_form_field.dart';
 class RentalPriceScreen extends StatefulWidget {
   final String? vehicleType;
   final Function(Map<String, dynamic>) onDataChanged;
-  const RentalPriceScreen({super.key, this.vehicleType, required this.onDataChanged});
+  final GlobalKey<FormState> formKey;
+
+  const RentalPriceScreen({
+    super.key,
+    this.vehicleType,
+    required this.onDataChanged,
+    required this.formKey,
+  });
 
   @override
   State<RentalPriceScreen> createState() => _RentalPriceScreenState();
 }
 
 class _RentalPriceScreenState extends State<RentalPriceScreen> {
-
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _accountNumberController = TextEditingController();
   final TextEditingController _accountNameController = TextEditingController();
 
   String? _nameBank;
+
   void _saveData() {
     final data = {
       'price': _priceController.text,
-      
+      'bankName': _nameBank,
+      'accountNumber': _accountNumberController.text,
+      'accountName': _accountNameController.text,
       'vehicleType': widget.vehicleType ?? 'vehicle',
     };
-    widget.onDataChanged(data); 
+    widget.onDataChanged(data);
   }
+
+  @override
+  void dispose() {
+    _priceController.dispose();
+    _accountNumberController.dispose();
+    _accountNameController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              SvgPicture.asset('assets/images/hosting/information/Group.svg'),
-              const SizedBox(width: 4),
-              CustomTextBodyL(title: 'Price Rental'),
-            ],
-          ),
-          const SizedBox(height: 8),
-          CustomTextBodySsb(title: 'price'),
-          const SizedBox(height: 8),
-          CustomTextField(
-            controller: _priceController,
-            hintText: 'VND',
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter rate';
-              }
-              return null;
-            },
-            onChanged: (_) => _saveData(),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              border: Border(
-                top:BorderSide(
-                  color: Color(0xFFD5D7DB),
-                  width: 1
-                )
-              )
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Form(
+      key: widget.formKey,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    SvgPicture.asset('assets/images/hosting/information/ion_card-outline.svg'),
-                    const SizedBox(width: 4),
-                    CustomTextBodyL(title: 'Card Information'),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                CustomTextBodySsb(title: 'Bank'),
-                const SizedBox(height: 8),
-                CustomDropdownButtonFormField(
-                  value: _nameBank,
-                  onChanged: (value) {
-                    setState(() {
-                      _nameBank == value;
-                      _saveData();
-                    });
-                  },
-                  hintText: 'Your Bank',
-                  items: ['Mb bank','viettinbank'],
-                ),
-                const SizedBox(height: 16),
-                CustomTextBodySsb(title: 'Account Number'),
-                const SizedBox(height: 8),
-                CustomTextField(
-                  controller: _accountNumberController,
-                  hintText: 'Your Bank Account Number',
-                  
-                ),
-                const SizedBox(height: 16),
-                CustomTextBodySsb(title: 'Name'),
-                const SizedBox(height: 8),
-                CustomTextField(
-                  controller: _accountNameController,
-                  hintText: 'Account Holder Name',           
-                ),
+                SvgPicture.asset('assets/images/hosting/information/Group.svg'),
+                const SizedBox(width: 4),
+                const CustomTextBodyL(title: 'Rental Price'),
               ],
-            )
-          )
-        ],
+            ),
+            const SizedBox(height: 8),
+            const CustomTextBodySsb(title: 'Price'),
+            const SizedBox(height: 8),
+            CustomTextField(
+              controller: _priceController,
+              hintText: 'VND',
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter rental price';
+                }
+                final price = double.tryParse(value);
+                if (price == null || price <= 0) {
+                  return 'Price must be a positive number';
+                }
+                return null;
+              },
+              onChanged: (_) => _saveData(),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.only(bottom: 16),
+              decoration: const BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    color: Color(0xFFD5D7DB),
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      SvgPicture.asset(
+                          'assets/images/hosting/information/ion_card-outline.svg'),
+                      const SizedBox(width: 4),
+                      const CustomTextBodyL(title: 'Card Information'),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  const CustomTextBodySsb(title: 'Bank'),
+                  const SizedBox(height: 8),
+                  CustomDropdownButtonFormField(
+                    value: _nameBank,
+                    onChanged: (value) {
+                      setState(() {
+                        _nameBank = value;
+                        _saveData();
+                      });
+                    },
+                    hintText: 'Select your bank',
+                    items: const ['MB Bank', 'VietinBank'],
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Please select a bank';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const CustomTextBodySsb(title: 'Account Number'),
+                  const SizedBox(height: 8),
+                  CustomTextField(
+                    controller: _accountNumberController,
+                    hintText: 'Bank account number',
+                    keyboardType: const TextInputType.numberWithOptions(),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter bank account number';
+                      }
+                      if (!RegExp(r'^\d+$').hasMatch(value)) {
+                        return 'Account number must contain only digits';
+                      }
+                      if (value.length < 8) {
+                        return 'Account number must be at least 8 digits';
+                      }
+                      return null;
+                    },
+                    onChanged: (_) => _saveData(),
+                  ),
+                  const SizedBox(height: 16),
+                  const CustomTextBodySsb(title: 'Account Name'),
+                  const SizedBox(height: 8),
+                  CustomTextField(
+                    controller: _accountNameController,
+                    hintText: 'Account holder name',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter account holder name';
+                      }
+                      if (value.length < 2) {
+                        return 'Name must be at least 2 characters';
+                      }
+                      return null;
+                    },
+                    onChanged: (_) => _saveData(),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

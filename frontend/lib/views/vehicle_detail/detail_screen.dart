@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
+import 'package:frontend/models/vehicles/car.dart';
+import 'package:frontend/models/vehicles/motorbike.dart';
+import 'package:frontend/models/vehicles/coach.dart';
+import 'package:frontend/models/vehicles/bike.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/booking/booking_screen.dart';
 import 'package:frontend/views/vehicle_detail/about_screen.dart';
@@ -33,7 +37,11 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _screens = [AboutScreen(), GalleryScreen(vehicle: widget.vehicle), ReviewScreen()];
+    _screens = [
+      AboutScreen(vehicle: widget.vehicle),
+      GalleryScreen(vehicle: widget.vehicle),
+      ReviewScreen(),
+    ];
   }
 
   @override
@@ -44,6 +52,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
       (b) => b.id == widget.vehicle.brand,
       orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
     );
+
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -81,8 +90,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                           Row(
                             children: [
                               CustomTextBodyL(
-                                title:
-                                    '${brand?.brandName} ${widget.vehicle.vehicleName}',
+                                title: '${brand?.brandName} ${widget.vehicle.vehicleName}',
                               ),
                               Spacer(),
                               Row(
@@ -117,6 +125,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                                 height: 28,
                                 child: SvgPicture.network(
                                   '${brand?.brandImage}',
+                                  placeholderBuilder: (context) => Icon(Icons.error),
                                 ),
                               ),
                               const SizedBox(width: 4),
@@ -135,31 +144,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                           const SizedBox(height: 28),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _buildContainer(
-                                'Transmission',
-                                'Automatic',
-                                'assets/images/vehicle_detail/Vector (8).svg',
-                              ),
-                    
-                              _buildContainer(
-                                'Seats',
-                                '4 seats',
-                                'assets/images/vehicle_detail/Vector (9).svg',
-                              ),
-                    
-                              _buildContainer(
-                                'Fuel',
-                                'Petrol',
-                                'assets/images/vehicle_detail/Vector (10).svg',
-                              ),
-                    
-                              _buildContainer(
-                                'Model',
-                                '${widget.vehicle.yearOfManufacture}',
-                                'assets/images/vehicle_detail/Vector (11).svg',
-                              ),
-                            ],
+                            children: _buildInfoContainers(),
                           ),
                           const SizedBox(height: 28),
                           Row(
@@ -174,10 +159,9 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                                     decoration: BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(
-                                          color:
-                                              selected
-                                                  ? const Color(0xFF1976D2)
-                                                  : const Color(0xFFD5D7DB),
+                                          color: selected
+                                              ? const Color(0xFF1976D2)
+                                              : const Color(0xFFD5D7DB),
                                           width: 1,
                                         ),
                                       ),
@@ -186,14 +170,11 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                                       item['label']!,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        color:
-                                            selected
-                                                ? const Color(0xff1976D2)
-                                                : const Color(0xff212121),
+                                        color: selected
+                                            ? const Color(0xff1976D2)
+                                            : const Color(0xff212121),
                                         fontWeight:
-                                            selected
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
+                                            selected ? FontWeight.bold : FontWeight.normal,
                                         fontSize: 12,
                                       ),
                                     ),
@@ -225,7 +206,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          border:Border(
+          border: Border(
             top: BorderSide(
               color: const Color(0xFFD5D7DB),
               width: 1,
@@ -302,48 +283,177 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
       ),
     );
   }
-}
 
-Widget _buildContainer(String title, String subtitle, String svgPath) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 12),
-    width: 83,
-    height: 90,
-    decoration: BoxDecoration(
-      color: Colors.transparent,
-      border: Border.all(color: const Color(0xFFD5D7DB), width: 1),
-      borderRadius: BorderRadius.circular(6),
-    ),
+  List<Widget> _buildInfoContainers() {
+    final vehicle = widget.vehicle;
+    List<Map<String, dynamic>> infoItems = [];
 
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(width: 24, height: 24, child: SvgPicture.asset(svgPath)),
-        Text(
-          title,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: const Color(0xFF808183),
-            fontSize: 12,
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w400,
-            height: 1.33,
+    if (vehicle is Car) {
+      infoItems = [
+        {
+          'title': 'Transmission',
+          'subtitle': 'Automatic', 
+          'icon': 'assets/images/vehicle_detail/Vector (8).svg',
+        },
+        {
+          'title': 'Seats',
+          'subtitle': '${vehicle.numberOfSeats} seats',
+          'icon': 'assets/images/vehicle_detail/Vector (9).svg',
+        },
+        {
+          'title': 'Fuel',
+          'subtitle': vehicle.fuelType,
+          'icon': 'assets/images/vehicle_detail/Vector (10).svg',
+        },
+        {
+          'title': 'Model',
+          'subtitle': vehicle.yearOfManufacture,
+          'icon': 'assets/images/vehicle_detail/Vector (11).svg',
+        },
+      ];
+    } else if (vehicle is Motor) {
+      infoItems = [
+        {
+          'title': 'Transmission',
+          'subtitle': 'Manual', 
+          'icon': 'assets/images/vehicle_detail/Vector (8).svg',
+        },
+        {
+          'title': 'Seats',
+          'subtitle': '2 seats', 
+          'icon': 'assets/images/vehicle_detail/Vector (9).svg',
+        },
+        {
+          'title': 'Fuel',
+          'subtitle': vehicle.fuelType,
+          'icon': 'assets/images/vehicle_detail/Vector (10).svg',
+        },
+        {
+          'title': 'Model',
+          'subtitle': vehicle.yearOfManufacture,
+          'icon': 'assets/images/vehicle_detail/Vector (11).svg',
+        },
+      ];
+    } else if (vehicle is Coach) {
+      infoItems = [
+        {
+          'title': 'Transmission',
+          'subtitle': 'Automatic', 
+          'icon': 'assets/images/vehicle_detail/Vector (8).svg',
+        },
+        {
+          'title': 'Seats',
+          'subtitle': '${vehicle.numberOfSeats} seats',
+          'icon': 'assets/images/vehicle_detail/Vector (9).svg',
+        },
+        {
+          'title': 'Fuel',
+          'subtitle': vehicle.fuelType,
+          'icon': 'assets/images/vehicle_detail/Vector (10).svg',
+        },
+        {
+          'title': 'Model',
+          'subtitle': vehicle.yearOfManufacture,
+          'icon': 'assets/images/vehicle_detail/Vector (11).svg',
+        },
+      ];
+    } else if (vehicle is Bike) {
+      infoItems = [
+        {
+          'title': 'Type',
+          'subtitle': vehicle.typeOfBike,
+          'icon': 'assets/images/vehicle_detail/Vector (8).svg',
+        },
+        {
+          'title': 'Seats',
+          'subtitle': '1 seat',
+          'icon': 'assets/images/vehicle_detail/Vector (9).svg',
+        },
+        {
+          'title': 'Fuel',
+          'subtitle': 'None', 
+          'icon': 'assets/images/vehicle_detail/Vector (10).svg',
+        },
+        {
+          'title': 'Model',
+          'subtitle': vehicle.yearOfManufacture,
+          'icon': 'assets/images/vehicle_detail/Vector (11).svg',
+        },
+      ];
+    } else {
+      infoItems = [
+        {
+          'title': 'Transmission',
+          'subtitle': 'Unknown',
+          'icon': 'assets/images/vehicle_detail/Vector (8).svg',
+        },
+        {
+          'title': 'Seats',
+          'subtitle': 'Unknown',
+          'icon': 'assets/images/vehicle_detail/Vector (9).svg',
+        },
+        {
+          'title': 'Fuel',
+          'subtitle': 'Unknown',
+          'icon': 'assets/images/vehicle_detail/Vector (10).svg',
+        },
+        {
+          'title': 'Model',
+          'subtitle': vehicle.yearOfManufacture,
+          'icon': 'assets/images/vehicle_detail/Vector (11).svg',
+        },
+      ];
+    }
+
+    return infoItems
+        .map((item) => _buildContainer(
+              item['title'],
+              item['subtitle'],
+              item['icon'],
+            ))
+        .toList();
+  }
+
+  Widget _buildContainer(String title, String subtitle, String svgPath) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 12),
+      width: 83,
+      height: 90,
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        border: Border.all(color: const Color(0xFFD5D7DB), width: 1),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(width: 24, height: 24, child: SvgPicture.asset(svgPath)),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: const Color(0xFF808183),
+              fontSize: 12,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w400,
+              height: 1.33,
+            ),
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          subtitle,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 14,
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w600,
-            height: 1.29,
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 14,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w600,
+              height: 1.29,
+            ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }

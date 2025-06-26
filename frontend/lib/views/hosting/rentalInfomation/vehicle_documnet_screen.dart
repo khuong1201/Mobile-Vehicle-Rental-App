@@ -5,7 +5,8 @@ import 'package:image_picker/image_picker.dart';
 class DocumentScreen extends StatefulWidget {
   final String? vehicleType;
   final Function(Map<String, dynamic>) onDataChanged;
-  const DocumentScreen({super.key, this.vehicleType, required this.onDataChanged});
+  final GlobalKey<FormState> formKey;
+  const DocumentScreen({super.key, this.vehicleType, required this.onDataChanged, required this.formKey});
 
   @override
   State<DocumentScreen> createState() => _DocumentScreenState();
@@ -36,29 +37,33 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-        'Vehicle Registration',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w700,
-            height: 1.25,
+    return Form(
+      key: widget.formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+          'Vehicle Registration',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w700,
+              height: 1.25,
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Expanded(
-          child: CustomBoxImage(
-            title: '',
-            hintText: 'Task a photo',
-            onPickImage:() => _pickImage,
-            image: _documentPicture,
+          const SizedBox(height: 16),
+          Expanded(
+            child: CustomBoxImage(
+              title: '',
+              hintText: 'Take a photo',
+              onPickImage:() => _pickImage,
+              validator: (image) => image == null ? 'Image is required' : null,
+              image: _documentPicture,
+            )
           )
-        )
-      ],
+        ],
+      ),
     );
   }
 }
