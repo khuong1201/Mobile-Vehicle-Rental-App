@@ -54,6 +54,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     );
 
     return Scaffold(
+      appBar: CustomAppbar(title: 'Detail'),
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -61,7 +62,6 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              CustomAppbar(title: 'Details'),
               const SizedBox(height: 28),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 16),

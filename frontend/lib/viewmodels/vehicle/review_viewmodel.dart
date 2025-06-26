@@ -72,6 +72,8 @@ class ReviewViewModel extends ChangeNotifier {
 
     if (response.success) {
       _errorMessage = null;
+      print("success");
+      await fetchReviews(context, vehicleId: vehicleId, clearBefore: true);
       return true;
     } else {
       _errorMessage = response.message;
