@@ -37,7 +37,7 @@ const VehicleSchema = new mongoose.Schema(
     location: LocationSchema,
     type: {
       type: String,
-      enum: ["Car", "Motorbike", "Coach", "Bike"],
+      enum: ['Car', 'car', 'Motor', 'motor', 'Coach', 'coach', 'Bike', 'bike'],
       required: true,
     },
     price: Number,

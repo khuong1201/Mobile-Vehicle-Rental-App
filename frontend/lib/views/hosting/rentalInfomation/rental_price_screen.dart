@@ -30,11 +30,11 @@ class _RentalPriceScreenState extends State<RentalPriceScreen> {
 
   void _saveData() {
     final data = {
-      'price': _priceController.text,
+      'price': double.tryParse(_priceController.text.trim()),
       'bankName': _nameBank,
       'accountNumber': _accountNumberController.text,
       'accountName': _accountNameController.text,
-      'vehicleType': widget.vehicleType ?? 'vehicle',
+      'vehicleType': widget.vehicleType,
     };
     widget.onDataChanged(data);
   }
