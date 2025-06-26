@@ -19,7 +19,7 @@ class ApiCreateReview {
 
     final response = await callProtectedApi<T>(
       viewModel,
-      endpoint: '/api/review/create-review',
+      endpoint: '/api/reviews/create-review',
       authService: authService,
       method: 'POST',
       body: body,

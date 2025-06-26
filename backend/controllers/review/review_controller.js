@@ -17,7 +17,7 @@ const CreateReview = async (req, res) => {
   try {
     const { vehicleId, rating, comment } = req.body;
     const renterId = req.user.id || req.user._id;
-
+    console.log(`data ${vehicleId}, ${rating}, comment: ${comment} `);
     const existingReview = await Review.findOne({ vehicleId, renterId });
     if (existingReview) {
       return res
