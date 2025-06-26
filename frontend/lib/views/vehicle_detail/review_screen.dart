@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
-import 'package:frontend/viewmodels/auth/auth_service.dart';
 import 'package:frontend/viewmodels/vehicle/review_viewmodel.dart';
 import 'package:frontend/views/widgets/custom_text_body_L.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +11,6 @@ class ReviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authServiceViewModel = AuthService;
     final reviewViewModel = Provider.of<ReviewViewModel>(context,listen: false);
 
     Future.microtask(() {
@@ -58,7 +56,7 @@ class ReviewScreen extends StatelessWidget {
                           children: [
                             ClipOval(
                               child: Image.network(
-                                '',
+                                review.renter.imageAvatarUrl!,
                                 width: 50,
                                 height: 50,
                                 fit: BoxFit.contain,

@@ -53,11 +53,13 @@ class RenterInfo {
   final String id;
   final String email;
   final String fullname;
+  final String? imageAvatarUrl;
 
   RenterInfo({
     required this.id,
     required this.email,
     required this.fullname,
+    required this.imageAvatarUrl,
   });
 
   factory RenterInfo.fromJson(Map<String, dynamic> json) {
@@ -65,6 +67,7 @@ class RenterInfo {
       id: json['_id'] ?? '',
       email: json['email'] ?? '',
       fullname: json['fullname'] ?? '',
+      imageAvatarUrl: json['imageAvatarUrl']?.toString() ?? '',
     );
   }
 
@@ -73,6 +76,7 @@ class RenterInfo {
       '_id': id,
       'email': email,
       'fullname': fullname,
+      'imageAvatarUrl': imageAvatarUrl ?? '',
     };
   }
 }
