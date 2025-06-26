@@ -30,7 +30,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
   void _saveData() {  
     final data = {
       'imagesRegistration': _documentPicture != null ? {'document': _documentPicture} : {},
-      'vehicleType': widget.vehicleType ?? 'vehicle',
+      'type': widget.vehicleType,
     };
     widget.onDataChanged(data);
   }

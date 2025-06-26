@@ -59,6 +59,21 @@ const CreateReview = async (req, res) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 };
+const GetReviewById = async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+
+    const review = await Review.findById(reviewId).populate("renterId", "name email");
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    res.status(200).json(review);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch review" });
+  }
+};
 
 const GetReviewsByVehicle = async (req, res) => {
   try {
@@ -143,4 +158,5 @@ module.exports = {
   GetReviewsByVehicle,
   DeleteReview,
   ReportReview,
+  GetReviewById,
 };

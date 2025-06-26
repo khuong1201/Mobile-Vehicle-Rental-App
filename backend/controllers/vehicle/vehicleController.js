@@ -89,7 +89,26 @@ const CreateVehicle = async (req, res) => {
       return res.status(400).json({ message: "Thương hiệu không tồn tại" });
     }
 
-    console.log("✅ Parsed brand:", brand._id);
+    let parsedLocation = undefined;
+
+    try {
+      if (typeof data.location === "string") {
+        parsedLocation = JSON.parse(data.location);
+      } else if (typeof data.location === "object") {
+        parsedLocation = data.location;
+      }
+      if (
+        !parsedLocation ||
+        (!parsedLocation.address &&
+          (parsedLocation.lat === undefined ||
+            parsedLocation.lng === undefined))
+      ) {
+        parsedLocation = undefined;
+      }
+    } catch (err) {
+      console.warn("⚠️ Lỗi khi parse location:", err.message);
+      parsedLocation = undefined;
+    }
 
     const images = req.files?.images
       ? req.files.images.map((file) => ({
@@ -100,7 +119,8 @@ const CreateVehicle = async (req, res) => {
 
     const vehicleData = {
       ...data,
-      brand: brand._id, // ← đã có object brand
+      brand: brand._id,
+      location: parsedLocation,
       ownerId: req.user.id,
       images: images.map((img) => img.url),
       imagePublicIds: images.map((img) => img.publicId),
@@ -116,7 +136,6 @@ const CreateVehicle = async (req, res) => {
     });
   }
 };
-
 
 // Cập nhật xe
 const UpdateVehicle = async (req, res) => {

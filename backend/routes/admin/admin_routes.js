@@ -4,13 +4,21 @@ const router = express.Router();
 const adminController = require('../../controllers/admin/admin_user_controller');
 const adminMiddleware = require('../../middlewares/admin_middleware');
 const authenticateToken = require('../../middlewares/auth_middleware');
-
+const vehicleController = require('../../controllers/vehicle/vehicleController');
+const reviewController = require('../../controllers/review/review_controller');
+const brandController = require('../../controllers/vehicle/brandController');
 router.delete('/delete-account', authenticateToken,adminMiddleware, adminController.DeleteAccount);
 router.get('/get-all-user', authenticateToken, adminMiddleware, adminController.GetAllUsers);
 router.get('/get-users-with-unapproved-licenses', authenticateToken, adminMiddleware, adminController.GetUsersWithUnapprovedLicenses);
 router.post('/approve-license', authenticateToken, adminMiddleware, adminController.ApproveLicense);
 router.post('/reject-license', authenticateToken, adminMiddleware, adminController.RejectLicense);
 router.get('/get-user-profile', authenticateToken, adminMiddleware, adminController.GetUser);
-
-
+router.put("/status/:id", authenticateToken, adminMiddleware, vehicleController.ChangeVehicleStatus);
+router.get("/pending", authenticateToken, adminMiddleware, vehicleController.GetVehiclePending);
+router.post('/create-brand', authenticateToken, adminMiddleware, brandController.CreateBrand);
+router.put('/update-brand/:id', authenticateToken, adminMiddleware, brandController.UpdateBrand);
+router.delete('/delete-brand/:id', authenticateToken, adminMiddleware, brandController.DeleteBrand);
+router.get("/all-vehicles", authenticateToken, adminMiddleware, vehicleController.GetAllVehicles);
+router.get("/review/:id", authenticateToken, adminMiddleware, reviewController.GetReviewById);
+router.delete("/delete-review/:id", authenticateToken, adminMiddleware, reviewController.DeleteReview);
 module.exports = router;

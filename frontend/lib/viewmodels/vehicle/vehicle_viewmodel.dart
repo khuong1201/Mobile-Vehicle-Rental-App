@@ -41,7 +41,7 @@ class VehicleViewModel extends ChangeNotifier {
 
   VehicleViewModel(this.authService);
 
-  void changeVehicleType(String? type, BuildContext context) {
+  void changetype(String? type, BuildContext context) {
     if (_selectedType != type) {
       _selectedType = type;
       _currentPage = 1;
@@ -172,7 +172,7 @@ class VehicleViewModel extends ChangeNotifier {
               : Brand(id: '', brandId: '', brandName: 'Unknown');
 
       Vehicle vehicle;
-      switch (data['vehicleType']?.toLowerCase()) {
+      switch (data['type']?.toLowerCase()) {
         case 'Car':
           vehicle = Car(
             id: '', 
@@ -183,7 +183,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'],
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            locationForVehicle: location,
+            location: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',
@@ -191,7 +191,7 @@ class VehicleViewModel extends ChangeNotifier {
             rate: 0.0,
             available: true,
             status: 'pending',
-            type: data['vehicleType'] ?? 'vehicle',
+            type: data['type'],
             fuelType: data['fuelType'] as String? ?? '', 
             fuelConsumption: (data['fuelConsumption'] as num?)?.toDouble() ?? 0.0,
             numberOfSeats: int.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
@@ -208,7 +208,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'],
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            locationForVehicle: location,
+            location: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',
@@ -216,7 +216,7 @@ class VehicleViewModel extends ChangeNotifier {
             rate: 0.0,
             available: true,
             status: 'pending',
-            type: data['vehicleType'] ?? 'vehicle',
+            type: data['type'],
             fuelType: data['fuelType'] as String? ?? '',
             fuelConsumption: (data['fuelConsumption'] as num?)?.toDouble() ?? 0.0,
           );
@@ -231,7 +231,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'],
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            locationForVehicle: location,
+            location: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',
@@ -239,7 +239,7 @@ class VehicleViewModel extends ChangeNotifier {
             rate: 0.0,
             available: true,
             status: 'pending',
-            type: data['vehicleType'] ?? 'vehicle',
+            type: data['type'] ?? 'Car',
             fuelType: data['fuelType'] as String? ?? '',
             fuelConsumption: (data['fuelConsumption'] as num?)?.toDouble() ?? 0.0,
             numberOfSeats: int.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
@@ -255,7 +255,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'],
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            locationForVehicle: location,
+            location: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',
@@ -263,7 +263,7 @@ class VehicleViewModel extends ChangeNotifier {
             rate: 0.0,
             available: true,
             status: 'pending',
-            type: data['vehicleType'] ?? 'vehicle',
+            type: data['type'] ?? 'Car',
             typeOfBike: data['typeOfBike'] as String? ?? '',
           );
           break;
@@ -277,7 +277,7 @@ class VehicleViewModel extends ChangeNotifier {
             yearOfManufacture: data['yearOfManufacture'],
             images: imageFiles.map((file) => file.path).toList(),
             description: data['description'] ?? 'Default description',
-            locationForVehicle: location,
+            location: location,
             model: data['model'] ?? '',
             ownerId: user?.id ?? 'user123',
             ownerEmail: user?.email ?? 'user@example.com',
@@ -285,7 +285,7 @@ class VehicleViewModel extends ChangeNotifier {
             rate: 0.0,
             available: true,
             status: 'pending',
-            type: data['vehicleType'] ?? 'vehicle',
+            type: data['type'] ?? 'Car',
           );
           break;
       }
@@ -300,7 +300,7 @@ class VehicleViewModel extends ChangeNotifier {
       if (response.success && response.data != null) {
         _vehicles.insert(0, response.data!); 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.message ?? 'Vehicle ${data['vehicleType']} created successfully!')),
+          SnackBar(content: Text(response.message ?? 'Vehicle ${data['type']} created successfully!')),
         );
       } else {
         _handleAuthError(response.message ?? 'Failed to create vehicle', context);
