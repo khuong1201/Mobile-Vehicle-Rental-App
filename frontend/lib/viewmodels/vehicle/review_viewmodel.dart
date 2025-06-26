@@ -67,7 +67,7 @@ class ReviewViewModel extends ChangeNotifier {
       authService: authService,
       vehicleId: vehicleId,
       rating: rating,
-      comment: comment!,
+      comment: comment ?? '',
     );
 
     if (response.success) {

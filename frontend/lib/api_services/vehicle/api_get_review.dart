@@ -19,7 +19,7 @@ class ApiGetReviewByVehicle {
     };
 
     final queryString = Uri(queryParameters: queryParams).query;
-    final endpoint = '/api/review/$vehicleId?$queryString';
+    final endpoint = '/api/reviews/$vehicleId?$queryString';
 
     final response = await callProtectedApi<T>(
       viewModel,
@@ -28,7 +28,13 @@ class ApiGetReviewByVehicle {
       method: 'GET',
     );
 
-    if (!response.success || response.data == null || response.data is! Map<String, dynamic>) {
+    if (response.success == true && response.data == null) {
+      return ApiResponse(
+        success: true,
+        message: 'none reviews',
+      );
+    }
+    if (!response.success || response.data is! Map<String, dynamic>) {
       return ApiResponse(
         success: false,
         message: response.message ?? '❌ Failed to fetch reviews.',

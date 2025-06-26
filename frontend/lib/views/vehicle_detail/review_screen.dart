@@ -12,10 +12,7 @@ class ReviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final reviewViewModel = Provider.of<ReviewViewModel>(
-      context,
-      listen: false,
-    );
+    final reviewViewModel = Provider.of<ReviewViewModel>(context,listen: false);
     final TextEditingController _comment = TextEditingController();
 
     Future.microtask(() {
@@ -228,10 +225,7 @@ class ReviewScreen extends StatelessWidget {
                       context,
                       listen: false,
                     );
-                    final vehicle = Provider.of<Vehicle>(
-                      context,
-                      listen: false,
-                    ); 
+                    final vehicleId = vehicle.id;
                     final commentText = _comment.text.trim();
 
                     bool success = await reviewViewModel.createReview(
