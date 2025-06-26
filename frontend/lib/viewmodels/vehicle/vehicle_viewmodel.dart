@@ -193,8 +193,7 @@ class VehicleViewModel extends ChangeNotifier {
             status: 'pending',
             type: data['type'],
             fuelType: data['fuelType'] as String? ?? '', 
-            fuelConsumption: (data['fuelConsumption'] as num?)?.toDouble() ?? 0.0,
-            numberOfSeats: int.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
+            numberOfSeats: double.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
           );
           break;
         case 'Motor':
@@ -218,7 +217,6 @@ class VehicleViewModel extends ChangeNotifier {
             status: 'pending',
             type: data['type'],
             fuelType: data['fuelType'] as String? ?? '',
-            fuelConsumption: (data['fuelConsumption'] as num?)?.toDouble() ?? 0.0,
           );
           break;
         case 'Coach':
@@ -241,8 +239,7 @@ class VehicleViewModel extends ChangeNotifier {
             status: 'pending',
             type: data['type'] ?? 'Car',
             fuelType: data['fuelType'] as String? ?? '',
-            fuelConsumption: (data['fuelConsumption'] as num?)?.toDouble() ?? 0.0,
-            numberOfSeats: int.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
+            numberOfSeats: double.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
           );
           break;
         case 'Bike':

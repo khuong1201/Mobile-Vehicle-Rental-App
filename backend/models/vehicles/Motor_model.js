@@ -7,10 +7,6 @@ const MotorSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    fuelConsumption: {
-        type: Number,
-        required: true
-    },
 });
 
 module.exports = Vehicle.discriminator('Motor', MotorSchema);

@@ -75,6 +75,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
                 title: 'Profile picture',
                 image: _profilePicture,
                 onPickImage: () => _pickImage('profile'),
+                validator: (image) => image == null ? 'Image is required' : null,
               ),
             ),
           ),

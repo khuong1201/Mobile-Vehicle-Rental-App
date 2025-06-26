@@ -6,7 +6,12 @@ class DocumentScreen extends StatefulWidget {
   final String? vehicleType;
   final Function(Map<String, dynamic>) onDataChanged;
   final GlobalKey<FormState> formKey;
-  const DocumentScreen({super.key, this.vehicleType, required this.onDataChanged, required this.formKey});
+  const DocumentScreen({
+    super.key,
+    this.vehicleType,
+    required this.onDataChanged,
+    required this.formKey,
+  });
 
   @override
   State<DocumentScreen> createState() => _DocumentScreenState();
@@ -27,9 +32,10 @@ class _DocumentScreenState extends State<DocumentScreen> {
     }
   }
 
-  void _saveData() {  
+  void _saveData() {
     final data = {
-      'imagesRegistration': _documentPicture != null ? {'document': _documentPicture} : {},
+      'imagesRegistration':
+          _documentPicture != null ? {'document': _documentPicture} : {},
       'type': widget.vehicleType,
     };
     widget.onDataChanged(data);
@@ -43,7 +49,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-          'Vehicle Registration',
+            'Vehicle Registration',
             style: TextStyle(
               color: Colors.black,
               fontSize: 16,
@@ -55,13 +61,13 @@ class _DocumentScreenState extends State<DocumentScreen> {
           const SizedBox(height: 16),
           Expanded(
             child: CustomBoxImage(
-              title: '',
+              title: 'dockument',
               hintText: 'Take a photo',
-              onPickImage:() => _pickImage,
-              validator: (image) => image == null ? 'Image is required' : null,
               image: _documentPicture,
-            )
-          )
+              onPickImage: () => _pickImage('document'),
+              validator: (image) => image == null ? 'Image is required' : null,
+            ),
+          ),
         ],
       ),
     );

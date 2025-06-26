@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/models/location/location.dart';
+import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/hosting/rentalInfomation/location/location_screen.dart';
@@ -36,7 +37,6 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
   Brand? _selectedBrand;
   String? _numberSeats;
   String? _typeFuel;
-  String? _fuelConsumption;
   Locations? _location;
 
   @override
@@ -49,16 +49,21 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
   }
 
   void _saveData() {
+    Map<String, dynamic>? locationData;
+  locationData = LocationForVehicle(
+    address: _locationController.text.toString(),
+    lat: 0.0,
+    lng: 0.0,
+  ).toJson();
     final data = {
       'licensePlate': _licensePlateController.text,
       'model': _modelController.text,
       'yearOfManufacture': _yearController.text,
-      'location': _locationController.text,
+      'location': locationData,
       'description': _descriptionController.text,
       'brand': _selectedBrand?.id ?? '',
       'numberSeats': _numberSeats,
-      'fuelType': _typeFuel,
-      'fuelConsumption': _fuelConsumption,
+      'fuelType': _typeFuel.toString(),
       'type': widget.vehicleType,
       
     };

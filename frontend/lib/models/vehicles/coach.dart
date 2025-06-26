@@ -2,8 +2,7 @@ import 'package:frontend/models/vehicles/vehicle.dart';
 
 class Coach extends Vehicle {
   final String fuelType;
-  final double fuelConsumption;
-  final int numberOfSeats;
+  final double numberOfSeats;
 
   Coach({
     required super.id,
@@ -24,7 +23,6 @@ class Coach extends Vehicle {
     required super.status,
     required super.type,
     required this.fuelType,
-    required this.fuelConsumption,
     required this.numberOfSeats,
   });
 
@@ -49,7 +47,6 @@ class Coach extends Vehicle {
       status: vehicle.status,
       type: vehicle.type,
       fuelType: json['fuelType'] ?? '',
-      fuelConsumption: (json['fuelConsumption'] ?? 0).toDouble(),
       numberOfSeats: json['numberOfSeats'] ?? 0,
     );
   }
@@ -58,7 +55,6 @@ class Coach extends Vehicle {
     final json = super.toJson();
     json.addAll({
       'fuelType': fuelType,
-      'fuelConsumption': fuelConsumption,
       'numberOfSeats': numberOfSeats,
     });
     return json;
