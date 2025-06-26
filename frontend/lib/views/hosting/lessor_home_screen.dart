@@ -203,6 +203,7 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
                       onChanged: (String? newValue) {
                         setState(() {
                           _selectedVehicleType = newValue;
+                          debugPrint('Selected vehicle type: $_selectedVehicleType');
                         });
                       },
                       isExpanded: true,
@@ -211,7 +212,7 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
                   ),
                   IconButton(
                     icon: Icon(Icons.close),
-                    onPressed: _toggleDropdown, // Đóng dropdown khi nhấn nút close
+                    onPressed: _toggleDropdown,
                   ),
                 ],
               ),

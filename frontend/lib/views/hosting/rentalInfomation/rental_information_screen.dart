@@ -27,12 +27,15 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
   int _pageIndex = 0;
 
   List<Map<String, String>> get _navItems {
-    String vehicleType = widget.vehicleType ?? 'Vehicle';
+    if (widget.vehicleType == null) {
+      throw Exception('Vehicle type cannot be null');
+    }
+    String vehicleType = widget.vehicleType!;
+
     String capitalizedType =
         vehicleType.isNotEmpty
             ? '${vehicleType[0].toUpperCase()}${vehicleType.substring(1)}'
-            : 'Vehicle';
-
+            : 'Car';
     return [
       {
         'icon': 'assets/images/hosting/information/info.svg',
@@ -45,7 +48,7 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
       },
       {
         'icon': 'assets/images/hosting/information/price.svg',
-        'label': 'Rental Price',
+        'label': '$capitalizedType Price',
       },
     ];
   }
@@ -67,27 +70,37 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
 
   Future<void> _submitData() async {
     if (_pageIndex == _navItems.length - 1) {
+      debugPrint('vehicle type ${widget.vehicleType}');
       final viewModel = Provider.of<VehicleViewModel>(context, listen: false);
       final Map<String, dynamic> data = {
         ...(_collectedData['VehicleInfomationScreen'] ?? {}),
         ...(_collectedData['ImageUploadScreen'] ?? {}),
         ...(_collectedData['VehicleDocumentScreen'] ?? {}),
         ...(_collectedData['RentalPriceScreen'] ?? {}),
-        'type': widget.vehicleType ?? 'vehicle',
+        'type':
+            '${widget.vehicleType?[0].toUpperCase()}${widget.vehicleType?.substring(1).toLowerCase()}',
       };
 
-      // Truy xuất 'images' và chuyển đổi XFile? thành List<File>
-      final Map<String, dynamic>? imagesData =
-          _collectedData['ImageUploadScreen']?['images']
-              as Map<String, dynamic>?;
-      final List<File> imageFiles =
-          imagesData != null
-              ? imagesData.values
-                  .whereType<XFile>()
-                  .map((xFile) => File(xFile.path))
-                  .toList()
-              : (widget.imageFiles ?? []);
+      final dynamic rawImages = _collectedData['ImageUploadScreen']?['images'];
+      final collectedLocation = _collectedData['VehicleInfomationScreen']?['location'];
+      
+        debugPrint('📌 Collected location: $collectedLocation');
+      List<File> imageFiles;
+
+      if (rawImages is Map<String, dynamic>) {
+        imageFiles =
+            rawImages.values
+                .whereType<XFile>()
+                .map((xFile) => File(xFile.path))
+                .toList();
+      } else if (rawImages is List<XFile>) {
+        imageFiles = rawImages.map((xFile) => File(xFile.path)).toList();
+      } else {
+        imageFiles = widget.imageFiles ?? [];
+      }
+      debugPrint('Collected data: $data');
       await viewModel.createVehicle(context, data, imageFiles);
+      debugPrint('vehicle type ${widget.vehicleType}');
       Navigator.pop(context);
     }
   }
@@ -185,10 +198,12 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
                         (data) => _updateData('ImageUploadScreen', data),
                   ),
                   DocumentScreen(
+                    vehicleType: widget.vehicleType,
                     onDataChanged:
                         (data) => _updateData('VehicleDocumentScreen', data),
                   ),
                   RentalPriceScreen(
+                    vehicleType: widget.vehicleType,
                     onDataChanged:
                         (data) => _updateData('RentalPriceScreen', data),
                   ),

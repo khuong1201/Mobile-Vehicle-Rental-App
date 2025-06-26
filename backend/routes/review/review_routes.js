@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const reviewController = require("../../controllers/review/review_controller");
 const authMiddleware = require("../../middlewares/auth_middleware");
-const adminMiddleware = require("../../middlewares/admin_middleware");
 const ownerMiddleware = require("../../middlewares/owner_middleware");
 const rateLimit = require("express-rate-limit");
 

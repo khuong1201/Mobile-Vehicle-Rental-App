@@ -56,15 +56,16 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
       'licensePlate': _licensePlateController.text,
       'model': _modelController.text,
       'yearOfManufacture': _yearController.text,
-      'location': _location?.toJson(),
+      'location': _locationController.text,
       'description': _descriptionController.text,
       'brand': _selectedBrand?.id ?? '',
       'numberSeats': _numberSeats,
       'fuelType': _typeFuel,
       'fuelConsumption': _fuelConsumption,
-      'vehicleType': widget.vehicleType ?? 'vehicle',
+      'type': widget.vehicleType,
       
     };
+
     widget.onDataChanged(data);
   }
 
@@ -265,6 +266,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                 if (result != null) {
                   setState(() {
                     _location = result;
+                    
                     _locationController.text = result.toString();
                     _saveData();
                   });

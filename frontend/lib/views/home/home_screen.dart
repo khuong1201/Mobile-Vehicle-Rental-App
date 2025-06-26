@@ -408,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ),
                                                 SizedBox(width: 8),
                                                 Text(
-                                                  vehicle.locationForVehicle
+                                                  vehicle.location
                                                           ?.toString() ??
                                                       ''
                                                           'Unknown Location',

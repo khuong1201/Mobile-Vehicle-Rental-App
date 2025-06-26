@@ -55,7 +55,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
         'left': _leftViewPicture,
         'right': _rightViewPicture,
       },
-      'vehicleType': widget.vehicleType ?? 'vehicle',
+      'type': widget.vehicleType,
     };
     widget.onDataChanged(data);
   }

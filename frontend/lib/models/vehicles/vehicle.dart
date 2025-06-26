@@ -13,7 +13,7 @@ class Vehicle {
   final String yearOfManufacture;
   final List<String> images;
   final String description;
-  final LocationForVehicle? locationForVehicle;
+  final LocationForVehicle? location;
   final String model;
   final String ownerId;
   final String ownerEmail;
@@ -33,7 +33,7 @@ class Vehicle {
     required this.yearOfManufacture,
     required this.images,
     required this.description,
-    required this.locationForVehicle,
+    required this.location,
     required this.model,
     required this.ownerId,
     required this.ownerEmail,
@@ -46,25 +46,34 @@ class Vehicle {
   });
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
-    final owner = json['ownerId'] as Map<String, dynamic>?;
+    final ownerData = json['ownerId'];
+    final ownerId =
+        ownerData is String ? ownerData : (ownerData?['_id']?.toString() ?? '');
+    final ownerEmail =
+        ownerData is Map<String, dynamic>
+            ? ownerData['email']?.toString() ?? ''
+            : '';
 
     return Vehicle(
       id: json['_id']?.toString() ?? '',
       vehicleId: json['vehicleId']?.toString() ?? '',
       vehicleName: json['vehicleName']?.toString() ?? '',
       licensePlate: json['licensePlate']?.toString() ?? '',
-      brand: json['brand'] is Map<String, dynamic>
-        ? Brand.fromJson(json['brand'] as Map<String, dynamic>).id
-        : json['brand']?.toString() ?? '',
-      yearOfManufacture: json['yearOfManufacture'] ?? 0,
+      brand:
+          json['brand'] is Map<String, dynamic>
+              ? Brand.fromJson(json['brand'] as Map<String, dynamic>).id
+              : json['brand']?.toString() ?? '',
+      yearOfManufacture: json['yearOfManufacture']?.toString() ?? '',
       images: List<String>.from(json['images'] ?? []),
       description: json['description']?.toString() ?? '',
-      locationForVehicle: json['location'] is Map<String, dynamic>
-        ? LocationForVehicle.fromJson(json['location'] as Map<String, dynamic>)
-        : null,
+      location:
+          (json['location'] != null && json['location'] is Map<String, dynamic>)
+              ? LocationForVehicle.fromJson(json['location'])
+              : null,
+
       model: json['model']?.toString() ?? '',
-      ownerId: owner?['_id']?.toString() ?? '',
-      ownerEmail: owner?['email']?.toString() ?? '',
+      ownerId: ownerId,
+      ownerEmail: ownerEmail,
       price: (json['price'] ?? 0).toDouble(),
       rate: (json['rate'] ?? 0).toDouble(),
       rentals: (json['rentals'] ?? 0).toDouble(),
@@ -84,7 +93,7 @@ class Vehicle {
       'yearOfManufacture': yearOfManufacture,
       'images': images,
       'description': description,
-      'location': locationForVehicle?.toJson(),
+      'location': location?.toJson(),
       'price': price,
       'rate': rate,
       'rentals': rentals,
