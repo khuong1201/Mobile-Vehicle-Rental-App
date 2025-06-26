@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:frontend/models/location/location.dart';
 import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
@@ -37,7 +36,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
   Brand? _selectedBrand;
   String? _numberSeats;
   String? _typeFuel;
-  Locations? _location;
+  LocationForVehicle? _locationForVehicle;
 
   @override
   void initState() {
@@ -227,14 +226,14 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
               controller: _locationController,
               hintText: 'Select car location',
               validator: (value) {
-                if (_location == null) {
+                if (_locationForVehicle == null) {
                   return 'Please select location';
                 }
                 return null;
               },
               suffixIcon: IconButton(
                 onPressed: () async {
-                final result = await Navigator.push<Locations?>(
+                final result = await Navigator.push<LocationForVehicle?>(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const LocationScreen(),
@@ -242,9 +241,9 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                 );
                 if (result != null) {
                   setState(() {
-                    _location = result;
-                    
-                    _locationController.text = result.toString();
+                    _locationController.text = result.address;
+                    _locationForVehicle = result;
+                    //_locationController.text = result.toString();
                     _saveData();
                   });
                 }
@@ -252,38 +251,6 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                 icon: Icon(Icons.arrow_forward_ios, size: 18)
               )
             ),
-            // GestureDetector(
-            //   onTap: () async {
-            //     final result = await Navigator.push<Locations?>(
-            //       context,
-            //       MaterialPageRoute(
-            //         builder: (context) => const LocationScreen(),
-            //       ),
-            //     );
-            //     if (result != null) {
-            //       setState(() {
-            //         _location = result;
-                    
-            //         _locationController.text = result.toString();
-            //         _saveData();
-            //       });
-            //     }
-            //   },
-            //   child: AbsorbPointer(
-            //     child: CustomTextField(
-            //       controller: _locationController,
-            //       hintText: 'Select car location',
-            //       validator: (value) {
-            //         if (_location == null) {
-            //           return 'Please select location';
-            //         }
-            //         return null;
-            //       },
-            //       suffixIcon: const Icon(Icons.arrow_forward_ios, size: 18),
-            //     ),
-            //   ),
-            // ),
-
             const SizedBox(height: 16),
             CustomTextBodyL(title: 'Description'),
             const SizedBox(height: 8),
