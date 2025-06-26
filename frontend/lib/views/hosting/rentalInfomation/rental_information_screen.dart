@@ -71,10 +71,8 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
     switch (_pageIndex) {
       case 0:
         return _infoFormKey.currentState?.validate() ?? false;
-        
       case 1:
         return _imageFormKey.currentState?.validate() ?? false;
-        
       case 2:
         return _docFormKey.currentState?.validate() ?? false;
       case 3:
