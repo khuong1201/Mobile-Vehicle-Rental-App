@@ -293,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   crossAxisCount: 2,
                                   mainAxisSpacing: 12,
                                   crossAxisSpacing: 16,
-                                  childAspectRatio: 0.63,
+                                  childAspectRatio: 0.6,
                                 ),
                             itemCount:
                                 rentalvehicles.length +
@@ -407,18 +407,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   ),
                                                 ),
                                                 SizedBox(width: 8),
-                                                Text(
-                                                  vehicle.location
-                                                          ?.toString() ??
-                                                      ''
-                                                          'Unknown Location',
-                                                  style: TextStyle(
-                                                    color: const Color(
-                                                      0xFFAAACAF,
+                                                Flexible(
+                                                  child: Text(
+                                                    vehicle.location
+                                                            ?.toString() ??
+                                                        ''
+                                                            'Unknown Location',
+                                                    overflow: TextOverflow.ellipsis,
+                                                    maxLines: 2,
+                                                    style: TextStyle(
+                                                      color: const Color(
+                                                        0xFFAAACAF,
+                                                      ),
+                                                      fontSize: 12,
+                                                      fontFamily: 'Inter',
+                                                      fontWeight: FontWeight.w400,
                                                     ),
-                                                    fontSize: 12,
-                                                    fontFamily: 'Inter',
-                                                    fontWeight: FontWeight.w400,
                                                   ),
                                                 ),
                                               ],

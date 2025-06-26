@@ -359,7 +359,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
       ];
     } else if (vehicle is Bike) {
       infoItems = [
-        {
+        { 
           'title': 'Type',
           'subtitle': vehicle.typeOfBike,
           'icon': 'assets/images/vehicle_detail/Vector (8).svg',

@@ -17,6 +17,8 @@ class Vehicle {
   final String model;
   final String ownerId;
   final String ownerEmail;
+  final String ownerName;
+  
   final double price;
   final double rate;
   final double rentals;
@@ -37,6 +39,7 @@ class Vehicle {
     required this.model,
     required this.ownerId,
     required this.ownerEmail,
+    required this.ownerName,
     required this.price,
     required this.rate,
     this.rentals = 0,
@@ -53,7 +56,10 @@ class Vehicle {
         ownerData is Map<String, dynamic>
             ? ownerData['email']?.toString() ?? ''
             : '';
-
+    final ownerName =
+        ownerData is Map<String, dynamic>
+            ? ownerData['fullName']?.toString() ?? ''
+            : '';
     return Vehicle(
       id: json['_id']?.toString() ?? '',
       vehicleId: json['vehicleId']?.toString() ?? '',
@@ -74,6 +80,7 @@ class Vehicle {
       model: json['model']?.toString() ?? '',
       ownerId: ownerId,
       ownerEmail: ownerEmail,
+      ownerName: ownerName,
       price: (json['price'] ?? 0).toDouble(),
       rate: (json['rate'] ?? 0).toDouble(),
       rentals: (json['rentals'] ?? 0).toDouble(),

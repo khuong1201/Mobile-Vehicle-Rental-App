@@ -131,8 +131,15 @@ class _LocationScreenState extends State<LocationScreen> {
                       position.longitude,
                     );
 
+                    final addressComponents = [
+                      placemark.street, // Tên đường
+                      placemark.subLocality, // Phường/xã
+                      placemark.locality, // Quận/huyện
+                      placemark.administrativeArea, // Tỉnh/thành phố
+                    ].where((e) => e != null && e.isNotEmpty).join(', ');
+
                     final locationForVehicle = LocationForVehicle(
-                      address: locationVM.getFullLocation().toString(),
+                      address: addressComponents.isNotEmpty ? addressComponents : locationVM.getFullLocation().toString(),
                       lat: position.latitude,
                       lng: position.longitude,
                     );
@@ -291,7 +298,12 @@ class _LocationScreenState extends State<LocationScreen> {
                   title: Text(ward.name),
                   onTap: () {
                     vm.selectWard(ward);
-                    Navigator.pop(context, vm.getFullLocation());
+                    final locationForVehicle = LocationForVehicle(
+                    address: vm.getFullLocation().toString(),
+                    lat: 0.0, 
+                    lng: 0.0,
+                  );
+                    Navigator.pop(context, locationForVehicle);
                   },
                 );
               },
