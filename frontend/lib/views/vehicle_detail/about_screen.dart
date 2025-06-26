@@ -41,7 +41,7 @@ class AboutScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Laura Master',
+                          vehicle.ownerName,
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 14,
@@ -111,7 +111,7 @@ class AboutScreen extends StatelessWidget {
           CustomTextBodyL(title: 'Description'),
           const SizedBox(height: 16),
           Text(
-            'The Ford Everest Platinum 2025 is the highest-end version of the 7-seat Ford Everest SUV lineup, officially distributed in Vietnam. Positioned as the most versatile 7-seat SUV in its segment, the vehicle inherits the strengths of its predecessors, including a solid chassis, thick bodywork, excellent sound insulation, and an authentic driving feel.',
+            vehicle.description,
             style: TextStyle(
               color: const Color(0xFF808183),
               fontSize: 14,
