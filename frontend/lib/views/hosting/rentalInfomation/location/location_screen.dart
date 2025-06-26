@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/viewmodels/location/location_viewmodel.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
@@ -130,10 +131,14 @@ class _LocationScreenState extends State<LocationScreen> {
                       position.longitude,
                     );
 
-                    final location = locationVM.getFullLocation();
-                    Navigator.pop(context, location);
+                    final locationForVehicle = LocationForVehicle(
+                      address: locationVM.getFullLocation().toString(),
+                      lat: position.latitude,
+                      lng: position.longitude,
+                    );
+                    Navigator.pop(context, locationForVehicle);
                     setState(() {
-                      _currentAddress = location.toString();
+                      _currentAddress = locationForVehicle.address;
                     });
                   } else {
                     throw Exception('Không tìm thấy địa chỉ từ tọa độ');
