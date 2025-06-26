@@ -18,7 +18,7 @@ class Vehicle {
   final String ownerId;
   final String ownerEmail;
   final String ownerName;
-  
+  final String ownerAvatar;
   final double price;
   final double rate;
   final double rentals;
@@ -45,7 +45,8 @@ class Vehicle {
     this.rentals = 0,
     required this.available,
     required this.status,
-    required this.type,
+    required this.type, 
+    required this.ownerAvatar,
   });
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
@@ -59,6 +60,10 @@ class Vehicle {
     final ownerName =
         ownerData is Map<String, dynamic>
             ? ownerData['fullName']?.toString() ?? ''
+            : '';
+    final ownerAvatar =
+        ownerData is Map<String, dynamic>
+            ? ownerData['avatar']?.toString() ?? ''
             : '';
     return Vehicle(
       id: json['_id']?.toString() ?? '',
@@ -81,6 +86,7 @@ class Vehicle {
       ownerId: ownerId,
       ownerEmail: ownerEmail,
       ownerName: ownerName,
+      ownerAvatar: ownerAvatar,
       price: (json['price'] ?? 0).toDouble(),
       rate: (json['rate'] ?? 0).toDouble(),
       rentals: (json['rentals'] ?? 0).toDouble(),

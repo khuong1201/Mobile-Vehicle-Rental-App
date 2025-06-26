@@ -409,11 +409,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 SizedBox(width: 8),
                                                 Flexible(
                                                   child: Text(
-                                                    vehicle.location
-                                                            ?.toString() ??
-                                                        ''
-                                                            'Unknown Location',
-                                                    overflow: TextOverflow.ellipsis,
+                                                    vehicle.location != null
+                                                    ? (vehicle.location!.address.isNotEmpty
+                                                        ? vehicle.location!.address
+                                                        : (vehicle.location!.lat != 0 && vehicle.location!.lng != 0
+                                                            ? '(${vehicle.location!.lat}, ${vehicle.location!.lng})'
+                                                            : 'none information'))
+                                                    : 'none information',
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                     maxLines: 2,
                                                     style: TextStyle(
                                                       color: const Color(
@@ -421,7 +425,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       ),
                                                       fontSize: 12,
                                                       fontFamily: 'Inter',
-                                                      fontWeight: FontWeight.w400,
+                                                      fontWeight:
+                                                          FontWeight.w400,
                                                     ),
                                                   ),
                                                 ),
