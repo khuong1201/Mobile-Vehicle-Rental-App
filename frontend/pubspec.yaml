@@ -46,6 +46,9 @@ dependencies:
   flutter_date_pickers: ^0.4.3
   geolocator: ^14.0.1
   geocoding: ^4.0.0
+  image: ^4.5.4
+  path_provider: ^2.1.5
+  heic_to_jpg: ^0.2.0
   # intl: 0.19.0
   # flutter_localizations:
   #   sdk: flutter

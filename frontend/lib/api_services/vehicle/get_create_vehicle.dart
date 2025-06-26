@@ -18,28 +18,35 @@ class ApiCreatVehicle {
     required List<File> imageFiles,
   }) async {
     try {
-      final rawFields =
-          vehicle.toJson()
-            ..remove('images')
-            ..remove('imagePublicIds');
+      debugPrint('🚀 Creating vehicle: ${vehicle.toJson()}');
+      debugPrint('📎 Image files: ${imageFiles.map((f) => f.path).toList()}');
 
-      // ✅ Chuyển thành String + loại bỏ null/rỗng
+      // Chuyển đổi dữ liệu vehicle thành Map<String, String>
+      final rawFields = vehicle.toJson()
+        ..remove('images')
+        ..remove('imagePublicIds');
+
       final fields = <String, String>{};
       rawFields.forEach((key, value) {
         if (key == 'location' && value is Map) {
           fields[key] = jsonEncode(value);
-        }
-        else if (value != null && value.toString().trim().isNotEmpty) {
+        } else if (value != null && value.toString().trim().isNotEmpty) {
           fields[key] = value.toString();
         }
       });
 
-      // Đảm bảo trường brand được thêm nếu có giá trị
+      // Đảm bảo các trường bắt buộc
       if (vehicle.brand.isNotEmpty) {
         fields['brand'] = vehicle.brand;
+      } else {
+        debugPrint('⚠️ Brand is empty');
+        return ApiResponse(success: false, message: 'Brand cannot be empty');
       }
       if (vehicle.type.isNotEmpty) {
         fields['type'] = vehicle.type;
+      } else {
+        debugPrint('⚠️ Type is empty');
+        return ApiResponse(success: false, message: 'Type cannot be empty');
       }
 
       debugPrint('📤 Submitting fields: $fields');
@@ -54,9 +61,8 @@ class ApiCreatVehicle {
         files: {'images': imageFiles},
       );
 
-      if (!response.success ||
-          response.data == null ||
-          response.data is! Map<String, dynamic>) {
+      if (!response.success || response.data == null || response.data is! Map<String, dynamic>) {
+        debugPrint('❌ API response failed: ${response.message}');
         return ApiResponse(
           success: false,
           message: response.message ?? 'Failed to create vehicle',
@@ -66,13 +72,14 @@ class ApiCreatVehicle {
       final data = response.data as Map<String, dynamic>;
       final createdVehicle = parseVehicle(data['data'] ?? data);
 
+      debugPrint('✅ Vehicle created: ${createdVehicle.vehicleName}');
       return ApiResponse(
         success: true,
         data: createdVehicle,
         message: 'Vehicle created successfully',
       );
     } catch (e, stackTrace) {
-      debugPrint('Vehicle create error: $e\n$stackTrace');
+      debugPrint('❌ Vehicle create error: $e\n$stackTrace');
       return ApiResponse(
         success: false,
         message: 'Failed to create vehicle: $e',
@@ -82,6 +89,7 @@ class ApiCreatVehicle {
 
   static Vehicle parseVehicle(Map<String, dynamic> item) {
     final type = (item['type'] ?? '').toString().toLowerCase();
+    debugPrint('🔍 Parsing vehicle type: $type');
     switch (type) {
       case 'car':
         return Car.fromJson(item);

@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:frontend/api_services/client/api_client.dart';
 import 'package:frontend/api_services/client/api_reponse.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
-import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
 
 Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
   T viewModel, {
@@ -17,10 +19,13 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
   bool isMultipart = false,
 }) async {
   try {
+    debugPrint('🚀 Calling API: $endpoint, Method: $method, Multipart: $isMultipart');
     final accessToken = await authService.getAccessToken();
     if (accessToken == null) {
+      debugPrint('❌ No access token found');
       return ApiResponse(success: false, message: 'Không có access token');
     }
+    debugPrint('🔑 Access token: $accessToken');
 
     final uri = Uri.parse('${ApiClient.baseUrl}$endpoint');
     final client = ApiClient().client;
@@ -30,6 +35,8 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       };
+      debugPrint('📤 JSON headers: $headers');
+      debugPrint('📤 JSON body: $body');
 
       switch (method.toUpperCase()) {
         case 'POST':
@@ -46,61 +53,73 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
 
     Future<http.Response> sendMultipartRequest(String token) async {
       debugPrint('📦 Multipart fields: $fields');
+      debugPrint('📦 Multipart files: ${files?['images']?.map((f) => f.path).toList() ?? []}');
       final request = http.MultipartRequest(method.toUpperCase(), uri);
       request.headers['Authorization'] = 'Bearer $token';
-      if (fields != null) request.fields.addAll(fields);
+      if (fields != null) {
+        request.fields.addAll(fields);
+      }
 
-      if (files != null) {
-        for (final entry in files.entries) {
-          for (final file in entry.value) {
-            final fileStream = http.MultipartFile.fromBytes(
-              entry.key,
-              await file.readAsBytes(),
-              filename: file.path.split('/').last,
-            );
-            request.files.add(fileStream);
+      if (files != null && files['images'] != null) {
+        for (final file in files['images']!) {
+          if (await file.exists()) {
+            final fileName = path.basename(file.path).toLowerCase();
+            final normalizedFileName = fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png')
+                ? fileName
+                : '${fileName.split('.').first}.jpg';
+            debugPrint('📎 Adding file: ${file.path}, Normalized name: $normalizedFileName');
+            request.files.add(await http.MultipartFile.fromPath(
+              'images', // Phải khớp với backend
+              file.path,
+              contentType: MediaType('image', 'jpeg'),
+              filename: normalizedFileName,
+            ));
+          } else {
+            debugPrint('❌ File not found: ${file.path}');
           }
         }
+      } else {
+        debugPrint('⚠️ No files provided for multipart request');
       }
 
       final streamed = await request.send();
-      return await http.Response.fromStream(streamed);
+      final response = await http.Response.fromStream(streamed);
+      debugPrint('📥 Response status: ${response.statusCode}');
+      debugPrint('📥 Response body: ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}');
+      return response;
     }
 
     Future<http.Response> makeRequest(String token) async {
-      return isMultipart
-          ? await sendMultipartRequest(token)
-          : await sendJsonRequest(token);
+      return isMultipart ? await sendMultipartRequest(token) : await sendJsonRequest(token);
     }
 
     Future<ApiResponse> handleResponse(http.Response response) async {
-      if (response.body.isEmpty) {
-        return ApiResponse(
-          success: response.statusCode >= 200 && response.statusCode < 300,
-          message: response.statusCode >= 200 && response.statusCode < 300
-              ? 'Phản hồi rỗng từ server'
-              : 'Lỗi: ${response.statusCode} - Phản hồi rỗng',
-        );
-      }
-
-      try {
-        final body = jsonDecode(response.body);
-        if (response.statusCode >= 200 && response.statusCode < 300) {
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        if (response.body.isEmpty) {
+          return ApiResponse(
+            success: true,
+            message: 'Phản hồi rỗng từ server',
+          );
+        }
+        try {
+          final body = jsonDecode(response.body);
           return ApiResponse(
             success: true,
             data: body,
             message: body is Map<String, dynamic> ? body['message'] ?? 'Thành công' : 'Thành công',
           );
-        } else {
+        } catch (e) {
+          debugPrint('❌ JSON parse error: $e');
           return ApiResponse(
             success: false,
-            message: body is Map<String, dynamic> ? body['message'] ?? 'Lỗi: ${response.statusCode}' : 'Lỗi: ${response.statusCode}',
+            message: 'Lỗi phân tích JSON: $e',
           );
         }
-      } catch (e) {
+      } else {
+        debugPrint('❌ Server error: ${response.statusCode}');
         return ApiResponse(
           success: false,
-          message: 'Lỗi phân tích JSON: $e',
+          message: 'Lỗi server: ${response.statusCode} - ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}',
         );
       }
     }
@@ -110,25 +129,28 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
 
     // Step 2: Handle token expired
     if (response.statusCode == 401 || response.statusCode == 403) {
+      debugPrint('🔄 Token expired, refreshing...');
       final refreshed = await authService.refreshToken();
       if (!refreshed) {
+        debugPrint('❌ Token refresh failed');
         await authService.logout();
         return ApiResponse(success: false, message: 'Token hết hạn, vui lòng đăng nhập lại');
       }
 
       final newAccessToken = await authService.getAccessToken();
       if (newAccessToken == null) {
+        debugPrint('❌ Failed to get new token');
         await authService.logout();
         return ApiResponse(success: false, message: 'Không thể lấy lại token mới');
       }
-
+      debugPrint('🔑 New access token: $newAccessToken');
       response = await makeRequest(newAccessToken);
     }
 
     // Step 3: Trả về kết quả
     return await handleResponse(response);
   } catch (e) {
-    debugPrint('❌ Lỗi gọi API: $e');
+    debugPrint('❌ API call error: $e');
     return ApiResponse(success: false, message: 'Lỗi ngoại lệ: $e');
   }
 }

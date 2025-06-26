@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frontend/api_services/util/convert_file.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/hosting/rentalInfomation/image_upload_screen.dart';
 import 'package:frontend/views/hosting/rentalInfomation/rental_price_screen.dart';
@@ -10,7 +11,6 @@ import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
 
 class RentalInformationScreen extends StatefulWidget {
   final String? vehicleType;
@@ -90,22 +90,29 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
       ...(_collectedData['ImageUploadScreen'] ?? {}),
       ...(_collectedData['DocumentScreen'] ?? {}),
       ...(_collectedData['RentalPriceScreen'] ?? {}),
-      'type': widget.vehicleType ?? 'vehicle',
+      'type': widget.vehicleType,
     };
 
-    final Map<String, dynamic>? imagesData =
-        _collectedData['ImageUploadScreen']?['images'] as Map<String, dynamic>?;
+    final Map<String, dynamic>? imagesData = _collectedData['ImageUploadScreen']?['images'] as Map<String, dynamic>?;
+    final List<File> imageFiles = await convertXFilesToJpgFiles(imagesData);
+    debugPrint('📎 Converted image files: ${imageFiles.map((f) => f.path).toList()}');
 
-    final List<File> imageFiles =
-        imagesData != null
-            ? imagesData.values
-                .whereType<XFile>()
-                .map((xFile) => File(xFile.path))
-                .where((file) => file.existsSync())
-                .toList()
-            : (widget.imageFiles ?? []);
+    final Map<String, dynamic>? docData = _collectedData['DocumentScreen']?['imagesRegistration'] as Map<String, dynamic>?;
+    final List<File> docFiles = await convertXFilesToJpgFiles(docData);
+    debugPrint('📎 Converted document files: ${docFiles.map((f) => f.path).toList()}');
 
-    await viewModel.createVehicle(context, data, imageFiles);
+    final allFiles = [...imageFiles, ...docFiles];
+    if (allFiles.isEmpty) {
+      debugPrint('❌ No files to submit');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vui lòng tải lên ít nhất một hình ảnh')),
+      );
+      return;
+    }
+    if(!mounted) return;
+    await viewModel.createVehicle(context, data, allFiles);
+
+    if (!mounted) return;
     Navigator.pop(context);
   }
 
@@ -125,8 +132,7 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
         builder:
             (context) => CustomAlertDialog(
               title: 'Error',
-              content:
-                  'Please try again.',
+              content: 'Please try again.',
               buttonText: 'OK',
             ),
       );
