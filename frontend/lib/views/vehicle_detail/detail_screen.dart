@@ -28,6 +28,8 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
   int _selectedIndex = 0;
   late List<Widget> _screens;
 
+  final GlobalKey<ReviewScreenState> reviewScreenKey = GlobalKey<ReviewScreenState>();
+
   final List<Map<String, String>> _navItems = [
     {'label': 'About'},
     {'label': 'Gallery'},
@@ -40,7 +42,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     _screens = [
       AboutScreen(vehicle: widget.vehicle),
       GalleryScreen(vehicle: widget.vehicle),
-      ReviewScreen(vehicle: widget.vehicle),
+      ReviewScreen(key: reviewScreenKey, vehicle: widget.vehicle),
     ];
   }
 
@@ -52,152 +54,158 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
       (b) => b.id == widget.vehicle.brand,
       orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
     );
-
     return Scaffold(
       appBar: CustomAppbar(title: 'Detail'),
       body: Container(
         height: double.infinity,
         width: double.infinity,
         color: const Color(0xffFCFCFC),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 28),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 213,
-                      decoration: ShapeDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(
-                            widget.vehicle.images.isNotEmpty
-                                ? widget.vehicle.images[0]
-                                : 'https://www.kia.com/content/dam/kwcms/gt/en/images/discover-kia/voice-search/parts-80-1.jpg',
+        child: RefreshIndicator(
+          onRefresh: () async {
+            if (_selectedIndex == 2) {
+              await reviewScreenKey.currentState?.fetchData();
+            }
+          },
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 28),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 213,
+                        decoration: ShapeDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              widget.vehicle.images.isNotEmpty
+                                  ? widget.vehicle.images[0]
+                                  : 'https://www.kia.com/content/dam/kwcms/gt/en/images/discover-kia/voice-search/parts-80-1.jpg',
+                            ),
+                            fit: BoxFit.cover,
                           ),
-                          fit: BoxFit.cover,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 28),
-                    Container(
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              CustomTextBodyL(
-                                title: '${brand?.brandName} ${widget.vehicle.vehicleName}',
-                              ),
-                              Spacer(),
-                              Row(
-                                children: [
-                                  Text(
-                                    widget.vehicle.rate.toString(),
-                                    style: TextStyle(
-                                      color: const Color(0xFF2B2B2C),
-                                      fontSize: 10,
-                                      fontFamily: 'Inter',
-                                      fontWeight: FontWeight.w500,
-                                      height: 1.20,
-                                    ),
-                                  ),
-                                  SizedBox(width: 3),
-                                  SizedBox(
-                                    width: 12,
-                                    height: 12,
-                                    child: SvgPicture.asset(
-                                      'assets/images/homePage/home/star.svg',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 28,
-                                height: 28,
-                                child: SvgPicture.network(
-                                  '${brand?.brandImage}',
-                                  placeholderBuilder: (context) => Icon(Icons.error),
+                      const SizedBox(height: 28),
+                      Container(
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                CustomTextBodyL(
+                                  title: '${brand?.brandName} ${widget.vehicle.vehicleName}',
                                 ),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                brand!.brandName,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 12,
-                                  fontFamily: 'Inter',
-                                  fontWeight: FontWeight.w400,
-                                  height: 1.33,
+                                Spacer(),
+                                Row(
+                                  children: [
+                                    Text(
+                                      widget.vehicle.rate.toString(),
+                                      style: TextStyle(
+                                        color: const Color(0xFF2B2B2C),
+                                        fontSize: 10,
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w500,
+                                        height: 1.20,
+                                      ),
+                                    ),
+                                    SizedBox(width: 3),
+                                    SizedBox(
+                                      width: 12,
+                                      height: 12,
+                                      child: SvgPicture.asset(
+                                        'assets/images/homePage/home/star.svg',
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 28),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: _buildInfoContainers(),
-                          ),
-                          const SizedBox(height: 28),
-                          Row(
-                            children: List.generate(itemCount, (index) {
-                              final selected = _selectedIndex == index;
-                              final item = _navItems[index];
-                              return Expanded(
-                                child: InkWell(
-                                  onTap: () => setState(() => _selectedIndex = index),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 8),
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 28,
+                                  height: 28,
+                                  child: SvgPicture.network(
+                                    '${brand?.brandImage}',
+                                    placeholderBuilder: (context) => Icon(Icons.error),
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  brand!.brandName,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 12,
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w400,
+                                    height: 1.33,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 28),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: _buildInfoContainers(),
+                            ),
+                            const SizedBox(height: 28),
+                            Row(
+                              children: List.generate(itemCount, (index) {
+                                final selected = _selectedIndex == index;
+                                final item = _navItems[index];
+                                return Expanded(
+                                  child: InkWell(
+                                    onTap: () => setState(() => _selectedIndex = index),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 8),
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color: selected
+                                                ? const Color(0xFF1976D2)
+                                                : const Color(0xFFD5D7DB),
+                                            width: 1,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        item['label']!,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
                                           color: selected
-                                              ? const Color(0xFF1976D2)
-                                              : const Color(0xFFD5D7DB),
-                                          width: 1,
+                                              ? const Color(0xff1976D2)
+                                              : const Color(0xff212121),
+                                          fontWeight:
+                                              selected ? FontWeight.bold : FontWeight.normal,
+                                          fontSize: 12,
                                         ),
                                       ),
                                     ),
-                                    child: Text(
-                                      item['label']!,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: selected
-                                            ? const Color(0xff1976D2)
-                                            : const Color(0xff212121),
-                                        fontWeight:
-                                            selected ? FontWeight.bold : FontWeight.normal,
-                                        fontSize: 12,
-                                      ),
-                                    ),
                                   ),
-                                ),
-                              );
-                            }),
-                          ),
-                          const SizedBox(height: 28),
-                          Container(
-                            child: IndexedStack(
-                              index: _selectedIndex,
-                              children: _screens,
+                                );
+                              }),
                             ),
-                          ),
-                          const SizedBox(height: 28),
-                        ],
+                            const SizedBox(height: 28),
+                            Container(
+                              child: IndexedStack(
+                                index: _selectedIndex,
+                                children: _screens,
+                              ),
+                            ),
+                            const SizedBox(height: 28),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

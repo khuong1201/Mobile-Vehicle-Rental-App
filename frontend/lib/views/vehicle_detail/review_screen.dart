@@ -15,25 +15,37 @@ class ReviewScreen extends StatefulWidget {
   });
 
   @override
-  State<ReviewScreen> createState() => _ReviewScreenState();
+  State<ReviewScreen> createState() => ReviewScreenState();
 }
 
-class _ReviewScreenState extends State<ReviewScreen> {
+class ReviewScreenState extends State<ReviewScreen> {
   final TextEditingController _comment = TextEditingController();
+
+  Future<void> fetchData() async {
+    final reviewViewModel = context.read<ReviewViewModel>();
+    await reviewViewModel.fetchReviews(
+      context,
+      vehicleId: widget.vehicle.id,
+      page: 1,
+      limit: 10,
+      clearBefore: true,
+    );
+  }
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      final reviewViewModel = Provider.of<ReviewViewModel>(context, listen: false);
-      reviewViewModel.fetchReviews(
-        context,
-        vehicleId: widget.vehicle.id,
-        page: 1,
-        limit: 10,
-        clearBefore: true,
-      );
-    });
+    fetchData();
+    // Future.microtask(() {
+    //   final reviewViewModel = Provider.of<ReviewViewModel>(context, listen: false);
+    //   reviewViewModel.fetchReviews(
+    //     context,
+    //     vehicleId: widget.vehicle.id,
+    //     page: 1,
+    //     limit: 10,
+    //     clearBefore: true,
+    //   );
+    // });
   }
 
   @override
@@ -92,7 +104,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                           ),
                                           const SizedBox(width: 12),
                                           Text(
-                                            review.renter.fullname,
+                                            review.renter.fullName,
                                             style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 14,

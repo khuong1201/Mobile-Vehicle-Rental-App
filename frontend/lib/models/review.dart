@@ -52,13 +52,13 @@ class ReviewModel {
 class RenterInfo {
   final String id;
   final String email;
-  final String fullname;
+  final String fullName;
   final String? imageAvatarUrl;
 
   RenterInfo({
     required this.id,
     required this.email,
-    required this.fullname,
+    required this.fullName,
     required this.imageAvatarUrl,
   });
 
@@ -66,7 +66,7 @@ class RenterInfo {
     return RenterInfo(
       id: json['_id'] ?? '',
       email: json['email'] ?? '',
-      fullname: json['fullname'] ?? '',
+      fullName: json['fullName'] ?? '',
       imageAvatarUrl: json['imageAvatarUrl']?.toString() ?? '',
     );
   }
@@ -75,7 +75,7 @@ class RenterInfo {
     return {
       '_id': id,
       'email': email,
-      'fullname': fullname,
+      'fullName': fullName,
       'imageAvatarUrl': imageAvatarUrl ?? '',
     };
   }

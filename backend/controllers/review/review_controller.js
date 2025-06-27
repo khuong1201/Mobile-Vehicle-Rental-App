@@ -63,7 +63,7 @@ const GetReviewById = async (req, res) => {
   try {
     const { reviewId } = req.params;
 
-    const review = await Review.findById(reviewId).populate("renterId", "name email");
+    const review = await Review.findById(reviewId).populate("renterId", "fullName email");
     if (!review) {
       return res.status(404).json({ message: "Review not found" });
     }
@@ -81,7 +81,6 @@ const GetReviewsByVehicle = async (req, res) => {
 
     const reviews = await Review.find({ vehicleId }).populate(
       "renterId",
-      "name email"
     );
 
     res.status(200).json(reviews);
