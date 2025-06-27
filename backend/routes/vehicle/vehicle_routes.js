@@ -3,7 +3,6 @@ const router = express.Router();
 const vehicleController = require("../../controllers/vehicle/vehicleController");
 const authenticateToken = require("../../middlewares/auth_middleware");
 const adminOrOwnerMiddleware = require("../../middlewares/admin_or_owner_middleware");
-const adminMiddleware = require("../../middlewares/admin_middleware");
 const uploadVehicle = require("../../middlewares/multer/upload_vehicle");
 
 // Get all vehicles

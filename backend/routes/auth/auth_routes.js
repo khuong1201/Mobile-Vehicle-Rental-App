@@ -7,6 +7,7 @@ const  authenticateToken  = require('../../middlewares/auth_middleware');
 
 router.post('/register', authController.Register);
 router.post('/login', authController.Login);
+router.post('/web-login', authController.WebLogin);
 router.post('/verify', authController.Verify);
 router.post('/refresh-token', authController.Refresh);
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));

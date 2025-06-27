@@ -161,15 +161,16 @@ const initDB = async () => {
     savedBrands.forEach(b => brandMap[b.brandName] = b._id);
     
     const vehicles = [
-      { vehicleName: 'C-Class', brandName: 'Mercedes', type: 'Car', price: 1800000 },
-      { vehicleName: 'E-Class', brandName: 'Mercedes', type: 'Car', price: 2200000 },
-      { vehicleName: 'GLC', brandName: 'Mercedes', type: 'Car', price: 2000000 },
-      { vehicleName: 'Q5', brandName: 'Audi', type: 'Car', price: 1800000 },
-      { vehicleName: 'RX', brandName: 'Lexus', type: 'Car', price: 2500000 },
-      { vehicleName: 'VF e34', brandName: 'VinFast', type: 'Car', price: 700000 },
-      { vehicleName: 'Tucson', brandName: 'Hyundai', type: 'Car', price: 800000 },
-      { vehicleName: 'Ranger', brandName: 'Ford', type: 'Car', price: 800000 }
+      { vehicleName: 'C-Class', brandName: 'Mercedes', price: 1800000, numberOfSeats: 5, fuelType: 'Gasoline' },
+      { vehicleName: 'E-Class', brandName: 'Mercedes', price: 2200000, numberOfSeats: 5, fuelType: 'Gasoline' },
+      { vehicleName: 'GLC', brandName: 'Mercedes', price: 2000000, numberOfSeats: 5, fuelType: 'Gasoline' },
+      { vehicleName: 'Q5', brandName: 'Audi', price: 1800000, numberOfSeats: 5, fuelType: 'Gasoline' },
+      { vehicleName: 'RX', brandName: 'Lexus', price: 2500000, numberOfSeats: 5, fuelType: 'Hybrid' },
+      { vehicleName: 'VF e34', brandName: 'VinFast', price: 700000, numberOfSeats: 5, fuelType: 'Electric' },
+      { vehicleName: 'Tucson', brandName: 'Hyundai', price: 800000, numberOfSeats: 5, fuelType: 'Diesel' },
+      { vehicleName: 'Ranger', brandName: 'Ford', price: 800000, numberOfSeats: 5, fuelType: 'Diesel' }
     ];
+    
 
     for (const v of vehicles) {
       const licensePlate = 'TEMP-' + Math.floor(Math.random() * 100000).toString().padStart(5, '0');

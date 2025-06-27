@@ -18,12 +18,17 @@ const { connectDB } = require("./config/database");
 const { initializePassport } = require("./config/passport");
 const initDB = require("./init_db");
 const { cleanupUnverifiedUsers } = require('./services/auth_service');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true, 
+  }));
 app.use(
     session({
         secret: process.env.SESSION_SECRET || "your_session_secret",

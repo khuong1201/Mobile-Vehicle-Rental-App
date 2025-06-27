@@ -9,7 +9,33 @@ const Register = async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 };
-
+const WebLogin = async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const result = await authService.loginUser({ email, password });
+  
+      res
+        .cookie('accessToken', result.accessToken, {
+          httpOnly: true,
+          secure: false, // Đặt true nếu dùng HTTPS
+          sameSite: 'Lax',
+          maxAge: 15 * 60 * 1000, // 15 phút
+        })
+        .cookie('refreshToken', result.refreshToken, {
+          httpOnly: true,
+          secure: false,
+          sameSite: 'Lax',
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
+        })
+        .json({
+          message: 'Đăng nhập thành công',
+          user: result.user,
+        });
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  };
+  
 const Login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -114,4 +140,4 @@ const ResetPassword = async (req, res) => {
     }
 };
 
-module.exports = { Register, Login, Verify, Refresh, GoogleLoginEndPoint, GoogleLogin, Logout, RequestPasswordReset, ResetPassword };
+module.exports = { Register, Login, WebLogin, Verify, Refresh, GoogleLoginEndPoint, GoogleLogin, Logout, RequestPasswordReset, ResetPassword };
