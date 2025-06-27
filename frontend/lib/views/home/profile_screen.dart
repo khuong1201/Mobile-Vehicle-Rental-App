@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
-import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
+import 'package:frontend/viewmodels/auth/auth_service.dart';
+import 'package:frontend/viewmodels/user/role_viewmodel.dart';
 import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
 import 'package:frontend/views/address/address_screen.dart';
 import 'package:frontend/views/myAcount/driver_license_screen.dart';
@@ -107,7 +107,21 @@ class _ProfileScreen extends State<ProfileScreen> {
                         context,
                         'assets/images/homePage/profile/StartHosting.svg',
                         'Start hosting',
-                        destination: StartScreen(),
+                        onTap: () async {
+                          final role = context.read<RoleViewModel>();
+                          final authService = AuthService(context);
+                          final userId = await authService.getUserId();
+
+                          await role.updateUserRole(
+                            userId: userId ?? '',
+                            newRole: 'owner',
+                          );
+                          print('userId: ${userId}');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const StartScreen()),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -180,6 +194,12 @@ class _ProfileScreen extends State<ProfileScreen> {
                         context,
                         'assets/images/homePage/profile/Signout.svg',
                         'Sign out',
+                        onTap: () async {
+                          final authService = AuthService(context);
+                          await authService.logout();
+
+                          Navigator.popUntil(context, ModalRoute.withName('/login'));
+                        },
                       ),
                     ],
                   ),
@@ -197,18 +217,14 @@ Widget _buildInkwellButton(
   BuildContext context,
   String pathSvg,
   String label, {
+  VoidCallback? onTap,
   bool hasBorder = false,
   Widget? destination,
 }) {
-  final authViewmodel = Provider.of<AuthViewModel>(context);
-  final gAuthViewmodel = Provider.of<GAuthViewModel>(context);
+
   return InkWell(
-    onTap: () {
-      if (label == 'Sign out') {
-        Navigator.popUntil(context, ModalRoute.withName('/login'));
-        authViewmodel.logout();
-        gAuthViewmodel.signOut();
-      } else if (destination != null) {
+    onTap: onTap ?? () {
+      if (destination != null) {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => destination),

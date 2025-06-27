@@ -12,11 +12,24 @@ class AuthService {
   Future<String?> getAccessToken() async {
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
     final gAuthViewModel = Provider.of<GAuthViewModel>(context, listen: false);
+    
 
     if (await authViewModel.isLoggedIn()) {
       return await UserSecureStorage.getAccessToken();
     } else if (await gAuthViewModel.isLoggedIn()) {
       return await UserSecureStorage.getAccessToken();
+    }
+    return null;
+  }
+
+  Future<String?> getUserId() async {
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+    final gAuthViewModel = Provider.of<GAuthViewModel>(context, listen: false);
+
+    if (await authViewModel.isLoggedIn()) {
+      return authViewModel.user?.id;
+    } else if (await gAuthViewModel.isLoggedIn()) {
+      return gAuthViewModel.user?.id;
     }
     return null;
   }

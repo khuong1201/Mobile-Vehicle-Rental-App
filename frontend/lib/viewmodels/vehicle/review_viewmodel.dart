@@ -67,11 +67,13 @@ class ReviewViewModel extends ChangeNotifier {
       authService: authService,
       vehicleId: vehicleId,
       rating: rating,
-      comment: comment!,
+      comment: comment ?? '',
     );
 
     if (response.success) {
       _errorMessage = null;
+      print("success");
+      await fetchReviews(context, vehicleId: vehicleId, clearBefore: true);
       return true;
     } else {
       _errorMessage = response.message;

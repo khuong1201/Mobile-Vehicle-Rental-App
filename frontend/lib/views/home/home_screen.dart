@@ -382,16 +382,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   ),
                                                 ),
                                                 SizedBox(width: 4),
-                                                Text(
-                                                  '${brand.brandName} ${vehicle.vehicleName}',
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 12,
-                                                    fontFamily: 'Inter',
-                                                    fontWeight: FontWeight.w800,
+                                                Flexible(
+                                                  child: Text(
+                                                    '${brand.brandName} ${vehicle.vehicleName}',
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 12,
+                                                      fontFamily: 'Inter',
+                                                      fontWeight: FontWeight.w800,
+                                                    ),
                                                   ),
                                                 ),
                                               ],

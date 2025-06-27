@@ -5,6 +5,7 @@ import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
 import 'package:frontend/viewmodels/booking/booking_viewmodel.dart';
 import 'package:frontend/viewmodels/location/location_viewmodel.dart';
 import 'package:frontend/viewmodels/user/personal_information_viewmodel.dart';
+import 'package:frontend/viewmodels/user/role_viewmodel.dart';
 import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle/review_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
@@ -43,6 +44,11 @@ class MyApp extends StatelessWidget {
         )),
         ChangeNotifierProvider(create: (_) => BookingViewModel()),
         ChangeNotifierProvider(create: (_) => LocationViewModel()),
+        ChangeNotifierProvider(
+          create: (context) => RoleViewModel(
+            authService: context.read<AuthService>(),
+          ),
+        ),
       ],
       child: MaterialApp(
         title: 'Vehicle Rental App',

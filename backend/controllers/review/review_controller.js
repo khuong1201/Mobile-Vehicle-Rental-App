@@ -17,7 +17,7 @@ const CreateReview = async (req, res) => {
   try {
     const { vehicleId, rating, comment } = req.body;
     const renterId = req.user.id || req.user._id;
-
+    console.log(`data ${vehicleId}, ${rating}, comment: ${comment} `);
     const existingReview = await Review.findOne({ vehicleId, renterId });
     if (existingReview) {
       return res
@@ -63,7 +63,7 @@ const GetReviewById = async (req, res) => {
   try {
     const { reviewId } = req.params;
 
-    const review = await Review.findById(reviewId).populate("renterId", "name email");
+    const review = await Review.findById(reviewId).populate("renterId", "fullName email");
     if (!review) {
       return res.status(404).json({ message: "Review not found" });
     }
@@ -82,17 +82,9 @@ const GetReviewsByVehicle = async (req, res) => {
     const sort = req.query.sort || "-createdAt";
 
     const { vehicleId } = req.params;
-    const result = await paginate(
-      Review,
-      {
-        vehicleId,
-        page,
-        limit,
-        sort,
-        populate: [
-          { path: "rentalId", select: "_id fullName email imageAvatarUrl" },
-        ],
-      }
+
+    const reviews = await Review.find({ vehicleId }).populate(
+      "renterId",
     );
     res.status(200).json(result);
   } catch (err) {
