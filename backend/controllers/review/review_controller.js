@@ -80,18 +80,34 @@ const GetReviewsByVehicle = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const sort = req.query.sort || "-createdAt";
-
     const { vehicleId } = req.params;
 
-    const reviews = await Review.find({ vehicleId }).populate(
-      "renterId",
-    );
-    res.status(200).json(result);
+    // ✅ Tính skip
+    const skip = (page - 1) * limit;
+
+    // ✅ Lấy danh sách reviews phân trang
+    const reviews = await Review.find({ vehicleId })
+      .populate("renterId")
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
+
+    // ✅ Đếm tổng số review
+    const total = await Review.countDocuments({ vehicleId });
+
+    // ✅ Trả kết quả
+    res.status(200).json({
+      reviews,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    });
   } catch (err) {
-    console.error(err);
+    console.error("Lỗi khi lấy reviews:", err);
     res.status(500).json({ message: "Failed to fetch reviews" });
   }
 };
+
 
 const DeleteReview = async (req, res) => {
   try {

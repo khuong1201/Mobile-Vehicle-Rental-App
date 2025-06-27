@@ -37,7 +37,13 @@ class UserSecureStorage {
   static Future<String?> getRefreshToken() async {
     return await _storage.read(key: _refreshTokenKey);
   }
-
+  static Future<void> deleteUser() async {
+    await _storage.delete(key: _userKey);
+  }
+  static Future<String?> getUserId() async {
+    final user = await getUser();
+    return user?.id;
+  }
   static Future<void> clearAll() async {
     await Future.wait([
       _storage.delete(key: _userKey),

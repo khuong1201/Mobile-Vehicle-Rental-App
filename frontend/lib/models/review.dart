@@ -28,9 +28,10 @@ class ReviewModel {
       rating: json['rating'] ?? 0,
       reviewCount: json['reviewCount'] ?? 0,
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.tryParse(json['updatedAt'])
-          : null,
+      updatedAt:
+          json['updatedAt'] != null
+              ? DateTime.tryParse(json['updatedAt'])
+              : null,
       renter: RenterInfo.fromJson(json['renterId']),
     );
   }

@@ -23,15 +23,11 @@ class AuthService {
   }
 
   Future<String?> getUserId() async {
-    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-    final gAuthViewModel = Provider.of<GAuthViewModel>(context, listen: false);
-
-    if (await authViewModel.isLoggedIn()) {
-      return authViewModel.user?.id;
-    } else if (await gAuthViewModel.isLoggedIn()) {
-      return gAuthViewModel.user?.id;
+    try{
+      return await UserSecureStorage.getUserId();
+    }catch (e) {
+      return null;
     }
-    return null;
   }
 
   Future<bool> refreshToken() async {
