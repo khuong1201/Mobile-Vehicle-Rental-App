@@ -77,14 +77,24 @@ const GetReviewById = async (req, res) => {
 
 const GetReviewsByVehicle = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const sort = req.query.sort || "-createdAt";
+
     const { vehicleId } = req.params;
-
-    const reviews = await Review.find({ vehicleId }).populate(
-      "renterId",
-      "name email"
+    const result = await paginate(
+      Review,
+      {
+        vehicleId,
+        page,
+        limit,
+        sort,
+        populate: [
+          { path: "rentalId", select: "_id fullName email imageAvatarUrl" },
+        ],
+      }
     );
-
-    res.status(200).json(reviews);
+    res.status(200).json(result);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to fetch reviews" });
