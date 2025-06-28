@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frontend/models/bank.dart';
 import 'package:frontend/views/widgets/custom_dropdown_formfield.dart';
 import 'package:frontend/views/widgets/custom_text_body_L.dart';
 import 'package:frontend/views/widgets/custom_text_body_S_sb.dart';
@@ -29,15 +30,23 @@ class _RentalPriceScreenState extends State<RentalPriceScreen> {
   String? _nameBank;
 
   void _saveData() {
-    final data = {
-      'price': double.tryParse(_priceController.text.trim()),
-      'bankName': _nameBank,
-      'accountNumber': _accountNumberController.text,
-      'accountHolderName': _accountHolderNameController.text,
-      'vehicleType': widget.vehicleType,
-    };
-    widget.onDataChanged(data);
-  }
+  final price = double.tryParse(_priceController.text.trim()) ?? 0.0;
+
+  final bankAccount = BankAccount(
+    accountNumber: _accountNumberController.text.trim(),
+    bankName: _nameBank ?? 'unknown',
+    accountHolderName: _accountHolderNameController.text.trim(),
+  );
+
+  final data = {
+    'price': price,
+    'bankAccount': bankAccount.toJson(), 
+    'vehicleType': widget.vehicleType,
+  };
+
+  widget.onDataChanged(data);
+}
+
 
   @override
   void dispose() {

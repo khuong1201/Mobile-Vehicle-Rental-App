@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/user.dart';
 import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
 import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -7,12 +6,13 @@ import '../user/user_secure_storage.dart';
 
 class AuthService {
   final BuildContext context;
-  User? user;
+
   AuthService(this.context);
 
   Future<String?> getAccessToken() async {
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
     final gAuthViewModel = Provider.of<GAuthViewModel>(context, listen: false);
+    
 
     if (await authViewModel.isLoggedIn()) {
       return await UserSecureStorage.getAccessToken();
@@ -21,12 +21,11 @@ class AuthService {
     }
     return null;
   }
-
   Future<bool> checkRoleOwner() async {
     final userRole = await UserSecureStorage.getUserRole();
-    return userRole == 'owner';
+    if (userRole == null) return false;
+    return userRole.toLowerCase() == 'owner';
   }
-
   Future<bool> refreshToken() async {
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
     final gAuthViewModel = Provider.of<GAuthViewModel>(context, listen: false);
@@ -55,6 +54,4 @@ class AuthService {
       return false;
     }
   }
-
-  static of(BuildContext context) {}
 }
