@@ -52,42 +52,52 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
     }
 
     Future<http.Response> sendMultipartRequest(String token) async {
-      debugPrint('📦 Multipart fields: $fields');
-      debugPrint('📦 Multipart files: ${files?['images']?.map((f) => f.path).toList() ?? []}');
-      final request = http.MultipartRequest(method.toUpperCase(), uri);
-      request.headers['Authorization'] = 'Bearer $token';
-      if (fields != null) {
-        request.fields.addAll(fields);
-      }
+  debugPrint('📦 Multipart fields: $fields');
+  debugPrint('📦 Multipart files: ${files?.entries.map((e) => '${e.key}: ${e.value.map((f) => f.path).toList()}').join(', ') ?? '[]'}');
 
-      if (files != null && files['images'] != null) {
-        for (final file in files['images']!) {
-          if (await file.exists()) {
-            final fileName = path.basename(file.path).toLowerCase();
-            final normalizedFileName = fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png')
-                ? fileName
-                : '${fileName.split('.').first}.jpg';
-            debugPrint('📎 Adding file: ${file.path}, Normalized name: $normalizedFileName');
-            request.files.add(await http.MultipartFile.fromPath(
-              'images', // Phải khớp với backend
-              file.path,
-              contentType: MediaType('image', 'jpeg'),
-              filename: normalizedFileName,
-            ));
-          } else {
-            debugPrint('❌ File not found: ${file.path}');
-          }
+  final request = http.MultipartRequest(method.toUpperCase(), uri);
+  request.headers['Authorization'] = 'Bearer $token';
+
+  if (fields != null) {
+    request.fields.addAll(fields);
+  }
+
+  if (files != null) {
+    for (final entry in files.entries) {
+      final fieldName = entry.key;
+      final fileList = entry.value;
+
+      for (final file in fileList) {
+        if (await file.exists()) {
+          final fileName = path.basename(file.path).toLowerCase();
+          final normalizedFileName = fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png')
+              ? fileName
+              : '${fileName.split('.').first}.jpg';
+
+          debugPrint('📎 Adding file: ${file.path}, field: $fieldName');
+
+          request.files.add(await http.MultipartFile.fromPath(
+            fieldName,
+            file.path,
+            contentType: MediaType('image', 'jpeg'),
+            filename: normalizedFileName,
+          ));
+        } else {
+          debugPrint('❌ File not found: ${file.path}');
         }
-      } else {
-        debugPrint('⚠️ No files provided for multipart request');
       }
-
-      final streamed = await request.send();
-      final response = await http.Response.fromStream(streamed);
-      debugPrint('📥 Response status: ${response.statusCode}');
-      debugPrint('📥 Response body: ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}');
-      return response;
     }
+  } else {
+    debugPrint('⚠️ No files provided for multipart request');
+  }
+
+  final streamed = await request.send();
+  final response = await http.Response.fromStream(streamed);
+  debugPrint('📥 Response status: ${response.statusCode}');
+  debugPrint('📥 Response body: ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}');
+  return response;
+}
+
 
     Future<http.Response> makeRequest(String token) async {
       return isMultipart ? await sendMultipartRequest(token) : await sendJsonRequest(token);

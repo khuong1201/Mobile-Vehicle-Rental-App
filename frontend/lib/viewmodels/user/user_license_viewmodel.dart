@@ -30,8 +30,8 @@ class UserLicenseViewModel extends ChangeNotifier {
         typeOfDriverLicense: typeOfDriverLicense,
         classLicense: classLicense,
         licenseNumber: licenseNumber,
-        frontImage: frontImage,
-        backImage: backImage,
+        frontImage: File(frontImage.path),
+        backImage: File(backImage.path),
       );
 
       lastResponse = response;

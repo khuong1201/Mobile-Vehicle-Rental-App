@@ -1,5 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:frontend/viewmodels/user/personal_information_viewmodel.dart';
+import 'package:frontend/viewmodels/user/user_license_viewmodel.dart';
 import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
 import 'package:frontend/views/home/profile_screen.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
@@ -34,7 +36,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
   final ImagePicker _picker = ImagePicker();
   XFile? _frontViewPicture;
   XFile? _backViewPicture;
-
+  
   Future<void> _pickImage(String type) async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
@@ -68,7 +70,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final personalInfoVM = Provider.of<PersonalInfoViewModel>(
+    final userLincenseVM = Provider.of<UserLicenseViewModel>(
       context,
       listen: false,
     );
@@ -200,37 +202,54 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: CustomButton(
           title: 'Save',
-          onPressed: () {
-            if (_formKey.currentState?.validate() ?? false) {
-              if (personalInfoVM.frontImage == null ||
-                  personalInfoVM.backImage == null) {
-                showDialog(
-                  context: context,
-                  builder:
-                      (context) => CustomAlertDialog(
-                        title: 'Error',
-                        content: 'Please select both front and back images.',
-                        buttonText: 'OK',
-                      ),
+          onPressed: () async {
+            if (_formKey.currentState?.validate() ?? false) { 
+               if (_frontViewPicture != null && _backViewPicture != null) {
+                File frontFile = File(_frontViewPicture!.path);
+                File backFile = File(_backViewPicture!.path);
+
+                final result = await userLincenseVM.updateDriverLicense(
+                  typeOfDriverLicense: _slectedTypeDriver!,
+                  classLicense: _classController.text,
+                  licenseNumber: _licenseNumberController.text,
+                  frontImage: frontFile,
+                  backImage: backFile,
                 );
-                return;
-              }
-              personalInfoVM.setInformation(
-                name: _nameController.text,
-                typeDriverLicense: _slectedTypeDriver,
-                className: _classController.text,
-              );
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfileScreen()),
-              );
+                if (result) {
+                  await showDialog(
+                    context: context,
+                    builder: (context) => CustomAlertDialog(
+                      title: 'Error',
+                      content: "Driver's license update successful",
+                      buttonText: 'OK',
+                      onPressed: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ProfileScreen()),
+                        );
+                      },
+                    ),
+
+                  );
+                } else {
+                  await showDialog(
+                    context: context,
+                    builder: (context) => CustomAlertDialog(
+                      title: 'Error',
+                      content: "Driver's license update faile",
+                      buttonText: 'OK',
+                    ),
+
+                  );
+                }
+              }        
             } else {
               showDialog(
                 context: context,
                 builder:
                     (context) => CustomAlertDialog(
                       title: 'Error',
-                      content: 'Please try again.',
+                      content: 'Please select both front and back images.',
                       buttonText: 'OK',
                     ),
               );
