@@ -234,7 +234,7 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: data['bankAccount'],
+            ownerBankAccount: data['bankAccount'].toJson()?? '',
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
             status: data['status'] as String? ?? 'pending',

@@ -21,10 +21,21 @@ class AuthService {
     }
     return null;
   }
+
+  Future<String?> getUserId() async {
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+    final gAuthViewModel = Provider.of<GAuthViewModel>(context, listen: false);
+
+    if (await authViewModel.isLoggedIn()) {
+      return await UserSecureStorage.getUserId();
+    } else if (await gAuthViewModel.isLoggedIn()) {
+      return await UserSecureStorage.getUserId();
+    }
+    return null;
+  }
   Future<bool> checkRoleOwner() async {
     final userRole = await UserSecureStorage.getUserRole();
-    if (userRole == null) return false;
-    return userRole.toLowerCase() == 'owner';
+    return userRole == 'owner';
   }
   Future<bool> refreshToken() async {
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
