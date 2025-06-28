@@ -13,9 +13,11 @@ router.get('/get-all-user', authenticateWeb, adminMiddleware, adminController.Ge
 router.get('/get-users-with-unapproved-licenses', authenticateWeb, adminMiddleware, adminController.GetUsersWithUnapprovedLicenses);
 router.post('/approve-license', authenticateWeb, adminMiddleware, adminController.ApproveLicense);
 router.post('/reject-license', authenticateWeb, adminMiddleware, adminController.RejectLicense);
-router.get('/get-user-profile', authenticateWeb, adminMiddleware, adminController.GetUser);
+router.get('/get-user-profile/:id', authenticateWeb, adminMiddleware, adminController.GetUser);
+router.get('/get-admin-profile', authenticateWeb, adminMiddleware, adminController.GetAdminProfile);
 router.put("/status/:id", authenticateWeb, adminMiddleware, vehicleController.ChangeVehicleStatus);
 router.get("/pending", authenticateWeb, adminMiddleware, vehicleController.GetVehiclePending);
+router.get('/get-all-banner', brandController.GetAllBrands);
 router.post('/create-brand', authenticateWeb, adminMiddleware, brandController.CreateBrand);
 router.put('/update-brand/:id', authenticateWeb, adminMiddleware, brandController.UpdateBrand);
 router.delete('/delete-brand/:id', authenticateWeb, adminMiddleware, brandController.DeleteBrand);

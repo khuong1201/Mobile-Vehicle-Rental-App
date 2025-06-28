@@ -16,8 +16,8 @@ router.get("/unavailable", authenticateToken, vehicleController.GetUnavailableVe
 router.get("/type/:type", authenticateToken, vehicleController.GetVehicleByType);
 
 // Create a new vehicle
-//router.post("/create-vehicle", authenticateToken, adminOrOwnerMiddleware, uploadVehicle, vehicleController.CreateVehicle);
-router.post("/create-vehicle", authenticateToken, uploadVehicle, vehicleController.CreateVehicle);
+router.post("/create-vehicle", authenticateToken, adminOrOwnerMiddleware, uploadVehicle, vehicleController.CreateVehicle);
+// router.post("/create-vehicle", authenticateToken, uploadVehicle, vehicleController.CreateVehicle);
 
 // Update a vehicle
 router.put("/:id", authenticateToken, adminOrOwnerMiddleware, uploadVehicle, vehicleController.UpdateVehicle);

@@ -89,6 +89,38 @@ const GetUser = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+const GetAdminProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select(
+      "-passwordHash -otp -otpExpires -refreshToken"
+    );
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({
+      message: "User profile retrieved successfully",
+      user: {
+        id: user._id,
+        userId: user.userId,
+        email: user.email,
+        fullName: user.fullName,
+        dateOfBirth: user.dateOfBirth,
+        phoneNumber: user.phoneNumber,
+        gender: user.gender,
+        IDs: user.IDs,
+        address: user.addresses,
+        license: user.license,
+        role: user.role,
+        verified: user.verified,
+        points: user.points,
+      },
+    });
+  } catch (err) {
+    console.error("Get user profile error:", err.message);
+    res.status(400).json({ message: err.message });
+  }
+};
 const DeleteAccount = async (req, res) => {
     try {
       const user = await User.findById(req.user.id);
@@ -110,4 +142,5 @@ module.exports = {
   ApproveLicense,
   RejectLicense,
   GetUser,
+  GetAdminProfile,
 };

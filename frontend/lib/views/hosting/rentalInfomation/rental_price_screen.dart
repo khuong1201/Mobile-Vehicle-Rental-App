@@ -24,7 +24,7 @@ class RentalPriceScreen extends StatefulWidget {
 class _RentalPriceScreenState extends State<RentalPriceScreen> {
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _accountNumberController = TextEditingController();
-  final TextEditingController _accountNameController = TextEditingController();
+  final TextEditingController _accountHolderNameController = TextEditingController();
 
   String? _nameBank;
 
@@ -33,7 +33,7 @@ class _RentalPriceScreenState extends State<RentalPriceScreen> {
       'price': double.tryParse(_priceController.text.trim()),
       'bankName': _nameBank,
       'accountNumber': _accountNumberController.text,
-      'accountName': _accountNameController.text,
+      'accountHolderName': _accountHolderNameController.text,
       'vehicleType': widget.vehicleType,
     };
     widget.onDataChanged(data);
@@ -43,7 +43,7 @@ class _RentalPriceScreenState extends State<RentalPriceScreen> {
   void dispose() {
     _priceController.dispose();
     _accountNumberController.dispose();
-    _accountNameController.dispose();
+    _accountHolderNameController.dispose();
     super.dispose();
   }
 
@@ -148,7 +148,7 @@ class _RentalPriceScreenState extends State<RentalPriceScreen> {
                   const CustomTextBodySsb(title: 'Account Name'),
                   const SizedBox(height: 8),
                   CustomTextField(
-                    controller: _accountNameController,
+                    controller: _accountHolderNameController,
                     hintText: 'Account holder name',
                     validator: (value) {
                       if (value == null || value.isEmpty) {

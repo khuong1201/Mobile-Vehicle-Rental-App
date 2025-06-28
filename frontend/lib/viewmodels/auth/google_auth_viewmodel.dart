@@ -24,10 +24,10 @@ class GAuthViewModel extends ChangeNotifier {
       final response = await ApiLoginWithGoogle.googleLoginEndPoint(
         googleUser.id,
         googleUser.email,
-        googleUser.displayName ?? '',
-        googleUser.photoUrl ?? '',
+        googleUser.displayName ?? 'User',
+        googleUser.photoUrl ?? 'assets/images/user/default_avatar.png',
       );
-
+      debugPrint("👉 Kết quả đăng nhập Google: ${response.success}, ${response.message}");
       if (response.success && response.data != null) {
         final accessToken = response.data!['accessToken'] as String?;
         final refreshToken = response.data!['refreshToken'] as String?;

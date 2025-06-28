@@ -16,7 +16,7 @@ function App() {
         const token = localStorage.getItem('accessToken');
         if (token) {
           console.log('App: Token found, verifying...');
-          await api.get('/admin/get-user-profile');
+          await api.get('/admin/get-admin-profile');
           setIsAuthenticated(true);
         } else {
           console.log('App: No token found');

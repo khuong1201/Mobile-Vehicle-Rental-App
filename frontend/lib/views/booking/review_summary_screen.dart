@@ -33,7 +33,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
   Widget build(BuildContext context) {
     final bookingVM = Provider.of<BookingViewModel>(context);
     final brands = Provider.of<VehicleViewModel>(context).brands;
-    final Brand? brand = brands.firstWhere(
+    final Brand brand = brands.firstWhere(
       (b) => b.id == widget.vehicle.brand,
       orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
     );
@@ -82,7 +82,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                             children: [
                               CustomTextBodyL(
                                 title:
-                                    '${brand?.brandName} ${widget.vehicle.vehicleName}',
+                                    '${brand.brandName} ${widget.vehicle.vehicleName}',
                               ),
                               Spacer(),
                               Row(
@@ -116,12 +116,12 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                                 width: 28,
                                 height: 28,
                                 child: SvgPicture.network(
-                                  '${brand?.brandImage}',
+                                  '${brand.brandImage}',
                                 ),
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                '${brand?.brandName}',
+                                brand.brandName,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 12,

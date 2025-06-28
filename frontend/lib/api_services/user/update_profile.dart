@@ -15,7 +15,7 @@ Future<ApiResponse<dynamic>> updatePersonalInfoApi<T extends ChangeNotifier>({
   final response = await callProtectedApi(
     viewModel,
     authService: authService,
-    endpoint: '/api/users/update-personal-info',
+    endpoint: '/api/user/update-personal-info',
     method: 'PUT',
     body: {
       'fullName': fullName,

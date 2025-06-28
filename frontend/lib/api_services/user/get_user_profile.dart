@@ -10,7 +10,7 @@ Future<ApiResponse<dynamic>> getUserProfileApi<T extends ChangeNotifier>({
   final response = await callProtectedApi(
     viewModel,
     authService: authService,
-    endpoint: '/api/users/get-user-profile',
+    endpoint: '/api/user/get-user-profile',
     method: 'GET',
   );
 

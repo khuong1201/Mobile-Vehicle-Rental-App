@@ -1,5 +1,7 @@
+import 'package:frontend/models/bank.dart';
 import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/models/vehicles/brand.dart';
+
 import 'package:intl/intl.dart';
 
 final currencyFormatter = NumberFormat.currency(locale: 'vi_VN', symbol: 'VNĐ');
@@ -20,6 +22,7 @@ class Vehicle {
   final String ownerName;
   final String ownerAvatar;
   final double price;
+  final BankAccount ownerBankAccount;
   final double rate;
   final double rentals;
   final bool available;
@@ -41,6 +44,7 @@ class Vehicle {
     required this.ownerEmail,
     required this.ownerName,
     required this.price,
+    required this.ownerBankAccount,
     required this.rate,
     this.rentals = 0,
     required this.available,
@@ -88,6 +92,13 @@ class Vehicle {
       ownerName: ownerName,
       ownerAvatar: ownerAvatar,
       price: (json['price'] ?? 0).toDouble(),
+      ownerBankAccount: ownerData is Map<String, dynamic>
+          ? BankAccount.fromJson(ownerData['bankAccount'] ?? {})
+          : BankAccount(
+              accountNumber: '',
+              bankName: '',
+              accountHolderName: '',
+            ),
       rate: (json['rate'] ?? 0).toDouble(),
       rentals: (json['rentals'] ?? 0).toDouble(),
       available: json['available'] ?? true,
@@ -108,6 +119,7 @@ class Vehicle {
       'description': description,
       'location': location?.toJson(),
       'price': price,
+      'bankAccount': ownerBankAccount.toJson(),
       'rate': rate,
       'rentals': rentals,
       'available': available,

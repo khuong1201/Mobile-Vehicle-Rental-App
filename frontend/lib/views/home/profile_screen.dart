@@ -20,9 +20,9 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreen extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
-  final userVM = Provider.of<UserViewModel>(context);
-  final user = userVM.user;
-  
+    final userVM = Provider.of<UserViewModel>(context);
+    final user = userVM.user;
+
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -55,7 +55,9 @@ class _ProfileScreen extends State<ProfileScreen> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        user?.fullName.isNotEmpty == true ? user!.fullName : 'Bro',
+                        user?.fullName.isNotEmpty == true
+                            ? user!.fullName
+                            : 'Bro',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -108,18 +110,27 @@ class _ProfileScreen extends State<ProfileScreen> {
                         'assets/images/homePage/profile/StartHosting.svg',
                         'Start hosting',
                         onTap: () async {
-                          final role = context.read<RoleViewModel>();
-                          final authService = AuthService(context);
-                          final userId = await authService.getUserId();
+                          final roleVM = context.read<RoleViewModel>();
+                          final bool isOwner = await roleVM.checkRole();
 
-                          await role.updateUserRole(
-                            userId: userId ?? '',
-                            newRole: 'owner',
-                          );
-                          print('userId: ${userId}');
+                          if (!isOwner) {
+                            await roleVM.updateUserRole(newRole: 'owner');
+
+                            final message =
+                                roleVM.successMessage ?? roleVM.errorMessage;
+                            if (message != null) {
+                              ScaffoldMessenger.of(
+                                context,
+                              ).showSnackBar(SnackBar(content: Text(message)));
+                            }
+                          }
+
+                          // Điều hướng
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const StartScreen()),
+                            MaterialPageRoute(
+                              builder: (context) => const StartScreen(),
+                            ),
                           );
                         },
                       ),
@@ -198,7 +209,10 @@ class _ProfileScreen extends State<ProfileScreen> {
                           final authService = AuthService(context);
                           await authService.logout();
 
-                          Navigator.popUntil(context, ModalRoute.withName('/login'));
+                          Navigator.popUntil(
+                            context,
+                            ModalRoute.withName('/login'),
+                          );
                         },
                       ),
                     ],
@@ -213,6 +227,7 @@ class _ProfileScreen extends State<ProfileScreen> {
     );
   }
 }
+
 Widget _buildInkwellButton(
   BuildContext context,
   String pathSvg,
@@ -221,16 +236,17 @@ Widget _buildInkwellButton(
   bool hasBorder = false,
   Widget? destination,
 }) {
-
   return InkWell(
-    onTap: onTap ?? () {
-      if (destination != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => destination),
-        );
-      }
-    },
+    onTap:
+        onTap ??
+        () {
+          if (destination != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => destination),
+            );
+          }
+        },
     child: Container(
       padding: EdgeInsets.symmetric(vertical: 8),
       margin: EdgeInsets.only(bottom: 8, left: 16, right: 16),

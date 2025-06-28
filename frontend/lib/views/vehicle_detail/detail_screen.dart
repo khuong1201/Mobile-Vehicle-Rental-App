@@ -50,7 +50,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
   Widget build(BuildContext context) {
     final int itemCount = _navItems.length;
     final brands = Provider.of<VehicleViewModel>(context).brands;
-    final Brand? brand = brands.firstWhere(
+    final Brand brand = brands.firstWhere(
       (b) => b.id == widget.vehicle.brand,
       orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
     );
@@ -97,7 +97,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                             Row(
                               children: [
                                 CustomTextBodyL(
-                                  title: '${brand?.brandName} ${widget.vehicle.vehicleName}',
+                                  title: '${brand.brandName} ${widget.vehicle.vehicleName}',
                                 ),
                                 Spacer(),
                                 Row(
@@ -131,13 +131,13 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                                   width: 28,
                                   height: 28,
                                   child: SvgPicture.network(
-                                    '${brand?.brandImage}',
+                                    '${brand.brandImage}',
                                     placeholderBuilder: (context) => Icon(Icons.error),
                                   ),
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  brand!.brandName,
+                                  brand.brandName,
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,

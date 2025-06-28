@@ -9,7 +9,16 @@ const LocationSchema = new mongoose.Schema(
   },
   { _id: false }
 );
-
+const bankAccountSchema = new mongoose.Schema(
+  {
+    accountNumber: { type: String, required: true },
+    bankName: { type: String, required: true },
+    accountHolderName: { type: String, required: true },
+    // routingNumber: { type: String, required: true },
+    // swiftCode: String,
+  },
+  { _id: false }
+);
 const VehicleSchema = new mongoose.Schema(
   {
     ownerId: {
@@ -36,6 +45,7 @@ const VehicleSchema = new mongoose.Schema(
     description: String,
     location: LocationSchema,
     price: Number,
+    bankAccount: bankAccountSchema,
     rate: { type: Number, default: 0 },
     available: { type: Boolean, default: true },
     status: {
