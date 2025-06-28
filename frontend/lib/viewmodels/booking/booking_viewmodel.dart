@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/api_services/booking/create_booking.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend/api_services/client/api_reponse.dart';

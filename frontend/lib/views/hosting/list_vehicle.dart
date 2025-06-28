@@ -2,7 +2,6 @@
   import 'package:flutter_svg/svg.dart';
   import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
-  import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
   import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/widgets/custom_text_body_M_sb.dart';
   import 'package:provider/provider.dart';
@@ -49,7 +48,6 @@ class ListVehicleState extends State<ListVehicle> {
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    print("user: ${userId}");
     final vehicleVM = Provider.of<VehicleViewModel>(context);
     final rentalvehicles = vehicleVM.vehicles.where((vh) => vh.ownerId == userId).toList();
     final brands = Provider.of<VehicleViewModel>(context).brands;

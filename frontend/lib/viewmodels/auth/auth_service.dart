@@ -22,6 +22,16 @@ class AuthService {
     return null;
   }
 
+  Future<String?> getUserId() async {
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+    final gAuthViewModel = Provider.of<GAuthViewModel>(context, listen: false);
+
+    if (await authViewModel.isLoggedIn()) {
+      return await UserSecureStorage.getUserId();
+    } else if (await gAuthViewModel.isLoggedIn()) {
+      return await UserSecureStorage.getUserId();
+    }
+  }
   Future<bool> checkRoleOwner() async {
     final userRole = await UserSecureStorage.getUserRole();
     return userRole == 'owner';
