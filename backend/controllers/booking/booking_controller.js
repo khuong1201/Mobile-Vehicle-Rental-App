@@ -14,9 +14,8 @@ const createBooking = async (req, res) => {
       dropoffDate,
       dropoffTime,
       basePrice,
-      note
     } = req.body;
-
+    console.log(req.body);
     const now = new Date();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
@@ -39,7 +38,6 @@ const createBooking = async (req, res) => {
       taxRate,
       taxAmount,
       totalPrice,
-      note,
     });
 
     await booking.save();

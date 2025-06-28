@@ -38,7 +38,7 @@ class Booking {
       id: json['_id'] ?? '',
       vehicleId: json['vehicleId']?['_id'] ?? json['vehicleId'] ?? '',
       renterId: json['renterId']?['_id'] ?? json['renterId'] ?? '',
-      ownerId: json['onwerId']?['_id'] ?? json['onwerId'] ?? '',
+      ownerId: json['ownerId']?['_id'] ?? json['ownerId'] ?? '',
       pickupLocation: json['pickupLocation'] ?? '',
       dropoffLocation: json['dropoffLocation'] ?? '',
       pickupDate: json['pickupDate'] ?? '',
@@ -49,7 +49,6 @@ class Booking {
       taxRate: (json['taxRate'] ?? 0).toDouble(),
       taxAmount: (json['taxAmount'] ?? 0).toDouble(),
       totalPrice: (json['totalPrice'] ?? 0).toDouble(),
-      note: json['note'],
     );
   }
 }

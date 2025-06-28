@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
+import 'package:frontend/viewmodels/auth/auth_service.dart';
 import 'package:frontend/viewmodels/booking/booking_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/booking/review_summary_screen.dart';
+import 'package:frontend/views/hosting/rentalInfomation/location/location_screen.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_date_formfield.dart';
@@ -147,13 +150,44 @@ class _BookingScreenState extends State<BookingScreen> {
                                 const SizedBox(height: 10),
                                 CustomTextField(
                                   controller: _pickUpLocationController,
-                    
+                                  suffixIcon: IconButton(
+                                    onPressed: () async {
+                                    final result = await Navigator.push<LocationForVehicle?>(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const LocationScreen(),
+                                      ),
+                                    );
+                                    if (result != null) {
+                                      setState(() {
+                                        _pickUpLocationController.text = result.address;
+                                      });
+                                    }
+                                  },
+                                    icon: Icon(Icons.arrow_forward_ios, size: 18)
+                                  )
                                 ),
                                 const SizedBox(height: 28),
                                 CustomTextBodyMsb(title: 'Drop - Off Location'),
                                 const SizedBox(height: 10),
                                 CustomTextField(
                                   controller: _dropOffLocationController,
+                                  suffixIcon: IconButton(
+                                    onPressed: () async {
+                                    final result = await Navigator.push<LocationForVehicle?>(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const LocationScreen(),
+                                      ),
+                                    );
+                                    if (result != null) {
+                                      setState(() {
+                                        _dropOffLocationController.text = result.address;
+                                      });
+                                    }
+                                  },
+                                    icon: Icon(Icons.arrow_forward_ios, size: 18)
+                                  )
                                 ),
                                 const SizedBox(height: 28),
                                 Row(
@@ -339,19 +373,22 @@ class _BookingScreenState extends State<BookingScreen> {
               ],
             ),
             CustomButton(
-              onPressed: () {
+              onPressed: () async{
+                final authService = AuthService(context);
+                final userId = await authService.getUserId();
                 if (_formKey.currentState!.validate()) {
-                  bookingVM.setBookingInfo(
+                  bookingVM.createBooking(
                     ownerId: widget.vehicle.ownerId,
-                    renterId: '',
-                    vehicleId: widget.vehicle.vehicleId,
+                    renterId: userId!,
+                    vehicleId: widget.vehicle.id,
                     pickUpLocation: _pickUpLocationController.text,
                     dropOffLocation: _dropOffLocationController.text,
                     pickUpDate: _pickUpDateController.text,
                     dropOffDate: _dropOffDateController.text,
                     pickUpTime: _pickUpTimeController.text,
                     dropOffTime: _dropOffTimeController.text,
-                    price: widget.vehicle.price,
+                    basePrice: widget.vehicle.price,
+                    authService: AuthService(context)
                   );
                   Navigator.push(
                     context,
