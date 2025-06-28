@@ -29,7 +29,7 @@ class ListVehicleState extends State<ListVehicle> {
 
   Future<void> fetchUserId() async {
     final authService = AuthService(context);
-    final id = await authService.getUserId();
+    final id = await authService.getUserIdFromStorage();
     setState(() {
       userId = id;
       isLoading = false;

@@ -209,9 +209,10 @@ class _ProfileScreen extends State<ProfileScreen> {
                           final authService = AuthService(context);
                           await authService.logout();
 
-                          Navigator.popUntil(
-                            context,
-                            ModalRoute.withName('/login'),
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            '/login', 
+                            (Route<dynamic> route) =>
+                                false, 
                           );
                         },
                       ),

@@ -14,9 +14,11 @@ class UserSecureStorage {
 
   static Future<User?> getUser() async {
     final jsonString = await _storage.read(key: _userKey);
+    
     if (jsonString == null) return null;
     try {
       return User.fromJson(jsonDecode(jsonString));
+
     } catch (e) {
       return null;
     }
@@ -41,7 +43,7 @@ class UserSecureStorage {
     await _storage.delete(key: _userKey);
   }
   static Future<String?> getUserId() async {
-    final user = await getUser();
+    final user = await UserSecureStorage.getUser();
     return user?.id;
   }
   static Future<String?> getUserRole() async {

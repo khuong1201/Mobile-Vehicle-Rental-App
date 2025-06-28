@@ -22,7 +22,7 @@ class AuthService {
     return null;
   }
 
-  Future<String?> getUserId() async {
+  Future<String?> getUserIdFromStorage() async {
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
     final gAuthViewModel = Provider.of<GAuthViewModel>(context, listen: false);
 

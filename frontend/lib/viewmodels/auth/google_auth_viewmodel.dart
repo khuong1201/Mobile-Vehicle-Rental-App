@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:frontend/api_services/auth/google_login_endpoint.dart';
@@ -27,16 +29,23 @@ class GAuthViewModel extends ChangeNotifier {
         googleUser.displayName ?? 'User',
         googleUser.photoUrl ?? 'assets/images/user/default_avatar.png',
       );
-      debugPrint("👉 Kết quả đăng nhập Google: ${response.success}, ${response.message}");
+      debugPrint(
+        "👉 Kết quả đăng nhập Google: ${response.success}, ${response.message}",
+      );
       if (response.success && response.data != null) {
         final accessToken = response.data!['accessToken'] as String?;
         final refreshToken = response.data!['refreshToken'] as String?;
         final userData = response.data!['user'] as Map<String, dynamic>?;
 
-        if (accessToken == null || refreshToken == null || userData == null) return null;
+        if (accessToken == null || refreshToken == null || userData == null)
+          return null;
 
         user = User.fromJson(userData);
         await UserSecureStorage.saveUser(user!);
+        debugPrint(
+          '🧪 User loaded from secure storage: ${jsonEncode(user?.toJson())}',
+        );
+        debugPrint('🧪 User ID: ${user?.id}');
         await UserSecureStorage.saveAccessToken(accessToken);
         await UserSecureStorage.saveRefreshToken(refreshToken);
         notifyListeners();

@@ -427,7 +427,10 @@ class _BookingScreenState extends State<BookingScreen> {
             CustomButton(
               onPressed: () async {
                 final authService = AuthService(context);
-                final userId = await authService.getUserId();
+                final userId = await authService.getUserIdFromStorage();
+                debugPrint('userId: $userId');
+                debugPrint('vehicleId: ${widget.vehicle.id}');
+                debugPrint('ownerId: ${widget.vehicle.ownerId}');
                 if (_formKey.currentState!.validate()) {
                   final response = await bookingVM.createBooking(
                     ownerId: widget.vehicle.ownerId,
@@ -441,6 +444,9 @@ class _BookingScreenState extends State<BookingScreen> {
                     dropOffTime: _dropOffTimeController.text,
                     basePrice: widget.vehicle.price,
                     authService: authService,
+                  );
+                  debugPrint(
+                    'Booking response: ${response.success}, ${response.message}, ${response.data}',
                   );
                   if (response.success && bookingVM.bookingResult != null) {
                     Navigator.push(

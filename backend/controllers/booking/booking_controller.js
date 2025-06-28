@@ -1,4 +1,5 @@
 const Booking = require('../../models/booking_model');
+const User = require('../../models/user_model');
 const { getTaxRateByOwner } = require('../../services/user_revenue_service');
 
 // Helper: Convert "DD/MM/YYYY" => "YYYY-MM-DD"
