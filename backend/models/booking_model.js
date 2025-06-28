@@ -17,6 +17,7 @@ const BookingSchema = new mongoose.Schema({
   taxRate: { type: Number, default: 0 },
   taxAmount: Number,
   totalPrice: Number,
+  totalRentalDays: { type: Number, required: true },
   isTaxDeducted: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });

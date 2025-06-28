@@ -10,10 +10,10 @@ class Booking {
   final String dropoffDate;
   final String dropoffTime;
   final double basePrice;
+  final double totalRentalDays;
   final double taxRate;
   final double taxAmount;
   final double totalPrice;
-  final String? note;
 
   Booking({
     required this.id,
@@ -28,9 +28,9 @@ class Booking {
     required this.dropoffTime,
     required this.basePrice,
     required this.taxRate,
+    required this.totalRentalDays,
     required this.taxAmount,
     required this.totalPrice,
-    this.note,
   });
 
   factory Booking.fromJson(Map<String, dynamic> json) {
@@ -46,6 +46,7 @@ class Booking {
       dropoffDate: json['dropoffDate'] ?? '',
       dropoffTime: json['dropoffTime'] ?? '',
       basePrice: (json['basePrice'] ?? 0).toDouble(),
+      totalRentalDays: (json['totalRentalDays'] ?? 0).toDouble(),
       taxRate: (json['taxRate'] ?? 0).toDouble(),
       taxAmount: (json['taxAmount'] ?? 0).toDouble(),
       totalPrice: (json['totalPrice'] ?? 0).toDouble(),

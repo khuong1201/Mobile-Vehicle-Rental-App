@@ -10,7 +10,7 @@ const LicenseSchema = new mongoose.Schema({
     driverLicenseBack: String,
     driverLicenseFrontPublicId: String,
     driverLicenseBackPublicId: String,
-    approved: Boolean
+    approved: {type : String, default: 'pending', enum: ['pending', 'approved', 'rejected']},
 });
 const AddressSchema = new mongoose.Schema({
     addressId: { type: String, default: uuidv4 },

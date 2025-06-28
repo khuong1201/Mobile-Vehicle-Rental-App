@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 
 class ReceiptScreen extends StatelessWidget {
   final Vehicle vehicle;
+
   const ReceiptScreen({super.key, required this.vehicle});
 
   @override
@@ -101,11 +102,9 @@ class ReceiptScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       _buildInfoRow('Drop - Off Time', bookingVM.dropOffTime),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Rent Type', 'Self Driver'),
-                      const SizedBox(height: 16),
                       _buildInfoRow(
                         'Total Rental Days',
-                        bookingVM.rentalDays.toString(),
+                          bookingVM.totalRentalDays?.toString() ?? '0'
                       ),
                     ],
                   ),
@@ -122,7 +121,8 @@ class ReceiptScreen extends StatelessWidget {
                     children: [
                       _buildInfoRow('Additional Drive', '0 VNĐ'),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Subtotal', bookingVM.formattedTotalPrice),
+                      _buildInfoRow('Subtotal', bookingVM.basePrice?.toStringAsFixed(0) ??
+                              '0' + ' VNĐ',),
                       const SizedBox(height: 16),
                       _buildInfoRow('Tax', '0 VNĐ'),
                     ],

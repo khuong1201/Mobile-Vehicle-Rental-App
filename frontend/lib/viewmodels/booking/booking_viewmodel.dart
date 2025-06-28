@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/booking/create_booking.dart';
-import 'package:intl/intl.dart';
 import 'package:frontend/api_services/client/api_reponse.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 
@@ -17,40 +16,19 @@ class BookingViewModel extends ChangeNotifier {
   String dropOffTime = '';
 
   double? basePrice;
-
+  double? taxAmount;
+  double? totalPrice;
+  int? totalRentalDays;
   String? _selectedPaymentMethod;
-
-  int rentalDays = 0;
-  double totalPrice = 0;
-  String formattedTotalPrice = '';
-
-  final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
-  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'VNĐ');
-
   String? get selectedPaymentMethod => _selectedPaymentMethod;
 
-  void setTotal() {
-    try {
-      final pickUp = _dateFormat.parseStrict(pickUpDate);
-      final dropOff = _dateFormat.parseStrict(dropOffDate);
-      final days = dropOff.difference(pickUp).inDays;
-      rentalDays = days > 0 ? days : 1;
-    } catch (_) {
-      rentalDays = 0;
-    }
+  Map<String, dynamic>? bookingResult;
 
-    totalPrice = (basePrice ?? 0) * rentalDays;
-    formattedTotalPrice = _currencyFormat.format(totalPrice);
-    notifyListeners();
-  }
-
-  /// Đổi phương thức thanh toán
   void setPaymentMethod(String method) {
     _selectedPaymentMethod = method;
     notifyListeners();
   }
 
-  /// Tạo booking - Call API
   Future<ApiResponse> createBooking({
     required String vehicleId,
     required String renterId,
@@ -67,7 +45,6 @@ class BookingViewModel extends ChangeNotifier {
     this.vehicleId = vehicleId;
     this.renterId = renterId;
     this.ownerId = ownerId;
-
     this.pickUpLocation = pickUpLocation;
     this.dropOffLocation = dropOffLocation;
     this.pickUpDate = pickUpDate;
@@ -76,12 +53,10 @@ class BookingViewModel extends ChangeNotifier {
     this.dropOffTime = dropOffTime;
     this.basePrice = basePrice;
 
-    setTotal();
-
     if (vehicleId.isEmpty || renterId.isEmpty || ownerId.isEmpty) {
       return ApiResponse(
         success: false,
-        message: 'Missing required booking information',
+        message: 'Thiếu thông tin đặt xe cần thiết',
       );
     }
 
@@ -105,10 +80,19 @@ class BookingViewModel extends ChangeNotifier {
     );
 
     if (response.success) {
-      reset();
+      bookingResult = response.data?['booking'];
+      basePrice = bookingResult?['basePrice']?.toDouble();
+      taxAmount = bookingResult?['taxAmount']?.toDouble();
+      totalPrice = bookingResult?['totalPrice']?.toDouble();
+      totalRentalDays = bookingResult?['totalRentalDays']?.toInt();
+      notifyListeners();
     }
 
     return response;
+  }
+
+  String get formattedTotalPrice {
+    return totalPrice != null ? "${totalPrice!.toStringAsFixed(0)} VNĐ" : "0 VNĐ";
   }
 
   void reset() {
@@ -121,11 +105,12 @@ class BookingViewModel extends ChangeNotifier {
     dropOffDate = '';
     pickUpTime = '';
     dropOffTime = '';
-    basePrice = 0;
-    rentalDays = 0;
-    totalPrice = 0;
-    formattedTotalPrice = '';
+    basePrice = null;
+    taxAmount = null;
+    totalPrice = null;
+    totalRentalDays = null;
     _selectedPaymentMethod = null;
+    bookingResult = null;
     notifyListeners();
   }
 }

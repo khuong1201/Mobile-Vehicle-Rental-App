@@ -14,8 +14,12 @@ import 'package:provider/provider.dart';
 
 class ReviewSummaryScreen extends StatefulWidget {
   final Vehicle vehicle;
-
-  const ReviewSummaryScreen({super.key, required this.vehicle});
+  final Map<String, dynamic> bookingData;
+  const ReviewSummaryScreen({
+    super.key,
+    required this.vehicle,
+    required this.bookingData,
+  });
 
   @override
   _ReviewSummaryScreenState createState() => _ReviewSummaryScreenState();
@@ -35,7 +39,13 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
     final brands = Provider.of<VehicleViewModel>(context).brands;
     final Brand brand = brands.firstWhere(
       (b) => b.id == widget.vehicle.brand,
-      orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
+      orElse:
+          () => Brand(
+            id: '',
+            brandId: '',
+            brandName: 'unknown',
+            brandImage: null,
+          ),
     );
     return Scaffold(
       body: Container(
@@ -208,21 +218,14 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        CustomTextBodySsb(title: 'Rent Type'),
-                        Spacer(),
-                        CustomTextBodyMsb(title: 'Self Driver'),
-                      ],
-                    ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        CustomTextBodySsb(title: 'Total Rental Days'),
-                        Spacer(),
-                        CustomTextBodyMsb(
-                          title: bookingVM.rentalDays.toString(),
+                        CustomTextBodySsb(
+                          title: 'Total Rental Days',
                         ),
+                        Spacer(),
+                        CustomTextBodyMsb(title: bookingVM.totalRentalDays?.toString() ?? '0'),
                       ],
                     ),
                   ],
@@ -251,7 +254,11 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                       children: [
                         CustomTextBodySsb(title: 'Subtotal'),
                         Spacer(),
-                        CustomTextBodyMsb(title: bookingVM.formattedTotalPrice),
+                        CustomTextBodyMsb(
+                          title:
+                              bookingVM.basePrice?.toStringAsFixed(0) ??
+                              '0' + ' VNĐ',
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -259,7 +266,11 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                       children: [
                         CustomTextBodySsb(title: 'Tax'),
                         Spacer(),
-                        CustomTextBodyMsb(title: '0 VNĐ'),
+                        CustomTextBodyMsb(
+                          title:
+                              bookingVM.taxAmount?.toStringAsFixed(0) ??
+                              '0' + ' VNĐ',
+                        ),
                       ],
                     ),
                   ],
@@ -275,9 +286,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                         CustomTextBodyMsb(title: 'Payment'),
                         Spacer(),
                         TextButton(
-                          onPressed: () {
-                            
-                          },
+                          onPressed: () {},
                           child: Text(
                             'See all',
                             style: TextStyle(
@@ -305,10 +314,12 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                               setState(() {
                                 selectedIndex = index;
                               });
-                              bookingVM.setPaymentMethod(paymentMethods[index]['name']!);
+                              bookingVM.setPaymentMethod(
+                                paymentMethods[index]['name']!,
+                              );
                             },
                             child: Container(
-                              padding:EdgeInsets.all(8),
+                              padding: EdgeInsets.all(8),
                               margin: EdgeInsets.only(right: 16),
                               width: 162,
                               decoration: BoxDecoration(
@@ -431,8 +442,12 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
               width: double.infinity,
               onPressed: () {
                 Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (context) => Confirmationscreen(vehicle: widget.vehicle))
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) =>
+                            Confirmationscreen(vehicle: widget.vehicle),
+                  ),
                 );
               },
               title: 'Pay Now',

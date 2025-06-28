@@ -26,8 +26,10 @@ class BookingScreen extends StatefulWidget {
 }
 
 class _BookingScreenState extends State<BookingScreen> {
-  final TextEditingController _pickUpLocationController = TextEditingController();
-  final TextEditingController _dropOffLocationController = TextEditingController();
+  final TextEditingController _pickUpLocationController =
+      TextEditingController();
+  final TextEditingController _dropOffLocationController =
+      TextEditingController();
   final TextEditingController _pickUpDateController = TextEditingController();
   final TextEditingController _dropOffDateController = TextEditingController();
   final TextEditingController _pickUpTimeController = TextEditingController();
@@ -35,22 +37,28 @@ class _BookingScreenState extends State<BookingScreen> {
 
   final dateFormat = DateFormat("dd/MM/yyyy");
   DateTime? parseDate(String input) {
-  try {
-    return DateFormat("dd/MM/yyyy").parseStrict(input);
-  } catch (_) {
-    return null;
+    try {
+      return DateFormat("dd/MM/yyyy").parseStrict(input);
+    } catch (_) {
+      return null;
+    }
   }
-}
 
   final _formKey = GlobalKey<FormState>();
-  
+
   @override
   Widget build(BuildContext context) {
     final bookingVM = Provider.of<BookingViewModel>(context);
     final brands = Provider.of<VehicleViewModel>(context).brands;
     final Brand brand = brands.firstWhere(
       (b) => b.id == widget.vehicle.brand,
-      orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
+      orElse:
+          () => Brand(
+            id: '',
+            brandId: '',
+            brandName: 'unknown',
+            brandImage: null,
+          ),
     );
     return Scaffold(
       body: Container(
@@ -152,20 +160,28 @@ class _BookingScreenState extends State<BookingScreen> {
                                   controller: _pickUpLocationController,
                                   suffixIcon: IconButton(
                                     onPressed: () async {
-                                    final result = await Navigator.push<LocationForVehicle?>(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const LocationScreen(),
-                                      ),
-                                    );
-                                    if (result != null) {
-                                      setState(() {
-                                        _pickUpLocationController.text = result.address;
-                                      });
-                                    }
-                                  },
-                                    icon: Icon(Icons.arrow_forward_ios, size: 18)
-                                  )
+                                      final result = await Navigator.push<
+                                        LocationForVehicle?
+                                      >(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) =>
+                                                  const LocationScreen(),
+                                        ),
+                                      );
+                                      if (result != null) {
+                                        setState(() {
+                                          _pickUpLocationController.text =
+                                              result.address;
+                                        });
+                                      }
+                                    },
+                                    icon: Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 18,
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(height: 28),
                                 CustomTextBodyMsb(title: 'Drop - Off Location'),
@@ -174,20 +190,28 @@ class _BookingScreenState extends State<BookingScreen> {
                                   controller: _dropOffLocationController,
                                   suffixIcon: IconButton(
                                     onPressed: () async {
-                                    final result = await Navigator.push<LocationForVehicle?>(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const LocationScreen(),
-                                      ),
-                                    );
-                                    if (result != null) {
-                                      setState(() {
-                                        _dropOffLocationController.text = result.address;
-                                      });
-                                    }
-                                  },
-                                    icon: Icon(Icons.arrow_forward_ios, size: 18)
-                                  )
+                                      final result = await Navigator.push<
+                                        LocationForVehicle?
+                                      >(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) =>
+                                                  const LocationScreen(),
+                                        ),
+                                      );
+                                      if (result != null) {
+                                        setState(() {
+                                          _dropOffLocationController.text =
+                                              result.address;
+                                        });
+                                      }
+                                    },
+                                    icon: Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 18,
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(height: 28),
                                 Row(
@@ -196,17 +220,21 @@ class _BookingScreenState extends State<BookingScreen> {
                                     Expanded(
                                       flex: 1,
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          CustomTextBodyMsb(title: 'Pick - Up Date'),
+                                          CustomTextBodyMsb(
+                                            title: 'Pick - Up Date',
+                                          ),
                                           const SizedBox(height: 10),
                                           CustomDateFormField(
                                             controller: _pickUpDateController,
                                             validator: (value) {
-                                              if (value == null || value.isEmpty) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
                                                 return 'Vui lòng chọn ngày';
                                               }
-                    
+
                                               return null;
                                             },
                                           ),
@@ -217,15 +245,19 @@ class _BookingScreenState extends State<BookingScreen> {
                                     Expanded(
                                       flex: 1,
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          CustomTextBodyMsb(title: 'Pick - Up Time'),
+                                          CustomTextBodyMsb(
+                                            title: 'Pick - Up Time',
+                                          ),
                                           const SizedBox(height: 10),
                                           CustomTextField(
                                             controller: _pickUpTimeController,
                                             hintText: 'Select Time',
                                             validator: (value) {
-                                              if (value == null || value.isEmpty) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
                                                 return 'Vui lòng chọn thời gian';
                                               }
                                               return null;
@@ -243,28 +275,44 @@ class _BookingScreenState extends State<BookingScreen> {
                                     Expanded(
                                       flex: 1,
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          CustomTextBodyMsb(title: 'Drop - Off Date'),
+                                          CustomTextBodyMsb(
+                                            title: 'Drop - Off Date',
+                                          ),
                                           const SizedBox(height: 10),
                                           CustomDateFormField(
                                             controller: _dropOffDateController,
-                                            firstDate: _pickUpDateController.text.isNotEmpty
-                                              ? parseDate(_pickUpDateController.text)!
-                                              : DateTime.now(),
+                                            firstDate:
+                                                _pickUpDateController
+                                                        .text
+                                                        .isNotEmpty
+                                                    ? parseDate(
+                                                      _pickUpDateController
+                                                          .text,
+                                                    )!
+                                                    : DateTime.now(),
                                             validator: (value) {
-                                              
-                                              if (value == null || value.isEmpty) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
                                                 return 'Vui lòng chọn ngày';
                                               }
-                    
-                                              final pickUpDate = parseDate(_pickUpDateController.text);
-                                              final dropOffDate = parseDate(value);
-                    
-                                              if (pickUpDate == null || dropOffDate == null) {
+
+                                              final pickUpDate = parseDate(
+                                                _pickUpDateController.text,
+                                              );
+                                              final dropOffDate = parseDate(
+                                                value,
+                                              );
+
+                                              if (pickUpDate == null ||
+                                                  dropOffDate == null) {
                                                 return 'Ngày không hợp lệ';
                                               }
-                                              if (dropOffDate.isBefore(pickUpDate)) {
+                                              if (dropOffDate.isBefore(
+                                                pickUpDate,
+                                              )) {
                                                 return 'Ngày trả không được chọn trước ngày nhận';
                                               }
                                               return null;
@@ -277,15 +325,19 @@ class _BookingScreenState extends State<BookingScreen> {
                                     Expanded(
                                       flex: 1,
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          CustomTextBodyMsb(title: 'Drop - Off Time'),
+                                          CustomTextBodyMsb(
+                                            title: 'Drop - Off Time',
+                                          ),
                                           const SizedBox(height: 10),
                                           CustomTextField(
                                             controller: _dropOffTimeController,
                                             hintText: 'Select Time',
                                             validator: (value) {
-                                              if (value == null || value.isEmpty) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
                                                 return 'Vui lòng chọn thời gian';
                                               }
                                               return null;
@@ -373,11 +425,11 @@ class _BookingScreenState extends State<BookingScreen> {
               ],
             ),
             CustomButton(
-              onPressed: () async{
+              onPressed: () async {
                 final authService = AuthService(context);
                 final userId = await authService.getUserId();
                 if (_formKey.currentState!.validate()) {
-                  bookingVM.createBooking(
+                  final response = await bookingVM.createBooking(
                     ownerId: widget.vehicle.ownerId,
                     renterId: userId!,
                     vehicleId: widget.vehicle.id,
@@ -388,16 +440,29 @@ class _BookingScreenState extends State<BookingScreen> {
                     pickUpTime: _pickUpTimeController.text,
                     dropOffTime: _dropOffTimeController.text,
                     basePrice: widget.vehicle.price,
-                    authService: AuthService(context)
+                    authService: authService,
                   );
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ReviewSummaryScreen(vehicle: widget.vehicle),
-                    ),
-                  );
+                  if (response.success && bookingVM.bookingResult != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => ReviewSummaryScreen(
+                              vehicle: widget.vehicle,
+                              bookingData: bookingVM.bookingResult!,
+                            ),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          response.message ?? 'Lỗi khi tạo booking',
+                        ),
+                      ),
+                    );
+                  }
                 }
-                
               },
               title: 'Rent Now',
               width: 150,
