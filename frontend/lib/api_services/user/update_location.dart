@@ -10,7 +10,7 @@ class ApiUserAddress {
   }) async {
     final response = await callProtectedApi<T>(
       viewModel,
-      endpoint: '/api/users/get-Address',
+      endpoint: '/api/user/get-Address',
       method: 'GET',
       authService: authService,
     );

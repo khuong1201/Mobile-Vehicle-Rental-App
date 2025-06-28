@@ -21,7 +21,7 @@ class ReceiptScreen extends StatelessWidget {
     final userVM = Provider.of<UserViewModel>(context);
     final user = userVM.user;
     final brands = Provider.of<VehicleViewModel>(context).brands;
-    final Brand? brand = brands.firstWhere(
+    final Brand brand = brands.firstWhere(
       (b) => b.id == vehicle.brand,
       orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
     );
@@ -76,7 +76,7 @@ class ReceiptScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       _buildInfoRow(
                         'Car',
-                        '${brand?.brandName} ${vehicle.vehicleName}',
+                        '${brand.brandName} ${vehicle.vehicleName}',
                       ),
                       const SizedBox(height: 16),
                       _buildInfoRow('Seats', '07'),

@@ -6,7 +6,7 @@ class User {
   final String fullName;
   final String email;
   final String imageAvatarUrl;
-  final String role;
+  late final String role;
   final bool verified;
 
   User({

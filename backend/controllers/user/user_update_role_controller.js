@@ -2,8 +2,11 @@ const User = require('../../models/user_model');
 
 const UpdateUserRole = async (req, res) => {
   try {
-    const { userId, newRole } = req.body;
+     
+    const { newRole } = req.body;
 
+    const userId = req.user?.id || req.user?.userId;
+    
     if (!userId || !newRole) {
       return res.status(400).json({ message: "User ID and new role are required" });
     }

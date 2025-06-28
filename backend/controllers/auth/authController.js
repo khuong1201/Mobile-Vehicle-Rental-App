@@ -69,28 +69,29 @@ const Refresh = async (req, res) => {
         res.status(401).json({ message: err.message });
     }
 };
-const GoogleLoginEndPoint = async ({ googleId, email, fullName }) => {
-    let user = await User.findOne({ googleId });
+const GoogleLoginEndPoint = async (req, res) => {
+    try {
+      const { googleId, email, fullName, avatar } = req.body;
   
-    if (user) {
-      return {
-        message: 'Login successful',
-        user,
-      };
+      const result = await authService.googleLoginEndPoint({
+        googleId,
+        email,
+        fullName,
+        avatar,
+      });
+  
+      return res.status(200).json({
+        success: true,
+        ...result,
+        message: 'Đăng nhập thành công',
+      });
+    } catch (err) {
+      console.error('🔥 GoogleLoginEndPoint error:', err.message);
+      return res.status(500).json({
+        success: false,
+        message: err.message,
+      });
     }
-  
-    user = new User({
-      googleId,
-      email,
-      fullName,
-    });
-  
-    await user.save();
-  
-    return {
-      message: 'Account created and login successful',
-      user,
-    };
   };
 const GoogleLogin = async (req, res) => {
     try {

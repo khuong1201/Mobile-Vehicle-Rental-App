@@ -44,6 +44,10 @@ class UserSecureStorage {
     final user = await getUser();
     return user?.id;
   }
+  static Future<String?> getUserRole() async {
+    final user = await getUser();
+    return user?.role;
+  }
   static Future<void> clearAll() async {
     await Future.wait([
       _storage.delete(key: _userKey),

@@ -11,7 +11,7 @@ Future<ApiResponse<dynamic>> deleteDriverLicenseApi<T extends ChangeNotifier>({
   final response = await callProtectedApi(
     viewModel,
     authService: authService,
-    endpoint: '/api/users/delete-license',
+    endpoint: '/api/user/delete-license',
     method: 'DELETE',
     body: {
       'licenseId': licenseId,

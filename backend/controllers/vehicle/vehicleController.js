@@ -123,6 +123,13 @@ const CreateVehicle = async (req, res) => {
       description: data.description,
       location: parsedLocation,
       price: parseFloat(data.price || 0),
+      bankAccount: {
+        accountNumber: data.accountNumber || '',
+        bankName: data.bankName || '',
+        accountHolderName: data.accountHolderName || '',
+        // routingNumber: data.routingNumber || '',
+        // swiftCode: data.swiftCode || '',
+      },
       rate: parseFloat(data.rate || 0),
       available: data.available === 'true' || data.available === true,
       status: data.status || 'pending',

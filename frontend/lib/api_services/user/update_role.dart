@@ -6,16 +6,14 @@ import 'package:frontend/viewmodels/auth/auth_service.dart';
 Future<ApiResponse<dynamic>> updateUserRoleApi<T extends ChangeNotifier>({
   required T viewModel,
   required AuthService authService,
-  required String userId,
   required String newRole,
 }) async {
   final response = await callProtectedApi(
     viewModel,
     authService: authService,
-    endpoint: '/api/users/update-role',
+    endpoint: '/api/user/update-role',
     method: 'PUT',
     body: {
-      'userId': userId,
       'newRole': newRole,
     },
   );

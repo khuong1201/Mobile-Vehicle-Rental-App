@@ -16,7 +16,7 @@ Future<ApiResponse<dynamic>> updateDriverLicenseApi<T extends ChangeNotifier>({
   final response = await callProtectedApi(
     viewModel,
     authService: authService,
-    endpoint: '/api/users/update-license',
+    endpoint: '/api/user/update-license',
     method: 'POST',
     isMultipart: true,
     fields: {
