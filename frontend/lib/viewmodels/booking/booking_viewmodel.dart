@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/booking/create_booking.dart';
-import 'package:intl/intl.dart';
 import 'package:frontend/api_services/client/api_reponse.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 
@@ -20,29 +19,9 @@ class BookingViewModel extends ChangeNotifier {
 
   String? _selectedPaymentMethod;
 
-  int rentalDays = 0;
-  double totalPrice = 0;
-  String formattedTotalPrice = '';
-
-  final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
-  final NumberFormat _currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'VNĐ');
-
+  
   String? get selectedPaymentMethod => _selectedPaymentMethod;
 
-  void setTotal() {
-    try {
-      final pickUp = _dateFormat.parseStrict(pickUpDate);
-      final dropOff = _dateFormat.parseStrict(dropOffDate);
-      final days = dropOff.difference(pickUp).inDays;
-      rentalDays = days > 0 ? days : 1;
-    } catch (_) {
-      rentalDays = 0;
-    }
-
-    totalPrice = (basePrice ?? 0) * rentalDays;
-    formattedTotalPrice = _currencyFormat.format(totalPrice);
-    notifyListeners();
-  }
 
   /// Đổi phương thức thanh toán
   void setPaymentMethod(String method) {
@@ -76,7 +55,6 @@ class BookingViewModel extends ChangeNotifier {
     this.dropOffTime = dropOffTime;
     this.basePrice = basePrice;
 
-    setTotal();
 
     if (vehicleId.isEmpty || renterId.isEmpty || ownerId.isEmpty) {
       return ApiResponse(
@@ -122,9 +100,6 @@ class BookingViewModel extends ChangeNotifier {
     pickUpTime = '';
     dropOffTime = '';
     basePrice = 0;
-    rentalDays = 0;
-    totalPrice = 0;
-    formattedTotalPrice = '';
     _selectedPaymentMethod = null;
     notifyListeners();
   }

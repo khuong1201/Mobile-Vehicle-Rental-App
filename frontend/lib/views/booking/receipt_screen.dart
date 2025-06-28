@@ -105,7 +105,7 @@ class ReceiptScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       _buildInfoRow(
                         'Total Rental Days',
-                        bookingVM.rentalDays.toString(),
+                        '',
                       ),
                     ],
                   ),
@@ -122,7 +122,7 @@ class ReceiptScreen extends StatelessWidget {
                     children: [
                       _buildInfoRow('Additional Drive', '0 VNĐ'),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Subtotal', bookingVM.formattedTotalPrice),
+                      _buildInfoRow('Subtotal', ''),
                       const SizedBox(height: 16),
                       _buildInfoRow('Tax', '0 VNĐ'),
                     ],
@@ -134,7 +134,7 @@ class ReceiptScreen extends StatelessWidget {
                   children: [
                     CustomTextBodyL(title: 'Total Rental Price'),
                     Text(
-                      bookingVM.formattedTotalPrice,
+                      '',
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         color: const Color(0xFF1976D2),
