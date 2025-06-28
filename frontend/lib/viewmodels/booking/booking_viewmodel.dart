@@ -29,37 +29,7 @@ class BookingViewModel extends ChangeNotifier {
 
   String? get selectedPaymentMethod => _selectedPaymentMethod;
 
-  void setBookingInfo({
-    required String vehicleId,
-    required String renterId,
-    required String ownerId,
-    required String pickUpLocation,
-    required String dropOffLocation,
-    required String pickUpDate,
-    required String dropOffDate,
-    required String pickUpTime,
-    required String dropOffTime,
-    required double price,
-  }) {
-    this.vehicleId = vehicleId;
-    this.renterId = renterId;
-    this.ownerId = ownerId;
-
-    this.pickUpLocation = pickUpLocation;
-    this.dropOffLocation = dropOffLocation;
-    this.pickUpDate = pickUpDate;
-    this.dropOffDate = dropOffDate;
-    this.pickUpTime = pickUpTime;
-    this.dropOffTime = dropOffTime;
-
-    this.basePrice = price;
-
-    _calculateRentalDetails();
-    notifyListeners();
-  }
-
-  /// Tính tổng giá và số ngày thuê
-  void _calculateRentalDetails() {
+  void setTotal() {
     try {
       final pickUp = _dateFormat.parseStrict(pickUpDate);
       final dropOff = _dateFormat.parseStrict(dropOffDate);
@@ -71,6 +41,7 @@ class BookingViewModel extends ChangeNotifier {
 
     totalPrice = (basePrice ?? 0) * rentalDays;
     formattedTotalPrice = _currencyFormat.format(totalPrice);
+    notifyListeners();
   }
 
   /// Đổi phương thức thanh toán
@@ -80,8 +51,34 @@ class BookingViewModel extends ChangeNotifier {
   }
 
   /// Tạo booking - Call API
-  Future<ApiResponse> createBooking(AuthService authService) async {
-    if (vehicleId == null || renterId == null || ownerId == null) {
+  Future<ApiResponse> createBooking({
+    required String vehicleId,
+    required String renterId,
+    required String ownerId,
+    required String pickUpLocation,
+    required String dropOffLocation,
+    required String pickUpDate,
+    required String dropOffDate,
+    required String pickUpTime,
+    required String dropOffTime,
+    required double basePrice,
+    required AuthService authService,
+  }) async {
+    this.vehicleId = vehicleId;
+    this.renterId = renterId;
+    this.ownerId = ownerId;
+
+    this.pickUpLocation = pickUpLocation;
+    this.dropOffLocation = dropOffLocation;
+    this.pickUpDate = pickUpDate;
+    this.dropOffDate = dropOffDate;
+    this.pickUpTime = pickUpTime;
+    this.dropOffTime = dropOffTime;
+    this.basePrice = basePrice;
+
+    setTotal();
+
+    if (vehicleId.isEmpty || renterId.isEmpty || ownerId.isEmpty) {
       return ApiResponse(
         success: false,
         message: 'Missing required booking information',
@@ -98,8 +95,7 @@ class BookingViewModel extends ChangeNotifier {
       "pickupTime": pickUpTime,
       "dropoffDate": dropOffDate,
       "dropoffTime": dropOffTime,
-      "basePrice": totalPrice,
-      "note": '', 
+      "basePrice": basePrice,
     };
 
     final response = await BookingCreateApi.createBooking(
@@ -114,6 +110,7 @@ class BookingViewModel extends ChangeNotifier {
 
     return response;
   }
+
   void reset() {
     vehicleId = null;
     renterId = null;

@@ -15,8 +15,7 @@ const createBooking = async (req, res) => {
       dropoffTime,
       basePrice,
     } = req.body;
-    cosole.log(req.body); 
-    
+    console.log(req.body);
     const now = new Date();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
