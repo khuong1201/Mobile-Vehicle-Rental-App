@@ -1,15 +1,15 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/viewmodels/user/personal_information_viewmodel.dart';
 import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
-import 'package:frontend/views/address/address_screen.dart';
+import 'package:frontend/views/home/profile_screen.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_dropdown_formfield.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 import 'package:frontend/views/widgets/custom_text_body_M_sb.dart';
+import 'package:frontend/views/widgets/customs_box_image.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class DriverLicenseScreen extends StatefulWidget {
@@ -24,9 +24,32 @@ class DriverLicenseScreen extends StatefulWidget {
 class _DriverLicenseScreen extends State<DriverLicenseScreen> {
   late TextEditingController _nameController = TextEditingController();
   final TextEditingController _classController = TextEditingController();
+  final TextEditingController _licenseNumberController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   String? _slectedTypeDriver;
-  final List<String> _typeDriver = ['chuabiet'];
+  final List<String> _typeDriver = [
+    'License (does not expire)',
+    'License (expire)',
+  ];
+  final ImagePicker _picker = ImagePicker();
+  XFile? _frontViewPicture;
+  XFile? _backViewPicture;
+
+  Future<void> _pickImage(String type) async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        switch (type) {
+          case 'front':
+            _frontViewPicture = image;
+            break;
+          case 'back':
+            _backViewPicture = image;
+            break;
+        }
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -39,7 +62,8 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
     super.didChangeDependencies();
     final userVM = Provider.of<UserViewModel>(context);
     final user = userVM.user;
-    _nameController.text = user?.fullName.isNotEmpty == true ? user!.fullName : 'Bro';
+    _nameController.text =
+        user?.fullName.isNotEmpty == true ? user!.fullName : 'Bro';
   }
 
   @override
@@ -66,7 +90,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical:  12),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -102,6 +126,19 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                                     : null,
                       ),
                       const SizedBox(height: 24),
+                      CustomTextBodyMsb(title: "License Number"),
+                      const SizedBox(height: 8),
+                      CustomTextField(
+                        controller: _licenseNumberController,
+                        hintText: 'Exp: 123456789',
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your License Number';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 24),
                       CustomTextBodyMsb(title: 'Class'),
                       const SizedBox(height: 8),
                       CustomTextField(
@@ -121,21 +158,31 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                         children: [
                           Expanded(
                             flex: 1,
-                            child: _buildImagePicker(
-                              context,
-                              'Front view picture',
-                              'Take a photo',
-                              isFront: true,
+                            child: CustomBoxImage(
+                              title: 'Right view picture',
+                              hintText: 'Take a photo',
+                              image: _frontViewPicture,
+                              onPickImage: () => _pickImage('front'),
+                              validator:
+                                  (image) =>
+                                      image == null
+                                          ? 'Image is required'
+                                          : null,
                             ),
                           ),
                           SizedBox(width: 12),
                           Expanded(
                             flex: 1,
-                            child: _buildImagePicker(
-                              context,
-                              'Back view picture',
-                              'Take a photo',
-                              isFront: false,
+                            child: CustomBoxImage(
+                              title: 'Right view picture',
+                              hintText: 'Take a photo',
+                              image: _backViewPicture,
+                              onPickImage: () => _pickImage('back'),
+                              validator:
+                                  (image) =>
+                                      image == null
+                                          ? 'Image is required'
+                                          : null,
                             ),
                           ),
                         ],
@@ -175,7 +222,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
               );
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddressScreen()),
+                MaterialPageRoute(builder: (context) => ProfileScreen()),
               );
             } else {
               showDialog(
@@ -193,63 +240,4 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
       ),
     );
   }
-}
-
-Widget _buildImagePicker(
-  BuildContext context,
-  String title,
-  String hintText, {
-  required bool isFront,
-}) {
-  final personalInfoVM = Provider.of<PersonalInfoViewModel>(
-    context,
-    listen: false,
-  );
-  final image = isFront ? personalInfoVM.frontImage : personalInfoVM.backImage;
-
-  return InkWell(
-    child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      decoration: BoxDecoration(
-        color: const Color(0xfffd9d9d9),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: image == null
-      ? Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          CustomTextBodyMsb(title: title),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.camera_alt_outlined,
-                color: const Color(0xFF555658),
-                size: 24,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Take a photo',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: const Color(0xFF555658),
-                  fontSize: 14,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w500,
-                  height: 1.29,
-                ),
-              ),
-            ],
-          ),
-        ],
-      )
-      : Image.file(File(image.path), height: 80, fit: BoxFit.cover),
-    ),
-    onTap:
-        () =>
-            isFront
-                ? personalInfoVM.pickFrontImage()
-                : personalInfoVM.pickBackImage(),
-  );
 }

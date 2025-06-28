@@ -109,6 +109,7 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
       );
       return;
     }
+
     if(!mounted) return;
     await viewModel.createVehicle(context, data, allFiles);
 

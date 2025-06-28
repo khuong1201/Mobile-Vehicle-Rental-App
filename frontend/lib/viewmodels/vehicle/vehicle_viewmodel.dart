@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/api_services/vehicle/api_get_brand.dart';
 import 'package:frontend/api_services/vehicle/api_get_vehicle_by_type.dart';
 import 'package:frontend/api_services/vehicle/get_vehicle.dart';
+import 'package:frontend/models/bank.dart';
 import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/models/vehicles/bike.dart';
 import 'package:frontend/models/vehicles/car.dart';
@@ -62,20 +63,21 @@ class VehicleViewModel extends ChangeNotifier {
     if (clearBefore) _vehicles.clear();
     notifyListeners();
 
-    final response = type == null || type == 'all'
-        ? await ApiGetAllVehicle.getAllVehicle(
-            this,
-            authService: authService,
-            page: page,
-            limit: limit,
-          )
-        : await ApiVehicleService.getVehiclesByType(
-            this,
-            authService: authService,
-            type: type,
-            page: page,
-            limit: limit,
-          );
+    final response =
+        type == null || type == 'all'
+            ? await ApiGetAllVehicle.getAllVehicle(
+              this,
+              authService: authService,
+              page: page,
+              limit: limit,
+            )
+            : await ApiVehicleService.getVehiclesByType(
+              this,
+              authService: authService,
+              type: type,
+              page: page,
+              limit: limit,
+            );
 
     if (response.success) {
       _vehicles.addAll(response.data ?? []);
@@ -98,7 +100,10 @@ class VehicleViewModel extends ChangeNotifier {
     _brands.clear();
     notifyListeners();
 
-    final response = await ApiGetAllBrand.getAllBrand(this, authService: authService);
+    final response = await ApiGetAllBrand.getAllBrand(
+      this,
+      authService: authService,
+    );
 
     if (response.success) {
       _brands.addAll(response.data ?? []);
@@ -163,9 +168,10 @@ class VehicleViewModel extends ChangeNotifier {
       }
 
       final locationData = data['location'];
-      final LocationForVehicle? location = locationData is LocationForVehicle
-          ? locationData
-          : locationData is Map<String, dynamic>
+      final LocationForVehicle? location =
+          locationData is LocationForVehicle
+              ? locationData
+              : locationData is Map<String, dynamic>
               ? LocationForVehicle.fromJson(locationData)
               : null;
 
@@ -176,9 +182,10 @@ class VehicleViewModel extends ChangeNotifier {
       }
 
       final brandData = data['brand'];
-      final brand = brandData is Map<String, dynamic>
-          ? Brand.fromJson(brandData)
-          : brandData is String && brandData.isNotEmpty
+      final brand =
+          brandData is Map<String, dynamic>
+              ? Brand.fromJson(brandData)
+              : brandData is String && brandData.isNotEmpty
               ? Brand(id: brandData, brandId: brandData, brandName: 'Unknown')
               : null;
 
@@ -186,6 +193,17 @@ class VehicleViewModel extends ChangeNotifier {
         debugPrint('❌ Invalid brand data');
         _handleAuthError('Dữ liệu thương hiệu không hợp lệ', context);
         return;
+      }
+      BankAccount parseBankAccount(dynamic rawBankAccount) {
+        if (rawBankAccount is BankAccount) return rawBankAccount;
+        if (rawBankAccount is Map<String, dynamic>) {
+          return BankAccount.fromJson(rawBankAccount);
+        }
+        return BankAccount(
+          accountNumber: '',
+          bankName: '',
+          accountHolderName: '',
+        );
       }
 
       Vehicle vehicle;
@@ -207,13 +225,14 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: data['bankAccount'],
+            ownerBankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
-            status: data['status'] as String? ?? 'pending',
+            status: data['status'] as String,
             type: data['type'] ?? 'car',
             fuelType: data['fuelType'] as String? ?? '',
-            numberOfSeats: double.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
+            numberOfSeats:
+                double.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
           );
           break;
         case 'motor':
@@ -234,7 +253,7 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: data['bankAccount'].toJson()?? '',
+            ownerBankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
             status: data['status'] as String? ?? 'pending',
@@ -259,13 +278,14 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: data['bankAccount'],
+            ownerBankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
             status: data['status'] as String? ?? 'pending',
             type: data['type'] ?? 'coach',
             fuelType: data['fuelType'] as String? ?? '',
-            numberOfSeats: double.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
+            numberOfSeats:
+                double.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
           );
           break;
         case 'bike':
@@ -285,7 +305,7 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: data['bankAccount'],
+            ownerBankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
             status: data['status'] as String? ?? 'pending',
@@ -310,7 +330,7 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: data['bankAccount'],
+            ownerBankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
             status: data['status'] as String? ?? 'pending',
@@ -329,10 +349,18 @@ class VehicleViewModel extends ChangeNotifier {
       if (response.success && response.data != null) {
         _vehicles.insert(0, response.data!);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.message ?? 'Vehicle ${data['type']} created successfully!')),
+          SnackBar(
+            content: Text(
+              response.message ??
+                  'Vehicle ${data['type']} created successfully!',
+            ),
+          ),
         );
       } else {
-        _handleAuthError(response.message ?? 'Failed to create vehicle', context);
+        _handleAuthError(
+          response.message ?? 'Failed to create vehicle',
+          context,
+        );
       }
     } catch (e) {
       debugPrint('❌ Error creating vehicle: $e');

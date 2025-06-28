@@ -22,14 +22,17 @@ class ApiCreatVehicle {
       debugPrint('📎 Image files: ${imageFiles.map((f) => f.path).toList()}');
 
       // Chuyển đổi dữ liệu vehicle thành Map<String, String>
-      final rawFields = vehicle.toJson()
-        ..remove('images')
-        ..remove('imagePublicIds');
+      final rawFields =
+          vehicle.toJson()
+            ..remove('images')
+            ..remove('imagePublicIds');
 
       final fields = <String, String>{};
+      const jsonEncodedKeys = ['location', 'ownerBankAccount'];
+
       rawFields.forEach((key, value) {
-        if (key == 'location' && value is Map) {
-          fields[key] = jsonEncode(value);
+        if (jsonEncodedKeys.contains(key) && value is Map) {
+          fields[key] = jsonEncode(value); // ✅ convert to JSON string
         } else if (value != null && value.toString().trim().isNotEmpty) {
           fields[key] = value.toString();
         }
@@ -61,7 +64,9 @@ class ApiCreatVehicle {
         files: {'images': imageFiles},
       );
 
-      if (!response.success || response.data == null || response.data is! Map<String, dynamic>) {
+      if (!response.success ||
+          response.data == null ||
+          response.data is! Map<String, dynamic>) {
         debugPrint('❌ API response failed: ${response.message}');
         return ApiResponse(
           success: false,

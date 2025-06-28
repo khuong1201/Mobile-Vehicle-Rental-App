@@ -10,7 +10,7 @@ class PersonalInfoViewModel extends ChangeNotifier {
 
   String? classLicense;
   String? typeDriverLicense;
-  final ImagePicker _picker = ImagePicker();
+  String? licenseNumber;
   XFile? frontImage;
   XFile? backImage;
 
@@ -35,22 +35,6 @@ class PersonalInfoViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> pickFrontImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      frontImage = image;
-      notifyListeners();
-    }
-  }
-
-  Future<void> pickBackImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      backImage = image;
-      notifyListeners();
-    }
-  }
-
   void clear() {
     name = null;
     dateOfBirth = null;
@@ -58,6 +42,8 @@ class PersonalInfoViewModel extends ChangeNotifier {
     gender = null;
     ids = null;
     classLicense = null;
+    typeDriverLicense = null;
+    licenseNumber = null;
     frontImage = null;
     backImage = null;
     notifyListeners();

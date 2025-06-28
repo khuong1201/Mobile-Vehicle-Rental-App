@@ -79,8 +79,8 @@ const CreateVehicle = async (req, res) => {
     console.log("📥 Dữ liệu xe mới:", data);
 
     // Lấy và chuẩn hóa type
-    const rawType = (data.type || '').toLowerCase();
-    if (!['car', 'motor', 'coach', 'bike'].includes(rawType)) {
+    const rawType = (data.type || "").toLowerCase();
+    if (!["car", "motor", "coach", "bike"].includes(rawType)) {
       return res.status(400).json({ message: "Loại xe không hợp lệ" });
     }
 
@@ -98,15 +98,32 @@ const CreateVehicle = async (req, res) => {
     // Parse location
     let parsedLocation;
     try {
-      parsedLocation = typeof data.location === 'string' ? JSON.parse(data.location) : data.location;
+      parsedLocation =
+        typeof data.location === "string"
+          ? JSON.parse(data.location)
+          : data.location;
     } catch (err) {
       console.warn("⚠️ Lỗi khi parse location:", err.message);
       parsedLocation = undefined;
     }
+    let parsedBankAccount;
+    try {
+      parsedBankAccount =
+        typeof data.ownerBankAccount === "string"
+          ? JSON.parse(data.ownerBankAccount)
+          : data.ownerBankAccount;
+    } catch (err) {
+      console.warn("⚠️ Lỗi khi parse bankAccount:", err.message);
+      parsedBankAccount = {
+        accountNumber: "",
+        bankName: "",
+        accountHolderName: "",
+      };
+    }
 
     // Xử lý ảnh
     const images = req.files?.images || [];
-    const imageInfos = images.map(file => ({
+    const imageInfos = images.map((file) => ({
       url: file.path,
       publicId: file.filename,
     }));
@@ -118,21 +135,15 @@ const CreateVehicle = async (req, res) => {
       brand: brand._id,
       model: data.model,
       yearOfManufacture: data.yearOfManufacture,
-      images: imageInfos.map(i => i.url),
-      imagePublicIds: imageInfos.map(i => i.publicId),
+      images: imageInfos.map((i) => i.url),
+      imagePublicIds: imageInfos.map((i) => i.publicId),
       description: data.description,
       location: parsedLocation,
       price: parseFloat(data.price || 0),
-      bankAccount: {
-        accountNumber: data.accountNumber || '',
-        bankName: data.bankName || '',
-        accountHolderName: data.accountHolderName || '',
-        // routingNumber: data.routingNumber || '',
-        // swiftCode: data.swiftCode || '',
-      },
+      bankAccount: parsedBankAccount,
       rate: parseFloat(data.rate || 0),
-      available: data.available === 'true' || data.available === true,
-      status: data.status || 'pending',
+      available: data.available === "true" || data.available === true,
+      status: data.status || "pending",
       ownerId: req.user.id,
       ownerEmail: req.user.email,
     };
@@ -141,32 +152,32 @@ const CreateVehicle = async (req, res) => {
 
     // Tạo từng loại xe theo type
     switch (rawType) {
-      case 'car':
+      case "car":
         vehicle = await Car.create({
           ...baseVehicleData,
-          fuelType: data.fuelType || '',
-          transmission: data.transmission || 'Automatic',
+          fuelType: data.fuelType || "",
+          transmission: data.transmission || "Automatic",
           numberOfSeats: parseFloat(data.numberOfSeats || 4),
         });
         break;
 
-      case 'motor':
+      case "motor":
         vehicle = await Motor.create({
           ...baseVehicleData,
-          fuelType: data.fuelType || '',
+          fuelType: data.fuelType || "",
         });
         break;
 
-      case 'coach':
+      case "coach":
         vehicle = await Coach.create({
           ...baseVehicleData,
-          fuelType: data.fuelType || '',
-          transmission: data.transmission || 'Manual',
+          fuelType: data.fuelType || "",
+          transmission: data.transmission || "Manual",
           numberOfSeats: parseFloat(data.numberOfSeats || 16),
         });
         break;
 
-      case 'bike':
+      case "bike":
         vehicle = await Bike.create(baseVehicleData);
         break;
 
