@@ -6,11 +6,13 @@ import 'package:frontend/viewmodels/booking/booking_viewmodel.dart';
 import 'package:frontend/viewmodels/location/location_viewmodel.dart';
 import 'package:frontend/viewmodels/user/personal_information_viewmodel.dart';
 import 'package:frontend/viewmodels/user/role_viewmodel.dart';
+import 'package:frontend/viewmodels/user/user_license_viewmodel.dart';
 import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle/review_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/home/home_page.dart';
 import 'package:frontend/views/login/sign_in_screen.dart';
+import 'package:frontend/views/myAcount/driver_license_screen.dart';
 import 'package:frontend/views/splash_screen.dart';
 import 'package:frontend/views/welcome_screen.dart';
 import 'package:provider/provider.dart';
@@ -39,15 +41,25 @@ class MyApp extends StatelessWidget {
               ),
         ),
         ChangeNotifierProvider(create: (_) => PersonalInfoViewModel()),
-        ChangeNotifierProvider(create: (context) => ReviewViewModel(
-          Provider.of<AuthService>(context, listen: false),
-        )),
+        ChangeNotifierProvider(
+          create:
+              (context) => UserLicenseViewModel(
+                authService: context.read<AuthService>(),
+              ),
+          child: DriverLicenseScreen(),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (context) => ReviewViewModel(
+                Provider.of<AuthService>(context, listen: false),
+              ),
+        ),
         ChangeNotifierProvider(create: (_) => BookingViewModel()),
         ChangeNotifierProvider(create: (_) => LocationViewModel()),
         ChangeNotifierProvider(
-          create: (context) => RoleViewModel(
-            authService: context.read<AuthService>(),
-          ),
+          create:
+              (context) =>
+                  RoleViewModel(authService: context.read<AuthService>()),
         ),
       ],
       child: MaterialApp(

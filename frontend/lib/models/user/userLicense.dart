@@ -1,21 +1,18 @@
-class userLicense {
-  final String name;
+class UserLicense {
   final String classLicense;
   final String typeDriverLicense;
   final String licenseNumber;
   final String frontImage;
   final String backImage;
-  userLicense({
-    required this.name,
+  UserLicense({
     required this.classLicense,
     required this.typeDriverLicense,
     required this.licenseNumber,
     required this.frontImage,
     required this.backImage,
   });
-  factory userLicense.fromJson(Map<String, dynamic> json) {
-    return userLicense(
-      name: json['name'] ?? '',
+  factory UserLicense.fromJson(Map<String, dynamic> json) {
+    return UserLicense(
       classLicense: json['classLicense'] ?? '',
       typeDriverLicense: json['typeDriverLicense'] ?? '',
       licenseNumber: json['licenseNumber'] ?? '',
@@ -25,7 +22,6 @@ class userLicense {
   }
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
       'classLicense': classLicense,
       'typeDriverLicense': typeDriverLicense,
       'licenseNumber': licenseNumber,
