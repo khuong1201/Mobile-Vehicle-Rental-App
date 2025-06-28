@@ -225,7 +225,9 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                           title: 'Total Rental Days',
                         ),
                         Spacer(),
-                        CustomTextBodyMsb(title: bookingVM.totalRentalDays?.toString() ?? '0'),
+                        CustomTextBodyMsb(
+                          title: bookingVM.totalRentalDays?.toString() ?? '0',
+                        ),
                       ],
                     ),
                   ],
@@ -254,11 +256,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                       children: [
                         CustomTextBodySsb(title: 'Subtotal'),
                         Spacer(),
-                        CustomTextBodyMsb(
-                          title:
-                              bookingVM.basePrice?.toStringAsFixed(0) ??
-                              '0' + ' VNĐ',
-                        ),
+                        CustomTextBodyMsb(title: bookingVM.formattedTotalPrice),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -426,7 +424,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
               children: [
                 CustomTextBodyL(title: 'Total Rental Price'),
                 Text(
-                  bookingVM.formattedTotalPrice,
+                  '',
                   style: TextStyle(
                     color: const Color(0xFF1976D2),
                     fontSize: 20,

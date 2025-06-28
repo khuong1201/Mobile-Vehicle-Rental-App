@@ -134,7 +134,7 @@ class ReceiptScreen extends StatelessWidget {
                   children: [
                     CustomTextBodyL(title: 'Total Rental Price'),
                     Text(
-                      bookingVM.formattedTotalPrice,
+                      '',
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         color: const Color(0xFF1976D2),
