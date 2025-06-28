@@ -342,6 +342,9 @@ class _BookingScreenState extends State<BookingScreen> {
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   bookingVM.setBookingInfo(
+                    ownerId: widget.vehicle.ownerId,
+                    renterId: '',
+                    vehicleId: widget.vehicle.vehicleId,
                     pickUpLocation: _pickUpLocationController.text,
                     dropOffLocation: _dropOffLocationController.text,
                     pickUpDate: _pickUpDateController.text,

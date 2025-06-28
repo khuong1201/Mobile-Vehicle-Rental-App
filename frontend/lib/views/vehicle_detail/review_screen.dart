@@ -36,16 +36,6 @@ class ReviewScreenState extends State<ReviewScreen> {
   void initState() {
     super.initState();
     fetchData();
-    // Future.microtask(() {
-    //   final reviewViewModel = Provider.of<ReviewViewModel>(context, listen: false);
-    //   reviewViewModel.fetchReviews(
-    //     context,
-    //     vehicleId: widget.vehicle.id,
-    //     page: 1,
-    //     limit: 10,
-    //     clearBefore: true,
-    //   );
-    // });
   }
 
   @override

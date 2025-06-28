@@ -27,7 +27,7 @@ class VehicleInfomationScreen extends StatefulWidget {
 
 class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
   final TextEditingController _licensePlateController = TextEditingController();
-  final TextEditingController _modelController = TextEditingController();
+  final TextEditingController _vehicleNameController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
@@ -56,7 +56,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
   ).toJson();
     final data = {
       'licensePlate': _licensePlateController.text,
-      'model': _modelController.text,
+      'vehicleName': _vehicleNameController.text,
       'yearOfManufacture': _yearController.text,
       'location': locationData,
       'description': _descriptionController.text,
@@ -123,11 +123,11 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
             ),
 
             const SizedBox(height: 16),
-            CustomTextBodyL(title: 'Model'),
+            CustomTextBodyL(title: 'Vehicle name'),
             const SizedBox(height: 8),
             CustomTextField(
-              controller: _modelController,
-              hintText: 'Enter Model',
+              controller: _vehicleNameController,
+              hintText: 'Enter vehicle name ',
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter Model';
