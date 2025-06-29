@@ -17,7 +17,9 @@ const InitStatus = mongoose.model('InitStatus', new mongoose.Schema({
 
 async function fetchAndStoreData() {
   try {
-    const provincesResponse = await axios.get('https://provinces.open-api.vn/api/p/');
+    const provincesResponse = await axios.get('https://provinces.open-api.vn/api/p/', {
+      timeout: 10000
+    });
     const provinces = provincesResponse.data;
 
     for (const provinceData of provinces) {
@@ -37,8 +39,17 @@ async function fetchAndStoreData() {
         console.log(`✅ Tỉnh/thành: ${province.name}`);
       }
 
-      const districtsResponse = await axios.get(`https://provinces.open-api.vn/api/p/${province.code}?depth=2`);
-      const districts = districtsResponse.data.districts || [];
+      // ➕ Bọc từng request districts
+      let districts = [];
+      try {
+        const districtsResponse = await axios.get(`https://provinces.open-api.vn/api/p/${province.code}?depth=2`, {
+          timeout: 10000
+        });
+        districts = districtsResponse.data.districts || [];
+      } catch (err) {
+        console.warn(`⚠️ Không thể lấy danh sách quận/huyện cho tỉnh: ${province.name}`);
+        continue; // bỏ qua nếu lỗi
+      }
 
       for (const districtData of districts) {
         let district = await District.findOne({ code: districtData.code });
@@ -61,8 +72,17 @@ async function fetchAndStoreData() {
           province.districts.push(district._id);
         }
 
-        const wardsResponse = await axios.get(`https://provinces.open-api.vn/api/d/${district.code}?depth=2`);
-        const wards = wardsResponse.data.wards || [];
+        // ➕ Bọc từng request wards
+        let wards = [];
+        try {
+          const wardsResponse = await axios.get(`https://provinces.open-api.vn/api/d/${district.code}?depth=2`, {
+            timeout: 10000
+          });
+          wards = wardsResponse.data.wards || [];
+        } catch (err) {
+          console.warn(`⚠️ Không thể lấy xã/phường cho quận: ${district.name}`);
+          continue;
+        }
 
         for (const wardData of wards) {
           let ward = await Ward.findOne({ code: wardData.code });
@@ -93,10 +113,11 @@ async function fetchAndStoreData() {
 
     console.log('✅ Dữ liệu hành chính đã được cập nhật.');
   } catch (error) {
-    console.error('❌ Lỗi khi lấy/lưu dữ liệu hành chính:', error.message);
-    throw error;
+    console.error('❌ Lỗi khi lấy dữ liệu tỉnh/thành:', error.message);
+    // Không throw nữa, tránh crash server
   }
 }
+
 
 const initDB = async () => {
   try {
