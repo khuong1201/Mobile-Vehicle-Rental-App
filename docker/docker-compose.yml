@@ -10,25 +10,41 @@ services:
     volumes:
       - ../backend:/app
       - /app/node_modules
+    working_dir: /app
     env_file:
       - ../backend/.env
     depends_on:
       - mongodb
     restart: on-failure
+    command: npm run dev
 
-  frontend:
+  frontend_admin:
     build:
       context: ../frontend-admin
       dockerfile: Dockerfile
     ports:
-      - "5173:5173"       
+      - "5173:5173"
     volumes:
       - ../frontend-admin:/app
-      - /app/node_modules  
+      - /app/node_modules
+    working_dir: /app
     env_file:
       - ../frontend-admin/.env
     depends_on:
       - backend
+    restart: on-failure
+    command: npm run dev
+
+  frontend_flutter:
+    image: ghcr.io/cirruslabs/flutter:stable
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - ../frontend-flutter:/app
+      - ./flutter-output:/output
+    command: flutter build apk --release
     restart: on-failure
 
   mongodb:
@@ -37,6 +53,7 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    restart: unless-stopped
 
 volumes:
   mongo-data:
