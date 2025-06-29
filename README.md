@@ -9,7 +9,6 @@
 The app provides:
 
 - 🔍 Browsing and filtering vehicles by type, location, and rental duration  
-- 🔐 Secure login and authentication using **Firebase Authentication** (Email/Password, OTP)  
 - 📆 Viewing and managing **rental history** and **reservations**  
 - 🗺️ Map integration for selecting pickup locations  
 - 💳 (Planned) Integration with online payment services  
@@ -76,7 +75,6 @@ This setup ensures consistency, simplifies scaling, and reduces configuration er
 
 ## 📌 Core Features
 
-- 🔐 Firebase-based user authentication (Email/Password, OTP)
 - 🚘 Vehicle browsing with filters for type, location, and availability
 - 📆 Rental history and active booking management
 - 💳 Planned integration with payment gateways
