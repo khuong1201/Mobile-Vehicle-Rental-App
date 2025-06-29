@@ -40,7 +40,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                     children: [
                       ClipOval(
                         child: Image.network(
-                          '',
+                          '${user?.imageAvatarUrl}',
                           fit: BoxFit.contain,
                           width: 130,
                           height: 130,

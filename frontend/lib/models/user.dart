@@ -26,7 +26,7 @@ class User {
       userId: json['userId'] ?? '',
       googleId: json['googleId'],
       fullName: json['fullName'] ?? '',
-      imageAvatarUrl: json['imageAvatarUrl'] ?? '',
+      imageAvatarUrl: json['avatar'] ?? '',
       email: json['email'] ?? '',
       role: json['role'] ?? 'renter',
       verified: json['verified'] ?? false,
@@ -41,7 +41,7 @@ class User {
       'googleId': googleId,
       'fullName': fullName,
       'email': email,
-      'imageAvatarUrl': imageAvatarUrl,
+      'avatar': imageAvatarUrl,
       'role': role,
       'verified': verified,
     };

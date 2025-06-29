@@ -323,7 +323,7 @@ const initDB = async () => {
       }
     }
     const provinceCount = await Province.countDocuments();
-    if (provinceCount === 0) {
+    if (provinceCount < 63) {
       await fetchAndStoreData();
       console.log("✅ Dữ liệu hành chính đã được cập nhật.");
     } else {
