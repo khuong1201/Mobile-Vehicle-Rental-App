@@ -267,7 +267,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                         CustomTextBodyMsb(
                           title:
                               bookingVM.taxAmount?.toStringAsFixed(0) ??
-                              '0' + ' VNĐ',
+                              '0' ' VNĐ',
                         ),
                       ],
                     ),

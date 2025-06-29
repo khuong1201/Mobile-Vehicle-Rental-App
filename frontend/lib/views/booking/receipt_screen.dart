@@ -122,7 +122,7 @@ class ReceiptScreen extends StatelessWidget {
                       _buildInfoRow('Additional Drive', '0 VNĐ'),
                       const SizedBox(height: 16),
                       _buildInfoRow('Subtotal', bookingVM.basePrice?.toStringAsFixed(0) ??
-                              '0' + ' VNĐ',),
+                              '0' ' VNĐ',),
                       const SizedBox(height: 16),
                       _buildInfoRow('Tax', '0 VNĐ'),
                     ],

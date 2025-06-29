@@ -37,8 +37,9 @@ class GAuthViewModel extends ChangeNotifier {
         final refreshToken = response.data!['refreshToken'] as String?;
         final userData = response.data!['user'] as Map<String, dynamic>?;
 
-        if (accessToken == null || refreshToken == null || userData == null)
+        if (accessToken == null || refreshToken == null || userData == null) {
           return null;
+        }
 
         user = User.fromJson(userData);
         await UserSecureStorage.saveUser(user!);

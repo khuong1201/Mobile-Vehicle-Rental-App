@@ -45,7 +45,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/vehicles', vehicleRoutes);
-app.use('api/banners',bannerRoutes);
+app.use('/api/banners',bannerRoutes);
 app.use('/api/locations', locationRoutes);
 app.use('/api/google', googleMapsRoutes);
 app.use('/api/reviews', reviewRoutes);
