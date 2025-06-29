@@ -1,4 +1,4 @@
-FROM cirrusci/flutter:3.22.0
+FROM ghcr.io/flutter/flutter:3.22.0
 
 WORKDIR /app
 
