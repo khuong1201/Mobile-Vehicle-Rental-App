@@ -13,7 +13,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
+      - name: Setup keystore
+        run: |
+          echo "${{ secrets.KEY_PROPERTIES }}" > frontend/android/key.properties
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > frontend/android/your-release-key.jks
       - name: Build Flutter Docker image
         run: |
           cd frontend
