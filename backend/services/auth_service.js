@@ -145,7 +145,7 @@ const googleLoginEndPoint = async ({ googleId, email, fullName, avatar }) => {
       user = await User.create({
         googleId,
         fullName: fullName.trim(),
-        avatar: avatar,
+        avatar: avatar.trim(),
         email: normalizedEmail,
         address: undefined,
         verified: true,
