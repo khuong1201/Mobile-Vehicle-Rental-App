@@ -1,33 +1,37 @@
-# 🛠️ Output và cache do Flutter tạo ra
+# ✅ Ignore để không bị chồng pubspec.* lên lần copy thứ 2
+pubspec.yaml
+pubspec.lock
+
+# 🛠️ Output và cache
 build/
 .dart_tool/
 .packages
 .pub-cache/
 .flutter-plugins
 .flutter-plugins-dependencies
-.melos_tool/
 .metadata
 
-# 📦 Android & iOS build cache
+# Android, iOS cache
 android/.gradle/
 ios/Pods/
 ios/Flutter/
 macos/Flutter/
 
-
-# 📁 IDE & hệ điều hành
+# IDE
 *.iml
 .idea/
 .vscode/
+
+# Hệ thống
 *.swp
 *.swo
 *.swn
 .DS_Store
 
-# 🗃️ Git
+# Git
 .git/
 .gitignore
 
-# 🔐 Dotenv (tùy chọn nếu bạn dùng)
+# Env
 .env
 .env.*

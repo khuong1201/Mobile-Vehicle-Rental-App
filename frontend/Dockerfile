@@ -1,33 +1,32 @@
 FROM ghcr.io/cirruslabs/flutter:stable AS builder
 
-# Tạo user thường và thư mục làm việc
+# Tạo user và thư mục làm việc
 RUN useradd -ms /bin/bash flutteruser
 WORKDIR /home/flutteruser/app
 RUN chown -R flutteruser:flutteruser /sdks/flutter /opt/android-sdk-linux
 
-# Copy pubspec để tận dụng cache
+# Copy pubspec để tận dụng cache (tách riêng để nếu không đổi thì không cần tải lại package)
 COPY pubspec.yaml pubspec.lock ./
-RUN chown -R flutteruser:flutteruser .  # Đảm bảo quyền
+RUN chown -R flutteruser:flutteruser .
 
-# Chạy pub get dưới quyền user thường
+# Cài dependency
 USER flutteruser
 RUN git config --global --add safe.directory /sdks/flutter
 RUN flutter pub get
 
-# Quay lại quyền root để copy file keystore (có thể cần quyền)
+# Trở lại quyền root để copy file bảo mật
 USER root
-
-# Copy keystore và key.properties
 COPY ./android/key.properties android/key.properties
 COPY ./android/my-release-key.jks android/my-release-key.jks
 
-# Copy toàn bộ mã nguồn trừ pubspec.* (đã copy trước rồi)
-COPY --chown=flutteruser:flutteruser . .
+# ❗ Copy toàn bộ mã nguồn, TRỪ pubspec.* (đã copy trước)
+COPY --chown=flutteruser:flutteruser . . 
+# Lưu ý: pubspec.* sẽ không bị đè vì nằm trong `.dockerignore`
 
-# Trở lại user thường để build
+# Build APK
 USER flutteruser
 RUN flutter build apk --release
 
-# Final stage - chỉ chứa APK
+# Final image
 FROM busybox AS final
 COPY --from=builder /home/flutteruser/app/build/app/outputs/flutter-apk/app-release.apk /output/
