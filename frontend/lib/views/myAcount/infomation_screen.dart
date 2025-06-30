@@ -6,7 +6,7 @@ import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_dropdown_formfield.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
-import 'package:frontend/views/widgets/custom_text_body_M_sb.dart';
+import 'package:frontend/views/widgets/custom_text_body_m_sb.dart';
 import 'package:provider/provider.dart';
 
 class PersonalInfoScreen extends StatefulWidget {

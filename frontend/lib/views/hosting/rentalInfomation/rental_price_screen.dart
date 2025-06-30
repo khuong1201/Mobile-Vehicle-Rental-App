@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/models/bank.dart';
 import 'package:frontend/views/widgets/custom_dropdown_formfield.dart';
-import 'package:frontend/views/widgets/custom_text_body_L.dart';
-import 'package:frontend/views/widgets/custom_text_body_S_sb.dart';
+import 'package:frontend/views/widgets/custom_text_body_l.dart';
+import 'package:frontend/views/widgets/custom_text_body_s_sb.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 
 class RentalPriceScreen extends StatefulWidget {

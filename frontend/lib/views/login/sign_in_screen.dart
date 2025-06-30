@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
 import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
-import 'package:frontend/views/widgets/custom_text_body_M_sb.dart';
+import 'package:frontend/views/widgets/custom_text_body_m_sb.dart';
 import 'package:provider/provider.dart';
 
 import 'package:frontend/views/widgets/custom_text_form_field.dart';

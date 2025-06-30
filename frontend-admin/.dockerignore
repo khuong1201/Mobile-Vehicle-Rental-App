@@ -1,0 +1,30 @@
+# Bỏ thư mục node_modules để Docker không copy vào image
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-lock.yaml
+
+# Bỏ build output nếu có
+build
+dist
+
+# Git & IDE files
+.git
+.gitignore
+*.swp
+*.swo
+*.swn
+*.log
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Cache tools
+.cache
+.next
+out
+.vite
+.vscode

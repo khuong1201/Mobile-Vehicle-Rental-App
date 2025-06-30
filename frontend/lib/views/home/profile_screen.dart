@@ -7,7 +7,7 @@ import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
 import 'package:frontend/views/address/address_screen.dart';
 import 'package:frontend/views/myAcount/driver_license_screen.dart';
 import 'package:frontend/views/myAcount/infomation_screen.dart';
-import 'package:frontend/views/widgets/custom_text_body_L.dart';
+import 'package:frontend/views/widgets/custom_text_body_l.dart';
 import 'package:provider/provider.dart';
 import '/views/hosting/start_screen.dart';
 

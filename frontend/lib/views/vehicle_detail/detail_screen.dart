@@ -13,7 +13,7 @@ import 'package:frontend/views/vehicle_detail/gallery_screen.dart';
 import 'package:frontend/views/vehicle_detail/review_screen.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
-import 'package:frontend/views/widgets/custom_text_body_L.dart';
+import 'package:frontend/views/widgets/custom_text_body_l.dart';
 import 'package:provider/provider.dart';
 
 class VehicleDetailScreen extends StatefulWidget {

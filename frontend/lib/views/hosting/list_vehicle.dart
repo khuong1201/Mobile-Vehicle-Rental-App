@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
   import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
-import 'package:frontend/views/widgets/custom_text_body_M_sb.dart';
+import 'package:frontend/views/widgets/custom_text_body_m_sb.dart';
 import 'package:provider/provider.dart';
 
 class ListVehicle extends StatefulWidget {

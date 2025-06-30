@@ -1,0 +1,32 @@
+# 🛠️ Output và cache do Flutter tạo ra
+build/
+.dart_tool/
+.packages
+.pub-cache/
+.flutter-plugins
+.flutter-plugins-dependencies
+.melos_tool/
+.metadata
+
+# 📦 Android & iOS build cache
+android/.gradle/
+ios/Pods/
+ios/Flutter/
+macos/Flutter/
+
+# 📁 IDE & hệ điều hành
+*.iml
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+.DS_Store
+
+# 🗃️ Git
+.git/
+.gitignore
+
+# 🔐 Dotenv (tùy chọn nếu bạn dùng)
+.env
+.env.*

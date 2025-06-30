@@ -7,8 +7,8 @@ import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/booking/confirmation_screen.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
-import 'package:frontend/views/widgets/custom_text_body_L.dart';
-import 'package:frontend/views/widgets/custom_text_body_S_sb.dart';
+import 'package:frontend/views/widgets/custom_text_body_l.dart';
+import 'package:frontend/views/widgets/custom_text_body_s_sb.dart';
 import 'package:frontend/views/widgets/custom_text_body_m_sb.dart';
 import 'package:provider/provider.dart';
 

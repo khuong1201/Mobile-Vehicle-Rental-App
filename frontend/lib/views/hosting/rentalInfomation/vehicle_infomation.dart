@@ -5,7 +5,7 @@ import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/hosting/rentalInfomation/location/location_screen.dart';
 import 'package:frontend/views/widgets/custom_dropdown_formfield.dart';
-import 'package:frontend/views/widgets/custom_text_body_L.dart';
+import 'package:frontend/views/widgets/custom_text_body_l.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 import 'package:provider/provider.dart';
 

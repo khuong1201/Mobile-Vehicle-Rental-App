@@ -11,8 +11,8 @@ import 'package:frontend/views/hosting/rentalInfomation/location/location_screen
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_date_formfield.dart';
-import 'package:frontend/views/widgets/custom_text_body_L.dart';
-import 'package:frontend/views/widgets/custom_text_body_M_sb.dart';
+import 'package:frontend/views/widgets/custom_text_body_l.dart';
+import 'package:frontend/views/widgets/custom_text_body_m_sb.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';

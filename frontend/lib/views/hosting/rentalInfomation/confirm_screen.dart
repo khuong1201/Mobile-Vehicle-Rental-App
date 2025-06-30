@@ -1,6 +1,6 @@
   import 'package:flutter/material.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
-import 'package:frontend/views/widgets/custom_text_body_L.dart';
+import 'package:frontend/views/widgets/custom_text_body_l.dart';
 
 class CofirmScreen extends StatelessWidget {
   const CofirmScreen({super.key});
