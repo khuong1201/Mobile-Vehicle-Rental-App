@@ -35,7 +35,6 @@ migrate_working_dir/
 .metadata
 analysis_options.yaml
 frontend.iml
-pubspec.lock
 .gitignore
 devtools_options.yaml
 # Symbolication related
