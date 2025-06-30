@@ -29,7 +29,6 @@ const createBooking = async (req, res) => {
       dropoffDate,
       dropoffTime,
       basePrice,
-      note,
     } = req.body;
 
     console.log("📥 Received booking data:", req.body);
