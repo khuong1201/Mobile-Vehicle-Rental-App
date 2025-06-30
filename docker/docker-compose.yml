@@ -33,14 +33,14 @@ services:
     restart: on-failure
     command: npm run dev
 
-  frontend_flutter:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-    working_dir: /app
-    volumes:
-      - ./flutter-output:/output
-    restart: on-failure
+  # frontend_flutter:
+  #   build:
+  #     context: ../frontend
+  #     dockerfile: Dockerfile
+  #   working_dir: /app
+  #   volumes:
+  #     - ./flutter-output:/output
+  #   restart: on-failure
 
 #   mongodb:
 #     image: mongo:latest

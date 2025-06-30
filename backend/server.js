@@ -15,6 +15,7 @@ const googleMapsRoutes = require("./routes/location/google_map_routes");
 const reviewRoutes = require("./routes/review/review_routes");
 const adminRoutes = require("./routes/admin/admin_routes");
 const bookingRoutes = require("./routes/booking/booking_routes");
+const momoRoutes = require("./routes/payment/momo_routes");
 const { connectDB } = require("./config/database");
 const { initializePassport } = require("./config/passport");
 const initDB = require("./init_db");
@@ -54,7 +55,7 @@ app.use('/api/google', googleMapsRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/bookings', bookingRoutes);
-
+app.use('/api/payment', momoRoutes);
 // Initialize Passport
 initializePassport();
 
