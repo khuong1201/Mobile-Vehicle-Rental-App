@@ -7,7 +7,7 @@ RUN chown -R flutteruser:flutteruser /sdks/flutter /opt/android-sdk-linux
 
 # Copy keystore và key.properties
 COPY android/key.properties android/key.properties
-COPY android/your-release-key.jks android/your-release-key.jks
+COPY android/my-release-key.jks android/my-release-key.jks
 
 # Tận dụng cache
 COPY pubspec.yaml pubspec.lock ./
