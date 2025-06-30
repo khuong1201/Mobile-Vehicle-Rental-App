@@ -13,6 +13,8 @@ android/.gradle/
 ios/Pods/
 ios/Flutter/
 macos/Flutter/
+pubspec.yaml
+pubspec.lock
 
 # 📁 IDE & hệ điều hành
 *.iml
