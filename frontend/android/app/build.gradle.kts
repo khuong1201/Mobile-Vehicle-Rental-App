@@ -6,7 +6,7 @@ val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
-
+println("✅ DEBUG keystoreProperties: $keystoreProperties")
 plugins {
     id("com.android.application")
     id("kotlin-android")
