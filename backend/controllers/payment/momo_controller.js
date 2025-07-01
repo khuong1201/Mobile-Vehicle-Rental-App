@@ -10,14 +10,14 @@ const Payment = require("../../models/payment_model");
 const createMoMoPayment = async (req, res) => {
   try {
     const {
-      bookingId,
+      bookingId: _id,
       amount,
       orderInfo = "Thanh toán qua MoMo",
       redirectUrl = process.env.MOMO_REDIRECT_URL,
       ipnUrl = process.env.MOMO_IPN_URL,
     } = req.body;
 
-    const booking = await Booking.findOne({ bookingId });
+    const booking = await Booking.findOne({ _id });
     if (!booking) {
       return res.status(404).json({ error: "Booking không tồn tại" });
     }

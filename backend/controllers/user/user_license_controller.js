@@ -58,7 +58,7 @@ const UpdateDriverLicense = async (req, res) => {
       driverLicenseBack: backUrl,
       driverLicenseFrontPublicId: frontId,
       driverLicenseBackPublicId: backId,
-      approved: false,
+      status: 'pending',
       ...(existing && { licenseId: existing.licenseId }), // Bảo toàn licenseId
     };
 

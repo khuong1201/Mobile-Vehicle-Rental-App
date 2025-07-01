@@ -14,7 +14,7 @@ const GetAllUsers = async (req, res) => {
 const GetUsersWithUnapprovedLicenses = async (req, res) => {
   try {
     const users = await User.find({
-      "license.approved": false,
+      "license.status": 'pending',
       role: { $ne: "admin" },
     }).select("-passwordHash -otp -otpExpires -refreshToken");
 
@@ -40,7 +40,7 @@ const ApproveLicense = async (req, res) => {
       return res.status(404).json({ message: "License not found" });
     }
 
-    license.approved = true;
+    license.status = 'approved';
 
     await user.save();
 
@@ -61,7 +61,7 @@ const RejectLicense = async (req, res) => {
     const license = user.license.find((l) => l.licenseId === licenseId);
     if (!license) return res.status(404).json({ message: "License not found" });
 
-    license.approved = false;
+    license.status = 'rejected';
     await user.save();
 
     res.json({ message: "License rejected successfully" });

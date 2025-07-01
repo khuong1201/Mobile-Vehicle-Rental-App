@@ -1,10 +1,10 @@
-const Booking = require('../../models/booking_model');
-const User = require('../../models/user_model');
-const { getTaxRateByOwner } = require('../../services/user_revenue_service');
+const Booking = require("../../models/booking_model");
+const User = require("../../models/user_model");
+const { getTaxRateByOwner } = require("../../services/user_revenue_service");
 
 // Helper: Convert "DD/MM/YYYY" => "YYYY-MM-DD"
 const convertDate = (str) => {
-  const [day, month, year] = str.split('/');
+  const [day, month, year] = str.split("/");
   return `${year}-${month}-${day}`;
 };
 
@@ -33,21 +33,38 @@ const createBooking = async (req, res) => {
 
     console.log("📥 Received booking data:", req.body);
 
-    if (!vehicleId || !renterId || !ownerId || !pickupDate || !dropoffDate || !pickupTime || !dropoffTime || !basePrice) {
-      return res.status(400).json({ message: 'Missing required booking fields.' });
+    if (
+      !vehicleId ||
+      !renterId ||
+      !ownerId ||
+      !pickupDate ||
+      !dropoffDate ||
+      !pickupTime ||
+      !dropoffTime ||
+      !basePrice
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Missing required booking fields." });
     }
-    const renter = await User.findById(renterId).select('license');
+    const renter = await User.findById(renterId).select("license");
     if (!renter || !renter.license) {
-      return res.status(403).json({ message: 'Người thuê không có thông tin bằng lái xe.' });
+      return res
+        .status(403)
+        .json({ message: "Người thuê không có thông tin bằng lái xe." });
     }
-    if (renter.license.status !== 'approved') {
-      return res.status(403).json({ 
-        message: 'Bằng lái xe chưa được phê duyệt. Vui lòng cập nhật và xác minh bằng lái trước khi đặt xe.' 
+    const approvedLicense = renter.license.find((l) => l.status === "approved");
+    if (!approvedLicense) {
+      return res.status(403).json({
+        message: "Bạn chưa có bằng lái nào được phê duyệt.",
       });
     }
+
     // 📅 Convert dates to ISO format
     const pickupDateTime = new Date(`${convertDate(pickupDate)}T${pickupTime}`);
-    const dropoffDateTime = new Date(`${convertDate(dropoffDate)}T${dropoffTime}`);
+    const dropoffDateTime = new Date(
+      `${convertDate(dropoffDate)}T${dropoffTime}`
+    );
 
     // Calculate total rental days
     const totalRentalDays = calculateRentalDays(pickupDate, dropoffDate);
@@ -76,20 +93,19 @@ const createBooking = async (req, res) => {
       taxAmount,
       totalPrice,
       totalRentalDays, // Add to booking model
-      note,
     });
 
     await booking.save();
 
     res.status(201).json({
-      message: 'Booking created successfully.',
+      message: "Booking created successfully.",
       booking: booking.toJSON(),
     });
   } catch (err) {
     console.error("🔥 Error creating booking:", err.message);
     console.error("📛 Stack trace:", err.stack);
     res.status(500).json({
-      message: 'Error creating booking.',
+      message: "Error creating booking.",
       error: err.message,
     });
   }
@@ -99,13 +115,13 @@ const getBookingsByOwner = async (req, res) => {
   try {
     const { ownerId } = req.params;
     const bookings = await Booking.find({ ownerId })
-      .populate('renterId', '_id fullName email')
-      .populate('vehicleId');
+      .populate("renterId", "_id fullName email")
+      .populate("vehicleId");
 
     res.status(200).json(bookings.map((b) => b.toJSON()));
   } catch (err) {
     res.status(500).json({
-      message: 'Error fetching bookings for owner.',
+      message: "Error fetching bookings for owner.",
       error: err.message,
     });
   }
@@ -115,13 +131,13 @@ const getBookingsByRenter = async (req, res) => {
   try {
     const { renterId } = req.params;
     const bookings = await Booking.find({ renterId })
-      .populate('vehicleId')
-      .populate('ownerId', '_id fullName email');
+      .populate("vehicleId")
+      .populate("ownerId", "_id fullName email");
 
     res.status(200).json(bookings.map((b) => b.toJSON()));
   } catch (err) {
     res.status(500).json({
-      message: 'Error fetching bookings for renter.',
+      message: "Error fetching bookings for renter.",
       error: err.message,
     });
   }
