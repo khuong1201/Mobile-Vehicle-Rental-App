@@ -92,6 +92,7 @@ const createMoMoPayment = async (req, res) => {
             message: "Yêu cầu thanh toán MoMo được tạo thành công",
             payUrl: response.payUrl,
             paymentId: requestId,
+            
           });
         } else {
           return res.status(400).json({

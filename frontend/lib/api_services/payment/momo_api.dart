@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/client/api_reponse.dart';
 import 'package:frontend/api_services/util/api_util.dart';
+import 'package:frontend/models/momo_payment.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 
 class PaymentMomoApi {
@@ -26,10 +27,10 @@ class PaymentMomoApi {
         );
       }
 
-      final data = response.data;
+      final momoPayment = MomoPayment.fromJson(response.data);
       return ApiResponse(
         success: true,
-        data: data,
+        data: momoPayment,
         message: 'Tạo thanh toán MoMo thành công',
       );
     } catch (e) {
