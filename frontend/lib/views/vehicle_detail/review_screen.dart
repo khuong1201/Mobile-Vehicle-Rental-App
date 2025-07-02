@@ -49,6 +49,68 @@ class ReviewScreenState extends State<ReviewScreen> {
             children: [
               CustomTextBodyL(title: 'Review'),
               const SizedBox(height: 16,),
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      hintText: "Bình luận",
+                      controller: _comment,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  IconButton(
+                    onPressed: () async {
+                      if (_comment.text.trim().isNotEmpty) {
+                        int? selectedRating = await showRatingDialog(context);
+                        if (selectedRating != null) {
+                          final reviewViewModel =
+                              Provider.of<ReviewViewModel>(context, listen: false);
+
+                          final commentText = _comment.text.trim();
+                          bool success = await reviewViewModel.createReview(
+                            context,
+                            vehicleId: widget.vehicle.id,
+                            rating: selectedRating,
+                            comment: commentText,
+                          );
+
+                          if (success) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Đánh giá đã được gửi thành công!')),
+                            );
+                            _comment.clear();
+                            await reviewViewModel.fetchReviews(
+                              context,
+                              vehicleId: widget.vehicle.id,
+                              page: 1,
+                              limit: 10,
+                              clearBefore: true,
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Lỗi: ${reviewViewModel.errorMessage ?? 'Không thể gửi đánh giá'}'),
+                              ),
+                            );
+                          }
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Vui lòng nhập bình luận trước khi gửi!'),
+                          ),
+                        );
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.send_rounded,
+                      size: 20,
+                      color: Color(0xff1976D2),
+                    ),
+                  ),
+                ],
+              ),
               reviewViewModel.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : reviewViewModel.reviews.isEmpty
@@ -144,68 +206,7 @@ class ReviewScreenState extends State<ReviewScreen> {
                             );
                           },
                         ),
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomTextField(
-                      hintText: "Bình luận",
-                      controller: _comment,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  IconButton(
-                    onPressed: () async {
-                      if (_comment.text.trim().isNotEmpty) {
-                        int? selectedRating = await showRatingDialog(context);
-                        if (selectedRating != null) {
-                          final reviewViewModel =
-                              Provider.of<ReviewViewModel>(context, listen: false);
-
-                          final commentText = _comment.text.trim();
-                          bool success = await reviewViewModel.createReview(
-                            context,
-                            vehicleId: widget.vehicle.id,
-                            rating: selectedRating,
-                            comment: commentText,
-                          );
-
-                          if (success) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Đánh giá đã được gửi thành công!')),
-                            );
-                            _comment.clear();
-                            await reviewViewModel.fetchReviews(
-                              context,
-                              vehicleId: widget.vehicle.id,
-                              page: 1,
-                              limit: 10,
-                              clearBefore: true,
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    'Lỗi: ${reviewViewModel.errorMessage ?? 'Không thể gửi đánh giá'}'),
-                              ),
-                            );
-                          }
-                        }
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Vui lòng nhập bình luận trước khi gửi!'),
-                          ),
-                        );
-                      }
-                    },
-                    icon: const Icon(
-                      Icons.send_rounded,
-                      size: 20,
-                      color: Color(0xff1976D2),
-                    ),
-                  ),
-                ],
-              ),
+              
             ],
           ),
         );

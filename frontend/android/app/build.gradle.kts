@@ -35,20 +35,20 @@ android {
         versionName = flutter.versionName
     }
 
-    signingConfigs {
-        create("release") {
-            keyAlias = keystoreProperties["keyAlias"]?.toString()
-            keyPassword = keystoreProperties["keyPassword"]?.toString()
-            storeFile = file(keystoreProperties["storeFile"]?.toString())
-            storePassword = keystoreProperties["storePassword"]?.toString()
-        }
-    }
+    // signingConfigs {
+    //     create("release") {
+    //         keyAlias = keystoreProperties["keyAlias"]?.toString()
+    //         keyPassword = keystoreProperties["keyPassword"]?.toString()
+    //         storeFile = file(keystoreProperties["storeFile"]?.toString())
+    //         storePassword = keystoreProperties["storePassword"]?.toString()
+    //     }
+    // }
 
     buildTypes {
     getByName("release") {
         isMinifyEnabled = false
         isShrinkResources = false // 👈 fix lỗi ở đây
-        signingConfig = signingConfigs.getByName("release")
+        // signingConfig = signingConfigs.getByName("release")
     }
 }
 

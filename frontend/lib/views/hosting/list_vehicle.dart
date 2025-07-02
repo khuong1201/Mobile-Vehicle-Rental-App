@@ -178,28 +178,36 @@ class ListVehicleState extends State<ListVehicle> {
                             ),
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            vehicle.formattedPrice.toString(),
-                            style: TextStyle(
-                              color: const Color(0xFF1976D2),
-                              fontSize: 16,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w700,
-                              height: 1.25,
+                          SizedBox(
+                            width: 130,
+                            child: Text.rich(
+                              TextSpan(
+                                text: 
+                                  vehicle.formattedPrice.toString(),
+                                  style: TextStyle(
+                                    color: const Color(0xFF1976D2),
+                                    fontSize: 16,
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w700,
+                                    height: 1.25,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text:
+                                    '/ day',
+                                    style: TextStyle(
+                                      color: const Color(0xFF808183),
+                                      fontSize: 16,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w400,
+                                      height: 1.20,
+                                    ),
+                                  )
+                                ]   
+                              ),
                             ),
                           ),
                           SizedBox(width: 4),
-                          Text(
-                            '/ day',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: const Color(0xFF808183),
-                              fontSize: 10,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                              height: 1.20,
-                            ),
-                          ),
                         ],
                       ),
                     ],
