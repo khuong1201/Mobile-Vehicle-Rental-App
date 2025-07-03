@@ -14,17 +14,19 @@ const WebLogin = async (req, res) => {
       const { email, password } = req.body;
       const result = await authService.loginUser({ email, password });
   
+      const isProduction = process.env.NODE_ENV === 'production';
+  
       res
         .cookie('accessToken', result.accessToken, {
           httpOnly: true,
-          secure: true, // Đặt true nếu dùng HTTPS
-          sameSite: 'Lax',
+          secure: isProduction, // HTTPS trên Render, HTTP khi chạy cục bộ
+          sameSite: isProduction ? 'None' : 'Lax', // None cho CORS trên Render
           maxAge: 15 * 60 * 1000, // 15 phút
         })
         .cookie('refreshToken', result.refreshToken, {
           httpOnly: true,
-          secure: true,
-          sameSite: 'Lax',
+          secure: isProduction,
+          sameSite: isProduction ? 'None' : 'Lax',
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
         })
         .json({

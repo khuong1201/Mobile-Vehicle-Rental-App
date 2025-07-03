@@ -13,7 +13,8 @@ function Login() {
     try {
       const res = await api.post('/auth/web-login', { email, password });
       console.log('Đăng nhập thành công:', res.data);
-      navigate('/dashboard'); 
+      console.log('Cookie sau đăng nhập:', document.cookie);
+      navigate('/dashboard');
     } catch (err) {
       console.error('Đăng nhập thất bại:', err.response?.data || err.message);
       alert('Đăng nhập thất bại: ' + (err.response?.data?.message || 'Lỗi không xác định'));
@@ -22,8 +23,20 @@ function Login() {
 
   return (
     <form onSubmit={handleLogin}>
-      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-      <input type="password" placeholder="Mật khẩu" value={password} onChange={(e) => setPassword(e.target.value)} required />
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <input
+        type="password"
+        placeholder="Mật khẩu"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
       <button type="submit">Đăng nhập</button>
     </form>
   );

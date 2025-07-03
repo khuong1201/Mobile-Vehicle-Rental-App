@@ -12,9 +12,10 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const usersRes = await api.get('/admin/get-all-user');
-        const vehiclesRes = await api.get('/admin/all-vehicles');
-        const brandsRes = await api.get('/admin/get-all-banner');
+        const timestamp = Date.now();
+        const usersRes = await api.get(`/admin/get-all-user?t=${timestamp}`);
+        const vehiclesRes = await api.get(`/admin/all-vehicles?t=${timestamp}`);
+        const brandsRes = await api.get(`/admin/get-all-banner?t=${timestamp}`);
 
         setStats({
           totalUsers: usersRes.data.length,
