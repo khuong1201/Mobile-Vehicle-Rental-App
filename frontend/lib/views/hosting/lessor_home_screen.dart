@@ -17,7 +17,6 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
 
   int _selectedIndex = 0;
   String? _selectedVehicleType;
-  bool _showDropdown = false;
 
   late List<Widget> _screens;
   final GlobalKey<ListVehicleState> reviewScreenKey = GlobalKey<ListVehicleState>();
@@ -42,11 +41,62 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
     ];
   }
 
-  void _toggleDropdown() {
-    setState(() {
-      _showDropdown = !_showDropdown;
-    });
+  void _showSelectVehicleTypeDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Select Vehicle Type',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Inter',
+            ),
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 2,
+              children: navItems
+                  .where((item) => item['label'] != 'All')
+                  .map(
+                    (item) => ListTile(
+                      leading: item['icon'] != null
+                          ? SizedBox(
+                            width: 27,
+                            height: 27,
+                            child: SvgPicture.asset(
+                                item['icon']!,
+                                colorFilter: ColorFilter.mode(
+                                  Color(0xff145EA8),
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                          )
+                          : null,
+                      title: Text(item['label']!),
+                      onTap: () {
+                        setState(() {
+                          _selectedVehicleType = item['label']!.toLowerCase();
+                        });
+                        Navigator.pop(context);
+                        _navigateToRentalInfo();
+                      },
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        );
+      },
+    );
   }
+
 
   void _navigateToRentalInfo() {
     if (_selectedVehicleType != null) {
@@ -189,55 +239,12 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
       ),
       bottomNavigationBar: Container(
       margin: EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (_showDropdown)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: DropdownButton<String>(
-                      value: _selectedVehicleType,
-                      hint: Text('Select Vehicle Type'),
-                      items: navItems
-                          .where((item) => item['label'] != 'All')
-                          .map((item) => DropdownMenuItem<String>(
-                                value: item['label']!.toLowerCase(),
-                                child: Text(item['label']!),
-                              ))
-                          .toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedVehicleType = newValue;
-                          debugPrint('Selected vehicle type: $_selectedVehicleType');
-                        });
-                      },
-                      isExpanded: true,
-                      underline: SizedBox(),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: _toggleDropdown,
-                  ),
-                ],
-              ),
-            ),
-          CustomButton(
-            title: 'Register New Vehicle',
-            width: double.infinity,
-            onPressed: () {
-              if (!_showDropdown) {
-                _toggleDropdown(); // Hiển thị dropdown khi nhấn nút
-              } else if (_selectedVehicleType != null) {
-                _navigateToRentalInfo(); // Điều hướng nếu đã chọn type
-              }
-            },
-          ),
-        ],
+      child: CustomButton(
+        title: 'Register New Vehicle',
+        width: double.infinity,
+        onPressed: () {
+          _showSelectVehicleTypeDialog();
+        },
       ),
     ),
     );

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
@@ -136,13 +137,17 @@ class _HomeScreenState extends State<HomeScreen> {
                             SizedBox(width: 10),
                             Column(
                               children: [
-                                Text(
-                                  'Welcome, ${user?.fullName.isNotEmpty == true ? user!.fullName : 'Bro'}',
-                                  style: TextStyle(
-                                    color: const Color(0xFFF7F7F8),
-                                    fontSize: 18,
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w700,
+                                SizedBox(
+                                  width: 205,
+                                  child: Text(
+                                    'Welcome, ${user?.fullName.isNotEmpty == true ? user!.fullName : 'Bro'}',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: const Color(0xFFF7F7F8),
+                                      fontSize: 18,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
                                 ),
                                 SizedBox(height: 6),
@@ -257,7 +262,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     itemBuilder: (context, index) {
                       return Container(
-                        //margin: EdgeInsets.only( left: 16, right: 16,),
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage(banners[index]),
@@ -285,20 +289,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       rentalvehicles.isEmpty
                           ? SizedBox(child: Center(child: EmptyListScreen()))
-                          : GridView.builder(
+                          : MasonryGridView.count(
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  mainAxisSpacing: 12,
-                                  crossAxisSpacing: 16,
-                                  childAspectRatio: 0.6,
-                                ),
+                            // gridDelegate:
+                            //     SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 16,
+                            //childAspectRatio: 0.6,
+                            //),
                             itemCount:
                                 rentalvehicles.length +
                                 (vehicleVM.hasMore ? 1 : 0),
                             itemBuilder: (context, index) {
+                              if (index >= rentalvehicles.length) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
                               final vehicle = rentalvehicles[index];
                               final brand = brands.firstWhere(
                                 (b) => b.id == vehicle.brand,
@@ -310,11 +319,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                       brandImage: null,
                                     ),
                               );
-                              if (index >= rentalvehicles.length) {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
                               return GestureDetector(
                                 onTap: () {
                                   Navigator.push(
@@ -392,7 +396,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       color: Colors.black,
                                                       fontSize: 12,
                                                       fontFamily: 'Inter',
-                                                      fontWeight: FontWeight.w800,
+                                                      fontWeight:
+                                                          FontWeight.w800,
                                                     ),
                                                   ),
                                                 ),
@@ -412,12 +417,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 Flexible(
                                                   child: Text(
                                                     vehicle.location != null
-                                                    ? (vehicle.location!.address.isNotEmpty
-                                                        ? vehicle.location!.address
-                                                        : (vehicle.location!.lat != 0 && vehicle.location!.lng != 0
-                                                            ? '(${vehicle.location!.lat}, ${vehicle.location!.lng})'
-                                                            : 'none information'))
-                                                    : 'none information',
+                                                        ? (vehicle
+                                                                .location!
+                                                                .address
+                                                                .isNotEmpty
+                                                            ? vehicle
+                                                                .location!
+                                                                .address
+                                                            : (vehicle.location!.lat !=
+                                                                        0 &&
+                                                                    vehicle
+                                                                            .location!
+                                                                            .lng !=
+                                                                        0
+                                                                ? '(${vehicle.location!.lat}, ${vehicle.location!.lng})'
+                                                                : 'none information'))
+                                                        : 'none information',
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     maxLines: 2,
@@ -504,40 +519,36 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ],
                                             ),
                                             SizedBox(height: 4),
-                                            Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  vehicle.formattedPrice
-                                                      .toString(),
-                                                  style: TextStyle(
-                                                    color: const Color(
-                                                      0xFF1976D2,
-                                                    ),
-                                                    fontSize: 16,
-                                                    fontFamily: 'Inter',
-                                                    fontWeight: FontWeight.w700,
-                                                    height: 1.25,
+                                            Text.rich(
+                                              TextSpan(
+                                                text:
+                                                    vehicle.formattedPrice
+                                                        .toString(),
+                                                style: TextStyle(
+                                                  color: const Color(
+                                                    0xFF1976D2,
                                                   ),
+                                                  fontSize: 16,
+                                                  fontFamily: 'Inter',
+                                                  fontWeight: FontWeight.w700,
+                                                  height: 1.25,
                                                 ),
-                                                SizedBox(width: 4),
-                                                Text(
-                                                  '/ day',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    color: const Color(
-                                                      0xFF808183,
+                                                children: [
+                                                  TextSpan(
+                                                    text: '/ day',
+                                                    style: TextStyle(
+                                                      color: const Color(
+                                                        0xFF808183,
+                                                      ),
+                                                      fontSize: 16,
+                                                      fontFamily: 'Inter',
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      height: 1.20,
                                                     ),
-                                                    fontSize: 10,
-                                                    fontFamily: 'Inter',
-                                                    fontWeight: FontWeight.w400,
-                                                    height: 1.20,
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           ],
                                         ),

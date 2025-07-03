@@ -36,6 +36,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
   Brand? _selectedBrand;
   String? _numberSeats;
   String? _typeFuel;
+  String? _transMission;
   LocationForVehicle? _locationForVehicle;
 
   @override
@@ -64,6 +65,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
       'numberSeats': _numberSeats,
       'fuelType': _typeFuel.toString(),
       'type': widget.vehicleType,
+      'transmission': _transMission
       
     };
 
@@ -165,7 +167,8 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(width: 24),
+                if (_vehicleType == 'car' || _vehicleType == 'coach')
+                  const SizedBox(width: 24),
                 if (_vehicleType == 'car' || _vehicleType == 'coach')
                   Expanded(
                     child: Column(
@@ -195,31 +198,53 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                   ),
               ],
             ),
-
-            const SizedBox(height: 16),
-            CustomTextBodyL(title: 'Drivetrain'),
-
-            const SizedBox(height: 8),
-            CustomTextBodyL(title: 'Fuel Type'),
-            const SizedBox(height: 8),
-            CustomDropdownButtonFormField(
-              value: _typeFuel,
-              onChanged: (value) {
-                setState(() {
-                  _typeFuel = value;
-                  _saveData();
-                });
-              },
-              items: ['Gasoline', 'Diesel', 'Electric'],
-              hintText: 'Type',
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please choose type';
-                }
-                return null;
-              },
-            ),
-
+            if (_vehicleType == 'car' || _vehicleType == 'coach')
+              const SizedBox(height: 16),
+            if (_vehicleType == 'car' || _vehicleType == 'coach')
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomTextBodyL(title: 'Drivetrain'),
+                  const SizedBox(height: 8),
+                  CustomDropdownButtonFormField(
+                    value: _transMission,
+                    onChanged: (value) {
+                      setState(() {
+                        _transMission = value;
+                        _saveData();
+                      });
+                    },
+                    items: ['Manual', 'Automatic'],
+                    hintText: 'Type',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please choose type';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              CustomTextBodyL(title: 'Fuel Type'),
+              const SizedBox(height: 8),
+              CustomDropdownButtonFormField(
+                value: _typeFuel,
+                onChanged: (value) {
+                  setState(() {
+                    _typeFuel = value;
+                    _saveData();
+                  });
+                },
+                items: ['Gasoline', 'Diesel', 'Electric'],
+                hintText: 'Type',
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please choose type';
+                  }
+                  return null;
+                },
+              ),
             const SizedBox(height: 16),
             CustomTextBodyL(title: 'Location'),
             CustomTextField(

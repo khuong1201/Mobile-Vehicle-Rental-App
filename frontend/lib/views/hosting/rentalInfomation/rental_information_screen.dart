@@ -154,7 +154,7 @@ class _RentalInformationScreen extends State<RentalInformationScreen> {
     final int itemCount = _navItems.length;
     return Scaffold(
       appBar: CustomAppbar(
-        title: 'List Your Vehicle',
+        title: '${widget.vehicleType![0].toUpperCase()}${widget.vehicleType!.substring(1).toLowerCase()} Information',
         textColor: Colors.white,
         height: 80,
         backgroundColor: const Color(0xFF1976D2),

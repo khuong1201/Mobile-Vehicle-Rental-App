@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/viewmodels/location/location_viewmodel.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
+import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 
@@ -16,6 +17,7 @@ class LocationScreen extends StatefulWidget {
 class _LocationScreenState extends State<LocationScreen> {
   
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _detailLocationController = TextEditingController();
   final PageController _pageController = PageController();
   final ValueNotifier<int> _pageNotifier = ValueNotifier<int>(0);
   String? _currentAddress;
@@ -112,89 +114,97 @@ class _LocationScreenState extends State<LocationScreen> {
                       : null,
             ),
             const SizedBox(height: 16),
-            InkWell(
-              onTap: () async {
-                final locationVM = Provider.of<LocationViewModel>(
-                  context,
-                  listen: false,
-                );
-                try {
-                  final position = await locationVM.getCurrentLocation();
-                  final placemark = await locationVM.getAddressFromCoordinates(
-                    position.latitude,
-                    position.longitude,
-                  );
-
-                  if (placemark != null) {
-                    await locationVM.autoSelectLocationFromCoordinates(
-                      position.latitude,
-                      position.longitude,
-                    );
-
-                    final addressComponents = [
-                      placemark.street, // Tên đường
-                      placemark.subLocality, // Phường/xã
-                      placemark.locality, // Quận/huyện
-                      placemark.administrativeArea, // Tỉnh/thành phố
-                    ].where((e) => e != null && e.isNotEmpty).join(', ');
-
-                    final locationForVehicle = LocationForVehicle(
-                      address: addressComponents.isNotEmpty ? addressComponents : locationVM.getFullLocation().toString(),
-                      lat: position.latitude,
-                      lng: position.longitude,
-                    );
-                    Navigator.pop(context, locationForVehicle);
-                    setState(() {
-                      _currentAddress = locationForVehicle.address;
-                    });
-                  } else {
-                    throw Exception('Không tìm thấy địa chỉ từ tọa độ');
-                  }
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Không lấy được vị trí: $e')),
-                  );
+            ValueListenableBuilder<int>(
+              valueListenable: _pageNotifier,
+                builder: (context, pageIndex, _) {
+                if (pageIndex > 0) {
+                  return const SizedBox();
                 }
-              },
-
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x14000000),
-                      blurRadius: 8,
-                      offset: Offset(0, 0),
-                      spreadRadius: 0,
+                return InkWell(
+                  onTap: () async {
+                    final locationVM = Provider.of<LocationViewModel>(
+                      context,
+                      listen: false,
+                    );
+                    try {
+                      final position = await locationVM.getCurrentLocation();
+                      final placemark = await locationVM.getAddressFromCoordinates(
+                        position.latitude,
+                        position.longitude,
+                      );
+                
+                      if (placemark != null) {
+                        await locationVM.autoSelectLocationFromCoordinates(
+                          position.latitude,
+                          position.longitude,
+                        );
+                
+                        final addressComponents = [
+                          placemark.street, // Tên đường
+                          placemark.subLocality, // Phường/xã
+                          placemark.locality, // Quận/huyện
+                          placemark.administrativeArea, // Tỉnh/thành phố
+                        ].where((e) => e != null && e.isNotEmpty).join(', ');
+                
+                        final locationForVehicle = LocationForVehicle(
+                          address: addressComponents.isNotEmpty ? addressComponents : locationVM.getFullLocation().toString(),
+                          lat: position.latitude,
+                          lng: position.longitude,
+                        );
+                        Navigator.pop(context, locationForVehicle);
+                        setState(() {
+                          _currentAddress = locationForVehicle.address;
+                        });
+                      } else {
+                        throw Exception('Không tìm thấy địa chỉ từ tọa độ');
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Không lấy được vị trí: $e')),
+                      );
+                    }
+                  },
+                
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0x14000000),
+                          blurRadius: 8,
+                          offset: Offset(0, 0),
+                          spreadRadius: 0,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/images/hosting/information/location.svg',
-                      width: 24,
-                      height: 24,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/images/hosting/information/location.svg',
+                          width: 24,
+                          height: 24,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _currentAddress ?? 'Use My Current Location',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                            height: 1.29,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      _currentAddress ?? 'Use My Current Location',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w400,
-                        height: 1.29,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              }
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -207,6 +217,8 @@ class _LocationScreenState extends State<LocationScreen> {
                   _buildDistrictList(vm),
 
                   _buildWardList(vm),
+
+                  _buildDetailLocation(vm)
                 ],
               ),
             ),
@@ -298,12 +310,7 @@ class _LocationScreenState extends State<LocationScreen> {
                   title: Text(ward.name),
                   onTap: () {
                     vm.selectWard(ward);
-                    final locationForVehicle = LocationForVehicle(
-                    address: vm.getFullLocation().toString(),
-                    lat: 0.0, 
-                    lng: 0.0,
-                  );
-                    Navigator.pop(context, locationForVehicle);
+                    _goToNextPage();
                   },
                 );
               },
@@ -312,5 +319,31 @@ class _LocationScreenState extends State<LocationScreen> {
         ],
       );
     }
+  }
+
+  Widget _buildDetailLocation(LocationViewModel vm){
+    return Column(
+      children: [
+        CustomTextField(
+          controller: _detailLocationController,
+          hintText: 'Enter Floor / Apartment number and street name',
+        ),
+        CustomButton(title: 'Save',
+          onPressed: (){
+            final fullLocation = vm.getFullLocation().toString();
+            final detailAddress = _detailLocationController.text.trim();
+            final combinedAddress = detailAddress.isNotEmpty
+              ? '$detailAddress, $fullLocation'
+              : fullLocation;
+            final locationForVehicle = LocationForVehicle(
+              address: combinedAddress,
+              lat: 0.0,
+              lng: 0.0,
+            );
+            Navigator.pop(context, locationForVehicle);
+          },
+        )
+      ],
+    );
   }
 }
