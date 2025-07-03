@@ -17,13 +17,13 @@ const WebLogin = async (req, res) => {
       res
         .cookie('accessToken', result.accessToken, {
           httpOnly: true,
-          secure: false, // Đặt true nếu dùng HTTPS
+          secure: true, // Đặt true nếu dùng HTTPS
           sameSite: 'Lax',
           maxAge: 15 * 60 * 1000, // 15 phút
         })
         .cookie('refreshToken', result.refreshToken, {
           httpOnly: true,
-          secure: false,
+          secure: true,
           sameSite: 'Lax',
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
         })

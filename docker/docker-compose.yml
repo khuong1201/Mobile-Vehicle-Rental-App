@@ -5,9 +5,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
-    volumes:
-      - ../backend:/app
-      - /app/node_modules
     working_dir: /app
     env_file:
       - ../backend/.env
@@ -16,18 +13,15 @@ services:
     restart: on-failure
     command: npm run dev
 
-  frontend_admin:
+  admin-dashboard:
     build:
-      context: ../frontend-admin
+      context: ../admin-dashboard
       dockerfile: Dockerfile
     ports:
       - "5173:5173"
-    volumes:
-      - ../frontend-admin:/app
-      - /app/node_modules
     working_dir: /app
     env_file:
-      - ../frontend-admin/.env
+      - ../admin-dashboard/.env
     depends_on:
       - backend
     restart: on-failure
