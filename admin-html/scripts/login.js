@@ -1,3 +1,6 @@
+const baseUrl = "https://mobile-vehicle-rental-app.onrender.com";
+// const baseUrl = "http://localhost:5000";
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("loginForm");
     const errorEl = document.getElementById("error");
@@ -9,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const password = document.getElementById("password").value;
   
       try {
-        const response = await fetch("http://localhost:5000/api/auth/web-login", {
+        const response = await fetch(`${baseUrl}/api/auth/web-login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

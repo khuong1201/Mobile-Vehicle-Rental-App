@@ -29,8 +29,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 const allowedOrigins = process.env.NODE_ENV === "production"
-  ? ['https://mobile-vehicle-rental-app.onrender.com']
-  : ['http://localhost:5500', 'http://127.0.0.1:5500'];
+  ? ['https://mobile-vehicle-rental-app.onrender.com','http://127.0.0.1:5500']
+  : ['http://localhost:5500', 'http://127.0.0.1:5500','https://mobile-vehicle-rental-app.onrender.com'];
 
 app.use(cors({
   origin: function (origin, callback) {

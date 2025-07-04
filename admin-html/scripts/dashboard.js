@@ -1,5 +1,5 @@
-const API_BASE = "http://localhost:5000/api";
-
+const API_BASE = "https://mobile-vehicle-rental-app.onrender.com/api";
+// const API_BASE = "http://localhost:5000/api";
 const DOM = {
   error: document.getElementById("error"),
   totalUsers: document.getElementById("totalUsers"),
@@ -39,7 +39,7 @@ async function callApi(endpoint, method = "GET", body = null) {
       });
 
       if (!refresh.ok) {
-        window.location.href = "/login.html";
+        window.location.href = "index.html";
         throw new Error("Token hết hạn. Vui lòng đăng nhập lại.");
       }
 

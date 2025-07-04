@@ -19,15 +19,15 @@ const WebLogin = async (req, res) => {
       res
         .cookie('accessToken', result.accessToken, {
           httpOnly: true,
-          secure: isProduction, // HTTPS trên Render, HTTP khi chạy cục bộ
-          sameSite: isProduction ? 'None' : 'Lax', // None cho CORS trên Render
-          maxAge: 15 * 60 * 1000, // 15 phút
+          secure: isProduction, 
+          sameSite: isProduction ? 'None' : 'Lax',
+          maxAge: 15 * 60 * 1000, 
         })
         .cookie('refreshToken', result.refreshToken, {
           httpOnly: true,
           secure: isProduction,
           sameSite: isProduction ? 'None' : 'Lax',
-          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
+          maxAge: 7 * 24 * 60 * 60 * 1000, 
         })
         .json({
           message: 'Đăng nhập thành công',
