@@ -8,9 +8,9 @@ services:
     working_dir: /app
     env_file:
       - ../backend/.env
-    volumes:
-      - ../backend:/app
-      - /app/node_modules
+    # volumes:
+    #   - ../backend:/app
+    #   - /app/node_modules
     # depends_on:
     #   - mongodb
     restart: on-failure
