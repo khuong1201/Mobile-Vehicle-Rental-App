@@ -8,15 +8,22 @@ services:
     working_dir: /app
     env_file:
       - ../backend/.env
+    volumes:
+      - ../backend:/app
+      - /app/node_modules
     # depends_on:
     #   - mongodb
     restart: on-failure
     command: npm run dev
   frontend:
-      build: ../admin-html
-      ports:
-        - "5500:80"
-      restart: unless-stopped
+    build: ../admin-html
+    ports:
+      - "5500:80"
+    volumes:
+      - ../admin-html:/usr/share/nginx/html:ro
+    restart: unless-stopped
+
+
   # frontend_flutter:
   #   build:
   #     context: ../frontend

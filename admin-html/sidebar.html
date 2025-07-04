@@ -1,0 +1,61 @@
+<aside class="sidebar bg-gray-800 text-white flex flex-col py-6 overflow-hidden">
+    <div class="flex justify-center mb-10">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    </div>
+  
+    <nav class="flex flex-col space-y-2 px-2">
+      <a href="dashboard.html" data-page="dashboard.html" class="sidebar-link flex items-center gap-3 px-4 py-2 rounded hover:bg-gray-700 transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <span class="sidebar-text whitespace-nowrap">Tổng quan</span>
+      </a>
+  
+      <a href="users.html" data-page="users.html" class="sidebar-link flex items-center gap-3 px-4 py-2 rounded hover:bg-gray-700 transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5.121 17.804A4 4 0 006 21h12a4 4 0 00.879-3.196M16 3.13A4 4 0 0012 3a4 4 0 00-4 4v1a4 4 0 008 0V7a4 4 0 00-2-3.87" />
+        </svg>
+        <span class="sidebar-text whitespace-nowrap">Người dùng</span>
+      </a>
+  
+      <a href="vehicles.html" data-page="vehicles.html" class="sidebar-link flex items-center gap-3 px-4 py-2 rounded hover:bg-gray-700 transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span class="sidebar-text whitespace-nowrap">Xe</span>
+      </a>
+  
+      <a href="brands.html" data-page="brands.html" class="sidebar-link flex items-center gap-3 px-4 py-2 rounded hover:bg-gray-700 transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 11h10m-6 4h6" />
+        </svg>
+        <span class="sidebar-text whitespace-nowrap">Thương hiệu</span>
+      </a>
+  
+      <a href="reviews.html" data-page="reviews.html" class="sidebar-link flex items-center gap-3 px-4 py-2 rounded hover:bg-gray-700 transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span class="sidebar-text whitespace-nowrap">Đánh giá</span>
+      </a>
+    </nav>
+  
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const currentPath = window.location.pathname.split("/").pop();
+        document.querySelectorAll(".sidebar-link").forEach(link => {
+          const page = link.getAttribute("data-page");
+          if (page === currentPath) {
+            link.classList.add("bg-gray-700");
+          } else {
+            link.classList.remove("bg-gray-700");
+          }
+        });
+      });
+    </script>
+  </aside>
+  

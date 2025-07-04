@@ -5,74 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-  <style>
-    .sidebar {
-      transition: all 0.3s ease;
-      width: 250px;
-    }
-
-    .sidebar.collapsed {
-      width: 64px;
-    }
-
-    .sidebar.collapsed .sidebar-text {
-      display: none;
-    }
-
-    .sidebar-toggle:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .card {
-      transition: transform 0.2s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-    }
-  </style>
+  <link rel="stylesheet" href="sidebar.css" />
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
   <div class="flex h-screen overflow-hidden">
     <!-- Sidebar -->
-    <aside class="sidebar bg-gray-800 text-white flex flex-col">
-      <div class="flex items-center justify-center h-16 border-b border-gray-700">
-        <span class="text-2xl font-bold">Admin</span>
-      </div>
-      <nav class="flex-1 px-2 py-4 space-y-1">
-        <a href="dashboard.html" class="flex items-center p-2 text-sm font-medium bg-gray-700 rounded hover:bg-gray-600">
-          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6m-6 4h.01M6 20h12" />
-          </svg>
-          <span class="sidebar-text">Tổng quan</span>
-        </a>
-        <a href="users.html" class="flex items-center p-2 text-sm font-medium rounded hover:bg-gray-700">
-          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-5-3.87M9 12a4 4 0 100-8 4 4 0 000 8zm0 0v6m-3-3h6" />
-          </svg>
-          <span class="sidebar-text">Người dùng</span>
-        </a>
-        <a href="vehicles.html" class="flex items-center p-2 text-sm font-medium rounded hover:bg-gray-700">
-          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          <span class="sidebar-text">Xe</span>
-        </a>
-        <a href="brands.html" class="flex items-center p-2 text-sm font-medium rounded hover:bg-gray-700">
-          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 11h10m-6 4h6" />
-          </svg>
-          <span class="sidebar-text">Thương hiệu</span>
-        </a>
-        <a href="reviews.html" class="flex items-center p-2 text-sm font-medium rounded hover:bg-gray-700">
-          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          <span class="sidebar-text">Đánh giá</span>
-        </a>
-      </nav>
-    </aside>
+    <div id="sidebar-container"></div>
 
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto p-6">
@@ -98,7 +37,13 @@
       </button>
     </main>
   </div>
-
+  <script>
+    fetch("sidebar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar-container").innerHTML = html;
+      });
+  </script>
   <script src="scripts/dashboard.js"></script>
 </body>
 </html>

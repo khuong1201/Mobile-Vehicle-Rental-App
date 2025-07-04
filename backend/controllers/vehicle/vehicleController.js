@@ -43,35 +43,75 @@ const GetAllVehicles = async (req, res) => {
     });
   }
 };
+const GetAllVehiclesForAdmin = async (req, res) => {
+  try {
+    const vehicles = await Vehicle.find().populate("brand", "brandName");
+
+    res.json({
+      vehicles: vehicles.map(v => ({
+        vehicleId: v.vehicleId,
+        vehicleName: v.vehicleName,
+        licensePlate: v.licensePlate,
+        brand: v.brand?.BrandName || "unknown",
+        price: v.price,
+        status: v.status,
+        images: v.images,
+        createdAt: v.createdAt,
+      }))
+    });
+  } catch (err) {
+    console.error("Get all vehicles error:", err.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = {
+  GetAllVehicles,
+  // các hàm khác...
+};
 
 // Lấy các xe chưa duyệt
 const GetVehiclePending = async (req, res) => {
   try {
-    const vehicles = await Vehicle.find({ status: "pending" });
-    res.status(200).json(vehicles);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Lỗi khi lấy xe đang chờ duyệt", error: error.message });
+    const vehicles = await Vehicle.find({ status: "pending" }).populate("brand", "brandName");
+
+    res.json({
+      vehicles: vehicles.map(v => ({
+        vehicleId: v.vehicleId,
+        vehicleName: v.vehicleName,
+        licensePlate: v.licensePlate,
+        brand: v.brand?.brandName || "unknown",
+        price: v.price,
+        images: v.images,
+        status: v.status,
+      }))
+    });
+  } catch (err) {
+    console.error("Error fetching pending vehicles:", err.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
+
 // Cập nhật trạng thái xe (duyệt/hủy...)
 const ChangeVehicleStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
   try {
-    const updated = await Vehicle.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    if (!updated)
-      return res.status(404).json({ message: "Không tìm thấy xe để cập nhật" });
-    res.status(200).json(updated);
-  } catch (error) {
-    res.status(500).json({
-      message: "Lỗi khi cập nhật trạng thái xe",
-      error: error.message,
-    });
+    const vehicle = await Vehicle.findOne({ vehicleId: id });
+    if (!vehicle) return res.status(404).json({ message: "Không tìm thấy xe" });
+
+    vehicle.status = status;
+    await vehicle.save();
+
+    res.json({ message: "Cập nhật trạng thái xe thành công" });
+  } catch (err) {
+    console.error("Change status error:", err.message);
+    res.status(500).json({ message: "Lỗi server" });
   }
 };
+
 
 const CreateVehicle = async (req, res) => {
   try {
@@ -312,6 +352,7 @@ const GetUnavailableVehicles = async (req, res) => {
 };
 
 module.exports = {
+  GetAllVehiclesForAdmin,
   GetAllVehicles,
   CreateVehicle,
   UpdateVehicle,

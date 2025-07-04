@@ -1,15 +1,35 @@
 const API_BASE = "http://localhost:5000/api";
 
-const errorEl = document.getElementById("error");
+const DOM = {
+  error: document.getElementById("error"),
+  totalUsers: document.getElementById("totalUsers"),
+  totalBookings: document.getElementById("totalBookings"),
+  userList: document.getElementById("userList"),
+  pendingList: document.getElementById("pendingList"),
+  vehicleList: document.getElementById("vehicleList"),
+  brandList: document.getElementById("brandList"),
+  reportList: document.getElementById("reportList"),
+  brandForm: document.getElementById("brandForm"),
+  brandId: document.getElementById("brandId"),
+  brandName: document.getElementById("brandName"),
+  brandLogo: document.getElementById("brandLogo"),
+  previewLogo: document.getElementById("previewLogo"),
+  imageModal: document.getElementById("imageModal"),
+  imageModalContent: document.getElementById("imageModalContent"),
+  licenseImageModal: document.getElementById("licenseImageModal"),
+  licenseImageModalContent: document.getElementById("licenseImageModalContent"),
+};
 
+// Utility function for API calls with token refresh
 async function callApi(endpoint, method = "GET", body = null) {
   try {
     const options = {
       method,
       credentials: "include",
-      headers: body ? { "Content-Type": "application/json" } : {},
-      body: body ? JSON.stringify(body) : null,
+      headers: body && !(body instanceof FormData) ? { "Content-Type": "application/json" } : {},
+      body: body instanceof FormData ? body : body ? JSON.stringify(body) : null,
     };
+
     let res = await fetch(`${API_BASE}${endpoint}`, options);
 
     if (res.status === 401) {
@@ -33,35 +53,49 @@ async function callApi(endpoint, method = "GET", body = null) {
 
     return await res.json();
   } catch (err) {
-    if (errorEl) {
-      errorEl.textContent = err.message;
-      errorEl.classList.remove("hidden");
+    if (DOM.error) {
+      DOM.error.textContent = err.message;
+      DOM.error.classList.remove("hidden");
     }
     return null;
   }
 }
 
-async function fetchStats() {
-  const totalUsersData = await callApi("/admin/get-total-users");
-  const totalBookingsData = await callApi("/admin/get-monthly-bookings");
-  const totalUsersEl = document.getElementById("totalUsers");
-  const totalBookingsEl = document.getElementById("totalBookings");
+// Display images in modal
+function openImageModal(images, modalId = "imageModal", contentId = "imageModalContent") {
+  const container = DOM[contentId];
+  container.innerHTML = images
+    .map(img => `<img src="${img}" alt="Ảnh" class="w-full h-auto object-contain rounded border" />`)
+    .join("");
+  DOM[modalId].classList.remove("hidden");
+}
 
-  if (totalUsersData && totalUsersEl) {
-    totalUsersEl.textContent = totalUsersData.totalUsers || 0;
+function closeImageModal(modalId = "imageModal") {
+  DOM[modalId].classList.add("hidden");
+}
+
+// Stats fetching
+async function fetchStats() {
+  const [totalUsersData, totalBookingsData] = await Promise.all([
+    callApi("/admin/get-total-users"),
+    callApi("/admin/get-monthly-bookings"),
+  ]);
+
+  if (totalUsersData && DOM.totalUsers) {
+    DOM.totalUsers.textContent = totalUsersData.totalUsers || 0;
   }
-  if (totalBookingsData && totalBookingsEl) {
-    totalBookingsEl.textContent = totalBookingsData.totalBookings || 0;
+  if (totalBookingsData && DOM.totalBookings) {
+    DOM.totalBookings.textContent = totalBookingsData.totalBookings || 0;
   }
 }
 
+// User management
 async function getAllUsers() {
-  const data = await callApi("/admin/get-all-user");
-  const list = document.getElementById("userList");
-  if (!list) return;
+  if (!DOM.userList) return;
+  DOM.userList.innerHTML = "";
 
-  list.innerHTML = "";
-  if (data && data.users) {
+  const data = await callApi("/admin/get-all-user");
+  if (data?.users) {
     data.users.forEach(u => {
       const tr = document.createElement("tr");
       tr.className = "border-b border-gray-200 hover:bg-gray-100";
@@ -74,91 +108,99 @@ async function getAllUsers() {
           <button onclick="deleteUser('${u.userId}')" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Xóa</button>
         </td>
       `;
-      list.appendChild(tr);
+      DOM.userList.appendChild(tr);
     });
   }
 }
 
 async function deleteUser(userId) {
-  if (confirm("Bạn có chắc muốn xóa người dùng này?")) {
-    const data = await callApi("/admin/delete-account", "DELETE", { userId });
-    if (data) {
-      alert("Xóa người dùng thành công!");
-      getAllUsers();
-    }
+  if (!confirm("Bạn có chắc muốn xóa người dùng này?")) return;
+  const data = await callApi("/admin/delete-account", "DELETE", { userId });
+  if (data) {
+    alert("Xóa người dùng thành công!");
+    await getAllUsers();
   }
 }
 
+// License management
 async function getPendingUsers() {
-  const data = await callApi("/admin/get-users-with-unapproved-licenses");
-  const list = document.getElementById("pendingList");
-  if (!list) return;
+  if (!DOM.pendingList) return;
+  DOM.pendingList.innerHTML = "";
 
-  list.innerHTML = "";
-  if (data && data.users) {
+  const data = await callApi("/admin/get-users-with-unapproved-licenses");
+  if (data?.users) {
     data.users.forEach(u => {
-      const tr = document.createElement("tr");
-      tr.className = "border-b border-gray-200 hover:bg-gray-100";
-      tr.innerHTML = `
-        <td class="py-3 px-6">${u.email}</td>
-        <td class="py-3 px-6">${u.fullName}</td>
-        <td class="py-3 px-6">
-          <img src="${u.avatar}" alt="Avatar" class="w-12 h-12 rounded-full object-cover" />
-        </td>
-        <td class="py-3 px-6">${u.license[0]?.status === "pending" ? "Chưa duyệt" : u.license[0]?.status}</td>
-        <td class="py-3 px-6 flex space-x-2">
-          <button onclick="approveLicense('${u.license[0]?._id}')" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">Duyệt</button>
-          <button onclick="rejectLicense('${u.license[0]?._id}')" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Từ chối</button>
-        </td>
-      `;
-      list.appendChild(tr);
+      u.license.forEach(lic => {
+        const frontImage = lic.driverLicenseFront
+          ? `<img src="${lic.driverLicenseFront}" class="w-16 h-10 object-cover border rounded cursor-pointer" onclick="openImageModal(['${lic.driverLicenseFront}', '${lic.driverLicenseBack || ''}'], 'licenseImageModal', 'licenseImageModalContent')" />`
+          : `<div class="w-16 h-10 flex items-center justify-center border rounded bg-gray-100 text-xs text-gray-500">Không có ảnh</div>`;
+
+        const backImage = lic.driverLicenseBack
+          ? `<img src="${lic.driverLicenseBack}" class="w-16 h-10 object-cover border rounded cursor-pointer" onclick="openImageModal(['${lic.driverLicenseFront || ''}', '${lic.driverLicenseBack}'], 'licenseImageModal', 'licenseImageModalContent')" />`
+          : `<div class="w-16 h-10 flex items-center justify-center border rounded bg-gray-100 text-xs text-gray-500">Không có ảnh</div>`;
+
+        const tr = document.createElement("tr");
+        tr.className = "border-b border-gray-200 hover:bg-gray-100";
+        tr.innerHTML = `
+          <td class="py-3 px-6">${u.email}</td>
+          <td class="py-3 px-6">${u.fullName}</td>
+          <td class="py-3 px-6"><div class="flex space-x-2 mt-2">${frontImage}${backImage}</div></td>
+          <td class="py-3 px-6">${lic.status === "pending" ? "Chưa duyệt" : lic.status}</td>
+          <td class="py-3 px-6 flex space-x-2">
+            <button onclick="approveLicense('${u._id}', '${lic._id}')" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">Duyệt</button>
+            <button onclick="rejectLicense('${u._id}', '${lic._id}')" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Từ chối</button>
+          </td>
+        `;
+        DOM.pendingList.appendChild(tr);
+      });
     });
   }
 }
 
-async function approveLicense(licenseId) {
-  const data = await callApi("/admin/approve-license", "POST", { licenseId });
+async function approveLicense(userId, licenseId) {
+  const data = await callApi("/admin/approve-license", "POST", { userId, licenseId });
   if (data) {
     alert("Duyệt giấy phép thành công!");
-    getPendingUsers();
+    await getPendingUsers();
   }
 }
 
-async function rejectLicense(licenseId) {
-  if (confirm("Bạn có chắc muốn từ chối giấy phép này?")) {
-    const data = await callApi("/admin/reject-license", "POST", { licenseId });
-    if (data) {
-      alert("Từ chối giấy phép thành công!");
-      getPendingUsers();
-    }
+async function rejectLicense(userId, licenseId) {
+  if (!confirm("Bạn có chắc muốn từ chối giấy phép này?")) return;
+  const data = await callApi("/admin/reject-license", "POST", { userId, licenseId });
+  if (data) {
+    alert("Từ chối giấy phép thành công!");
+    await getPendingUsers();
   }
 }
 
+// Vehicle management
 async function getPendingVehicles() {
-  const data = await callApi("/admin/pending");
-  const list = document.getElementById("vehicleList");
-  if (!list) return;
+  if (!DOM.vehicleList) return;
+  DOM.vehicleList.innerHTML = "";
 
-  list.innerHTML = "";
-  if (data && data.vehicles) {
+  const data = await callApi("/admin/pending");
+  if (data?.vehicles) {
     data.vehicles.forEach(v => {
       const tr = document.createElement("tr");
-      tr.className = "border-b border-gray-200 hover:bg-gray-100";
+      tr.className = "border-b hover:bg-gray-100";
       tr.innerHTML = `
         <td class="py-3 px-6">${v.vehicleName}</td>
         <td class="py-3 px-6">${v.licensePlate}</td>
         <td class="py-3 px-6">${v.brand}</td>
         <td class="py-3 px-6">${v.price.toLocaleString()} VND</td>
         <td class="py-3 px-6">
-          ${v.images && v.images.length ? `<img src="${v.images[0]}" alt="Vehicle" class="w-12 h-12 object-cover rounded" />` : "Không có ảnh"}
+          ${v.images?.length
+            ? `<button onclick="openImageModal(${JSON.stringify(v.images)})" class="text-blue-600 underline hover:text-blue-800">Xem ${v.images.length} ảnh</button>`
+            : "Không có ảnh"}
         </td>
         <td class="py-3 px-6">${v.status}</td>
-        <td class="py-3 px-6 flex space-x-2">
-          <button onclick="approveVehicle('${v.vehicleId}')" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">Duyệt</button>
-          <button onclick="rejectVehicle('${v.vehicleId}')" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Từ chối</button>
+        <td class="py-3 px-6 flex gap-2">
+          <button onclick="approveVehicle('${v.vehicleId}')" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">Duyệt</button>
+          <button onclick="rejectVehicle('${v.vehicleId}')" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Từ chối</button>
         </td>
       `;
-      list.appendChild(tr);
+      DOM.vehicleList.appendChild(tr);
     });
   }
 }
@@ -167,125 +209,160 @@ async function approveVehicle(vehicleId) {
   const data = await callApi(`/admin/status/${vehicleId}`, "PUT", { status: "approved" });
   if (data) {
     alert("Duyệt xe thành công!");
-    getPendingVehicles();
+    await getPendingVehicles();
   }
 }
 
 async function rejectVehicle(vehicleId) {
-  if (confirm("Bạn có chắc muốn từ chối xe này?")) {
-    const data = await callApi(`/admin/status/${vehicleId}`, "PUT", { status: "rejected" });
-    if (data) {
-      alert("Từ chối xe thành công!");
-      getPendingVehicles();
-    }
+  if (!confirm("Bạn có chắc muốn từ chối xe này?")) return;
+  const data = await callApi(`/admin/status/${vehicleId}`, "PUT", { status: "rejected" });
+  if (data) {
+    alert("Từ chối xe thành công!");
+    await getPendingVehicles();
   }
 }
 
+// Brand management
 async function getAllBrands() {
-  const data = await callApi("/admin/get-all-banner");
-  const list = document.getElementById("brandList");
-  if (!list) return;
+  if (!DOM.brandList) return;
+  DOM.brandList.innerHTML = "";
 
-  list.innerHTML = "";
-  if (data && data.brands) {
-    data.brands.forEach(b => {
+  const res = await callApi("/admin/get-all-brands");
+  if (res?.data) {
+    res.data.forEach(b => {
       const tr = document.createElement("tr");
       tr.className = "border-b border-gray-200 hover:bg-gray-100";
       tr.innerHTML = `
-        <td class="py-3 px-6">${b.name}</td>
+        <td class="py-3 px-6"><img src="${b.brandLogo?.url || ''}" class="w-12 h-12 object-contain" alt="Brand Logo"/></td>
+        <td class="py-3 px-6">${b.brandName}</td>
         <td class="py-3 px-6 flex space-x-2">
-          <button onclick="editBrand('${b.id}', '${b.name}')" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Sửa</button>
-          <button onclick="deleteBrand('${b.id}')" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Xóa</button>
+          <button onclick="editBrand('${b._id}', '${b.brandName}', '${b.brandLogo?.url || ''}')" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Sửa</button>
+          <button onclick="deleteBrand('${b._id}')" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Xóa</button>
         </td>
       `;
-      list.appendChild(tr);
+      DOM.brandList.appendChild(tr);
     });
   }
 }
 
-async function createOrUpdateBrand() {
-  const brandName = document.getElementById("brandName").value;
-  const brandId = document.getElementById("brandId").value;
-
-  if (!brandName) {
-    alert("Vui lòng nhập tên thương hiệu!");
-    return;
-  }
-
-  let data;
-  if (brandId) {
-    data = await callApi(`/admin/update-brand/${brandId}`, "PUT", { name: brandName });
-  } else {
-    data = await callApi("/admin/create-brand", "POST", { name: brandName });
-  }
-
-  if (data) {
-    alert(brandId ? "Cập nhật thương hiệu thành công!" : "Tạo thương hiệu thành công!");
-    document.getElementById("brandName").value = "";
-    document.getElementById("brandId").value = "";
-    getAllBrands();
-  }
-}
-
-async function editBrand(id, name) {
-  document.getElementById("brandName").value = name;
-  document.getElementById("brandId").value = id;
+function editBrand(id, name, logoUrl) {
+  DOM.brandId.value = id;
+  DOM.brandName.value = name;
+  DOM.previewLogo.src = logoUrl;
+  DOM.previewLogo.classList.remove("hidden");
 }
 
 async function deleteBrand(id) {
-  if (confirm("Bạn có chắc muốn xóa thương hiệu này?")) {
-    const data = await callApi(`/admin/delete-brand/${id}`, "DELETE");
-    if (data) {
-      alert("Xóa thương hiệu thành công!");
-      getAllBrands();
-    }
+  if (!confirm("Bạn có chắc muốn xóa thương hiệu này?")) return;
+  const res = await callApi(`/admin/delete-brand/${id}`, "DELETE");
+  if (res?.success) {
+    alert("Xóa thành công!");
+    await getAllBrands();
   }
 }
 
-async function getAllReviews() {
-  const data = await callApi("/admin/all-reviews");
-  const list = document.getElementById("reviewList");
-  if (!list) return;
+// Review management
+async function getReviewReports() {
+  if (!DOM.reportList) return;
+  DOM.reportList.innerHTML = "";
 
-  list.innerHTML = "";
-  if (data && data.reviews) {
-    data.reviews.forEach(r => {
+  const res = await callApi("/admin/get-review-reports");
+  if (res?.success && res.reports) {
+    res.reports.forEach(r => {
       const tr = document.createElement("tr");
       tr.className = "border-b border-gray-200 hover:bg-gray-100";
       tr.innerHTML = `
-        <td class="py-3 px-6">${r.content}</td>
-        <td class="py-3 px-6">${r.rating}</td>
-        <td class="py-3 px-6">
-          <button onclick="deleteReview('${r.id}')" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Xóa</button>
+        <td class="px-6 py-3">${r.vehicleId?.name || "N/A"}</td>
+        <td class="px-6 py-3">${r.reviewId?.comment || "Không có"}</td>
+        <td class="px-6 py-3">${r.reviewId?.renterId || "Ẩn"}</td>
+        <td class="px-6 py-3">${r.ownerId?.fullName || "Ẩn"}</td>
+        <td class="px-6 py-3">${r.reason}</td>
+        <td class="px-6 py-3">
+          <button onclick="deleteReview('${r.reviewId?._id}')" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Xóa</button>
         </td>
       `;
-      list.appendChild(tr);
+      DOM.reportList.appendChild(tr);
     });
   }
 }
 
 async function deleteReview(id) {
-  if (confirm("Bạn có chắc muốn xóa đánh giá này?")) {
-    const data = await callApi(`/admin/delete-review/${id}`, "DELETE");
-    if (data) {
-      alert("Xóa đánh giá thành công!");
-      getAllReviews();
-    }
+  if (!confirm("Bạn có chắc muốn xóa đánh giá này?")) return;
+  const data = await callApi(`/admin/delete-review/${id}`, "DELETE");
+  if (data) {
+    alert("Xóa đánh giá thành công!");
+    await getReviewReports();
   }
 }
 
-// Auto-fetch data based on current page
-document.addEventListener("DOMContentLoaded", () => {
-  if (document.getElementById("totalUsers") || document.getElementById("totalBookings")) {
-    fetchStats();
-  } else if (document.getElementById("userList") || document.getElementById("pendingList")) {
-    getAllUsers();
-    getPendingUsers();
-  } else if (document.getElementById("vehicleList")) {
-    getPendingVehicles();
-  } else if (document.getElementById("brandList")) {
-    getAllBrands();
-  } else if (document.getElementById("reviewList")) {
-    getAllReviews();
+// Initialize form and event listeners
+function initializeForm() {
+  if (DOM.brandLogo && DOM.previewLogo) {
+    DOM.brandLogo.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          DOM.previewLogo.src = reader.result;
+          DOM.previewLogo.classList.remove("hidden");
+        };
+        reader.readAsDataURL(file);
+      }
+    });
   }
+
+  if (DOM.brandForm) {
+    DOM.brandForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const brandId = DOM.brandId?.value;
+      const brandName = DOM.brandName?.value;
+      const logoFile = DOM.brandLogo?.files?.[0];
+
+      if (!brandName) {
+        alert("Vui lòng nhập tên thương hiệu!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("brandName", brandName);
+      if (logoFile) formData.append("logo", logoFile);
+
+      const res = await fetch(`${API_BASE}${brandId ? `/admin/update-brand/${brandId}` : "/admin/create-brand"}`, {
+        method: brandId ? "PUT" : "POST",
+        body: formData,
+      }).then(r => r.json());
+
+      if (res.success) {
+        alert(brandId ? "Cập nhật thành công!" : "Tạo thương hiệu thành công!");
+        DOM.brandForm.reset();
+        DOM.previewLogo?.classList.add("hidden");
+        await getAllBrands();
+      } else {
+        alert(res.message || "Có lỗi xảy ra.");
+      }
+    });
+  }
+}
+
+// Initialize app
+document.addEventListener("DOMContentLoaded", () => {
+  initializeForm();
+  if (DOM.totalUsers || DOM.totalBookings) fetchStats();
+  if (DOM.userList) getAllUsers();
+  if (DOM.pendingList) getPendingUsers();
+  if (DOM.vehicleList) getPendingVehicles();
+  if (DOM.brandList) getAllBrands();
+  if (DOM.reportList) getReviewReports();
 });
+
+// Expose functions to global scope for inline event handlers
+window.deleteUser = deleteUser;
+window.approveLicense = approveLicense;
+window.rejectLicense = rejectLicense;
+window.approveVehicle = approveVehicle;
+window.rejectVehicle = rejectVehicle;
+window.editBrand = editBrand;
+window.deleteBrand = deleteBrand;
+window.deleteReview = deleteReview;
+window.openImageModal = openImageModal;
+window.closeImageModal = closeImageModal;

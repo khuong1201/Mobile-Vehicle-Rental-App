@@ -1,155 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - Vehicles</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    .sidebar {
-      transition: width 0.3s ease;
-    }
-    .sidebar:hover {
-      width: 250px;
-    }
-    .sidebar:not(:hover) {
-      width: 64px;
-    }
-    .sidebar-item-text {
-      display: none;
-    }
-    .sidebar:hover .sidebar-item-text {
-      display: inline;
-    }
-  </style>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="sidebar.css" />
 </head>
 <body class="bg-gray-100 font-sans">
+
   <div class="flex h-screen">
     <!-- Sidebar -->
-    <div class="sidebar bg-gray-800 text-white flex flex-col items-center py-4">
-      <div class="mb-8">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-        </svg>
-      </div>
-      <nav class="flex flex-col space-y-4">
-        <a href="dashboard.html" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-          </svg>
-          <span class="sidebar-item-text">Tổng quan</span>
-        </a>
-        <a href="users.html" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-          </svg>
-          <span class="sidebar-item-text">Người dùng</span>
-        </a>
-        <a href="vehicles.html" class="flex items-center space-x-2 p-2 bg-gray-700 rounded">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-          </svg>
-          <span class="sidebar-item-text">Xe</span>
-        </a>
-        <a href="brands.html" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 Content-Type: text/html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin - Vehicles</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    .sidebar {
-      transition: width 0.3s ease;
-    }
-    .sidebar:hover {
-      width: 250px;
-    }
-    .sidebar:not(:hover) {
-      width: 64px;
-    }
-    .sidebar-item-text {
-      display: none;
-    }
-    .sidebar:hover .sidebar-item-text {
-      display: inline;
-    }
-  </style>
-</head>
-<body class="bg-gray-100 font-sans">
-  <div class="flex h-screen">
-    <!-- Sidebar -->
-    <div class="sidebar bg-gray-800 text-white flex flex-col items-center py-4">
-      <div class="mb-8">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-        </svg>
-      </div>
-      <nav class="flex flex-col space-y-4">
-        <a href="dashboard.html" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-          </svg>
-          <span class="sidebar-item-text">Tổng quan</span>
-        </a>
-        <a href="users.html" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-          </svg>
-          <span class="sidebar-item-text">Người dùng</span>
-        </a>
-        <a href="vehicles.html" class="flex items-center space-x-2 p-2 bg-gray-700 rounded">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-          </svg>
-          <span class="sidebar-item-text">Xe</span>
-        </a>
-        <a href="brands.html" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-1.657 1.657M7 21h12"></path>
-          </svg>
-          <span class="sidebar-item-text">Thương hiệu</span>
-        </a>
-        <a href="reviews.html" class="flex items-center space-x-2 p-2 hover:bg-gray-700 rounded">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0l-1.414-1.414a2 2 0 010-2.828L9 9.172"></path>
-          </svg>
-          <span class="sidebar-item-text">Đánh giá</span>
-        </a>
-      </nav>
-    </div>
+    <div id="sidebar-container"></div>
 
     <!-- Main Content -->
     <div class="flex-1 p-6 overflow-auto">
-      <h1 class="text-2xl font-bold mb-6">Quản lý xe chờ duyệt</h1>
-      <p id="error" class="text-red-500 mb-4 hidden"></p>
+      <h1 class="text-2xl font-bold mb-6">Quản lý xe</h1>
 
-      <!-- Pending Vehicles Section -->
-      <div id="pending-vehicles" class="api-section">
-        <h3 class="text-lg font-semibold mb-4">🚗 Xe chờ duyệt</h3>
-        <button onclick="getPendingVehicles()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4">Làm mới dữ liệu</button>
-        <div class="overflow-x-auto">
-          <table class="w-full bg-white shadow-md rounded">
-            <thead>
-              <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                <th class="py-3 px-6 text-left">Tên xe</th>
-                <th class="py-3 px-6 text-left">Biển số</th>
-                <th class="py-3 px-6 text-left">Hãng</th>
-                <th class="py-3 px-6 text-left">Giá</th>
-                <th class="py-3 px-6 text-left">Hình ảnh</th>
-                <th class="py-3 px-6 text-left">Trạng thái</th>
-                <th class="py-3 px-6 text-left">Hành động</th>
-              </tr>
-            </thead>
-            <tbody id="vehicleList" class="text-gray-600 text-sm font-light"></tbody>
-          </table>
-        </div>
+      <!-- Buttons -->
+      <div class="flex gap-4 mb-4">
+        <button onclick="getPendingVehicles()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+          🚗 Xe chờ duyệt
+        </button>
+        <button onclick="getAllVehicles()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
+          📋 Tất cả xe
+        </button>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full bg-white shadow-md rounded">
+          <thead>
+            <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+              <th class="py-3 px-6 text-left">Tên xe</th>
+              <th class="py-3 px-6 text-left">Biển số</th>
+              <th class="py-3 px-6 text-left">Hãng</th>
+              <th class="py-3 px-6 text-left">Giá</th>
+              <th class="py-3 px-6 text-left">Hình ảnh</th>
+              <th class="py-3 px-6 text-left">Trạng thái</th>
+              <th class="py-3 px-6 text-left">Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="vehicleList" class="text-gray-600 text-sm font-light"></tbody>
+        </table>
       </div>
     </div>
   </div>
 
-  <script src="scripts/dashboard.js"></script>
+  <!-- Image Modal -->
+  <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
+    <div class="bg-white p-4 rounded shadow-lg max-w-4xl max-h-[90vh] overflow-y-auto relative">
+      <button onclick="closeImageModal()" class="absolute top-2 right-2 text-gray-600 hover:text-black text-xl">×</button>
+      <div id="imageModalContent" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+        <!-- Images go here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    fetch("sidebar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar-container").innerHTML = html;
+      });
+  </script>
+
+  <script defer src="scripts/dashboard.js">
+    window.onload = getPendingVehicles;
+  </script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Brand = require('../../models/vehicles/brand_model');
+const cloudinary = require('../../config/cloudinary_instance');
 
 // Get all brands
 const GetAllBrands = async (req, res) => {
@@ -7,14 +8,9 @@ const GetAllBrands = async (req, res) => {
     const brands = await Brand.find();
     res.status(200).json({ success: true, data: brands });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Error retrieving brand list',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Lỗi lấy danh sách thương hiệu', error: error.message });
   }
 };
-
 const GetBrandByBrandId = async (req, res) => {
   try {
     const { brandId } = req.params;
@@ -36,85 +32,100 @@ const GetBrandByBrandId = async (req, res) => {
     });
   }
 };
-
+// Create brand
 const CreateBrand = async (req, res) => {
   try {
-    const { brandName, brandLogo } = req.body;
+    const { brandName } = req.body;
+    const file = req.file;
 
-    if (!req.body) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide a brand name and logo'
-      });
+    if (!brandName || !file) {
+      return res.status(400).json({ success: false, message: 'Thiếu tên hoặc logo thương hiệu' });
     }
 
     const existed = await Brand.findOne({ brandName });
     if (existed) {
-      return res.status(400).json({
-        success: false,
-        message: 'Brand already exists'
-      });
+      return res.status(400).json({ success: false, message: 'Thương hiệu đã tồn tại' });
     }
 
+    const brandLogo = {
+      url: file.path,
+      publicId: file.filename
+    };
+
     const newBrand = await Brand.create({ brandName, brandLogo });
-    res.status(201).json({
-      success: true,
-      data: newBrand,
-      message: 'Brand created successfully'
-    });
+    res.status(201).json({ success: true, data: newBrand, message: 'Tạo thương hiệu thành công' });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Error creating brand',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Lỗi tạo thương hiệu', error: error.message });
   }
 };
 
+// Update brand
 const UpdateBrand = async (req, res) => {
   try {
     const { id } = req.params;
-    const { brandName, brandLogo } = req.body;
+    const { brandName } = req.body;
+    const file = req.file;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, message: 'Invalid ID' });
+      return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
     }
 
-    const updated = await Brand.findByIdAndUpdate(id, { brandName, brandLogo }, { new: true, runValidators: true });
-
-    if (!updated) {
-      return res.status(404).json({ success: false, message: 'Brand not found' });
+    const brand = await Brand.findById(id);
+    if (!brand) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy thương hiệu' });
     }
 
-    res.status(200).json({ success: true, data: updated, message: 'Brand updated successfully' });
+    // Nếu có ảnh mới => xóa ảnh cũ trên Cloudinary
+    let brandLogo = brand.brandLogo;
+    if (file) {
+      if (brandLogo?.publicId) {
+        await cloudinary.uploader.destroy(brandLogo.publicId);
+      }
+      brandLogo = {
+        url: file.path,
+        publicId: file.filename
+      };
+    }
+
+    brand.brandName = brandName || brand.brandName;
+    brand.brandLogo = brandLogo;
+    await brand.save();
+
+    res.status(200).json({ success: true, data: brand, message: 'Cập nhật thương hiệu thành công' });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error updating brand', error: error.message });
+    res.status(500).json({ success: false, message: 'Lỗi cập nhật thương hiệu', error: error.message });
   }
 };
 
+// Delete brand
 const DeleteBrand = async (req, res) => {
   try {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, message: 'Invalid ID' });
+      return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
     }
 
-    const deleted = await Brand.findByIdAndDelete(id);
-
-    if (!deleted) {
-      return res.status(404).json({ success: false, message: 'Brand not found' });
+    const brand = await Brand.findById(id);
+    if (!brand) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy thương hiệu' });
     }
 
-    res.status(200).json({ success: true, message: 'Brand deleted successfully' });
+    // Xóa logo trên Cloudinary nếu có
+    if (brand.brandLogo?.publicId) {
+      await cloudinary.uploader.destroy(brand.brandLogo.publicId);
+    }
+
+    await Brand.findByIdAndDelete(id);
+    res.status(200).json({ success: true, message: 'Xóa thương hiệu thành công' });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error deleting brand', error: error.message });
+    res.status(500).json({ success: false, message: 'Lỗi xóa thương hiệu', error: error.message });
   }
 };
 
 module.exports = {
-  GetAllBrands,
   GetBrandByBrandId,
+  GetAllBrands,
   CreateBrand,
   UpdateBrand,
   DeleteBrand
