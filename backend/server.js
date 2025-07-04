@@ -27,18 +27,34 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
+
+const allowedOrigins = process.env.NODE_ENV === "production"
+  ? ['https://mobile-vehicle-rental-app.onrender.com']
+  : ['http://localhost:5500', 'http://127.0.0.1:5500'];
+
 app.use(cors({
-    origin: [
-      'http://localhost:5173', // để dev local
-      'https://mobile-vehicle-rental-app.onrender.com',
-    ],
-    credentials: true,
-  }));
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.error(`Blocked by CORS: ${origin}`);
+      callback(new Error("Không được phép truy cập (CORS)"));
+    }
+  },
+  credentials: true,
+}));
+
+  
 app.use(
     session({
         secret: process.env.SESSION_SECRET || "your_session_secret",
         resave: false,
         saveUninitialized: false,
+        cookie: {
+            secure: process.env.NODE_ENV === "production", 
+            httpOnly: true,
+            sameSite: "lax",
+          }
     })
 );
 app.use(passport.initialize());
@@ -73,7 +89,7 @@ const startServer = async () => {
         console.log('Cron job để ghi log người dùng không được xác minh đã được lên lịch.');
 
         // Khởi động server
-        app.listen(PORT, () => console.log(`Server đang chạy trên cổng ${PORT}`));
+        app.listen(PORT,'0.0.0.0', () => console.log(`Server đang chạy trên cổng ${PORT}`));
     } catch (err) {
         console.error('Lỗi khi khởi động server:', err);
         process.exit(1);

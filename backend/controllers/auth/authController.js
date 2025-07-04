@@ -71,6 +71,38 @@ const Refresh = async (req, res) => {
         res.status(401).json({ message: err.message });
     }
 };
+const RefreshWebToken = async (req, res) => {
+    try {
+      const refreshToken = req.cookies['refreshToken'];
+      if (!refreshToken) {
+        return res.status(400).json({ message: 'Refresh token required' });
+      }
+  
+      const result = await authService.refreshAccessToken(refreshToken);
+  
+      const isProduction = process.env.NODE_ENV === 'production';
+      res.cookie('accessToken', result.accessToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'None' : 'Lax',
+        maxAge: 15 * 60 * 1000,
+      });
+      res.cookie('refreshToken', result.refreshToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'None' : 'Lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+  
+      res.json({
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+      });
+    } catch (err) {
+      res.status(401).json({ message: err.message });
+    }
+  };
+  
 const GoogleLoginEndPoint = async (req, res) => {
     try {
       const { googleId, email, fullName, avatar } = req.body;
@@ -143,4 +175,4 @@ const ResetPassword = async (req, res) => {
     }
 };
 
-module.exports = { Register, Login, WebLogin, Verify, Refresh, GoogleLoginEndPoint, GoogleLogin, Logout, RequestPasswordReset, ResetPassword };
+module.exports = { Register, Login, WebLogin, Verify, Refresh, RefreshWebToken, GoogleLoginEndPoint, GoogleLogin, Logout, RequestPasswordReset, ResetPassword };

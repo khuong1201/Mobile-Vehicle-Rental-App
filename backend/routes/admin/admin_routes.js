@@ -6,6 +6,7 @@ const adminMiddleware = require('../../middlewares/admin_middleware');
 const vehicleController = require('../../controllers/vehicle/vehicleController');
 const reviewController = require('../../controllers/review/review_controller');
 const brandController = require('../../controllers/vehicle/brandController');
+const bookingController = require('../../controllers/booking/bookingController');
 const authenticateWeb = require('../../middlewares/auth_web_middleware');
 
 router.delete('/delete-account', authenticateWeb,adminMiddleware, adminController.DeleteAccount);
@@ -24,4 +25,6 @@ router.delete('/delete-brand/:id', authenticateWeb, adminMiddleware, brandContro
 router.get("/all-vehicles", authenticateWeb, adminMiddleware, vehicleController.GetAllVehicles);
 router.get("/review/:id", authenticateWeb, adminMiddleware, reviewController.GetReviewById);
 router.delete("/delete-review/:id", authenticateWeb, adminMiddleware, reviewController.DeleteReview);
+router.get("/get-total-users", authenticateWeb, adminMiddleware, adminController.GetTotalUsers);
+router.get("/get-monthly-bookings", authenticateWeb, adminMiddleware, bookingController.GetMonthlyBookings);
 module.exports = router;

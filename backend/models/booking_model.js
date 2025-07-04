@@ -19,8 +19,7 @@ const BookingSchema = new mongoose.Schema({
   totalPrice: Number,
   totalRentalDays: { type: Number, required: true },
   isTaxDeducted: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now }
-});
+},{ timestamps: true });
 
 // Ẩn _id và __v khi trả JSON
 BookingSchema.methods.toJSON = function () {

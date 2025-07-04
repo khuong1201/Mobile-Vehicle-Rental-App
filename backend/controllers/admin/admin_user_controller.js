@@ -1,5 +1,5 @@
 const User = require("../../models/user_model");
-
+const Booking = require("../../models/booking_model");
 const GetAllUsers = async (req, res) => {
   try {
     const users = await User.find({ role: { $ne: "admin" } }).select(
@@ -28,7 +28,7 @@ const ApproveLicense = async (req, res) => {
   const { userId, licenseId } = req.body;
 
   try {
-    const user = await User.findOne({ userId });
+    const user = await User.findById( userId );
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -55,7 +55,7 @@ const RejectLicense = async (req, res) => {
   const { userId, licenseId } = req.body;
 
   try {
-    const user = await User.findOne({ userId });
+    const user = await User.findById( userId );
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const license = user.license.find((l) => l.licenseId === licenseId);
@@ -135,7 +135,18 @@ const DeleteAccount = async (req, res) => {
       res.status(400).json({ message: err.message });
     }
   };
+
+  const GetTotalUsers = async (req, res) => {
+    try {
+      const totalUsers = await User.countDocuments({ role: { $ne: "admin" } });
+      res.json({ totalUsers });
+    } catch (err) {
+      console.error("Get total users error:", err.message);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
 module.exports = {
+  GetTotalUsers,
   DeleteAccount,
   GetAllUsers,
   GetUsersWithUnapprovedLicenses,
