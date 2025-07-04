@@ -10,4 +10,8 @@ COPY . .
 
 EXPOSE 5000
 
-CMD ["npm", "run", "dev"]
+# dùng cho dev
+# CMD ["npm", "run", "dev"] 
+
+# production dùng node server.js
+CMD ["npm", "start"]  
