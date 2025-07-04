@@ -14,7 +14,8 @@ services:
     # depends_on:
     #   - mongodb
     restart: on-failure
-    command: npm run dev
+    # command: npm run dev
+    command: npm run start
   frontend:
     build: ../admin-html
     ports:
