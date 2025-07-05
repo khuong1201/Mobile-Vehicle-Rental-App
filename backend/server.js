@@ -23,7 +23,7 @@ const { cleanupUnverifiedUsers } = require('./services/auth_service');
 const cookieParser = require('cookie-parser');
 
 const app = express();
-
+app.set('trust proxy', 1);
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
