@@ -8,24 +8,22 @@ services:
     working_dir: /app
     env_file:
       - ../backend/.env
+    # volumes:
+    #   - ../backend:/app
+    #   - /app/node_modules
     # depends_on:
     #   - mongodb
     restart: on-failure
-    command: npm run dev
+    # command: npm run dev
+    command: npm run start
+  frontend:
+    build: ../admin-html
+    ports:
+      - "5500:80"
+    volumes:
+      - ../admin-html:/usr/share/nginx/html:ro
+    restart: unless-stopped
 
-  # admin-dashboard:
-  #   build:
-  #     context: ../admin-dashboard
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "5173:5173"
-  #   working_dir: /app
-  #   env_file:
-  #     - ../admin-dashboard/.env
-  #   depends_on:
-  #     - backend
-  #   restart: on-failure
-  #   command: npm run dev
 
   # frontend_flutter:
   #   build:
@@ -36,13 +34,13 @@ services:
   #     - ./flutter-output:/output
   #   restart: on-failure
 
-  mongodb:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
-    restart: unless-stopped
+  # mongodb:
+  #   image: mongo:latest
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongo-data:/data/db
+  #   restart: unless-stopped
 
-volumes:
-  mongo-data:
+# volumes:
+#   mongo-data:

@@ -1,0 +1,25 @@
+.sidebar {
+    transition: all 0.3s ease;
+    width: 64px; /* collapsed mặc định */
+  }
+  
+  .sidebar:hover {
+    width: 250px; /* mở rộng khi hover */
+  }
+  
+  .sidebar .sidebar-text {
+    display: none;
+  }
+  
+  .sidebar:hover .sidebar-text {
+    display: inline;
+  }
+  
+  .sidebar svg {
+    transition: transform 0.2s ease;
+  }
+  
+  .sidebar:hover svg {
+    transform: scale(1.05);
+  }
+  

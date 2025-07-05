@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Thương hiệu</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="sidebar.css" />
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6 overflow-auto">
+      <h1 class="text-2xl font-bold mb-6">Quản lý thương hiệu</h1>
+
+      <!-- Buttons -->
+      <div class="flex gap-4 mb-4">
+        <button onclick="getAllBrands()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
+          📋 Tất cả thương hiệu
+        </button>
+      </div>
+
+      <!-- Form -->
+      <div class="bg-white p-6 rounded-lg shadow-md mb-8 max-w-xl">
+        <h3 class="text-lg font-semibold mb-4">Thêm / Cập nhật thương hiệu</h3>
+        <form id="brandForm" class="space-y-4" enctype="multipart/form-data">
+          <input type="hidden" id="brandId" name="brandId" />
+          <div>
+            <input id="brandName" name="brandName" type="text" placeholder="Tên thương hiệu" class="w-full p-2 border border-gray-300 rounded" />
+          </div>
+          <div>
+            <input id="brandLogo" name="logo" type="file" accept="image/*" class="w-full p-2 border border-gray-300 rounded bg-white" />
+            <img id="previewLogo" src="" alt="Logo preview" class="mt-2 w-32 hidden" />
+          </div>
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Lưu</button>
+        </form>
+      </div>
+
+      <!-- Brand Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full bg-white shadow-md rounded">
+          <thead>
+            <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+              <th class="py-3 px-6 text-left">Logo</th>
+              <th class="py-3 px-6 text-left">Tên thương hiệu</th>
+              <th class="py-3 px-6 text-left">Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="brandList" class="text-gray-600 text-sm font-light"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <script>
+    fetch("sidebar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar-container").innerHTML = html;
+      });
+  </script>
+
+  <!-- Script -->
+  <script src="scripts/dashboard.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    getAllBrands();
+  });
+</script>
+</body>
+</html>

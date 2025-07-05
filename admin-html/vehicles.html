@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Vehicles</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="sidebar.css" />
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6 overflow-auto">
+      <h1 class="text-2xl font-bold mb-6">Quản lý xe</h1>
+
+      <!-- Buttons -->
+      <div class="flex gap-4 mb-4">
+        <button onclick="getPendingVehicles()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+          🚗 Xe chờ duyệt
+        </button>
+        <button onclick="getAllVehicles()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
+          📋 Tất cả xe
+        </button>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full bg-white shadow-md rounded">
+          <thead>
+            <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+              <th class="py-3 px-6 text-left">Tên xe</th>
+              <th class="py-3 px-6 text-left">Biển số</th>
+              <th class="py-3 px-6 text-left">Hãng</th>
+              <th class="py-3 px-6 text-left">Giá</th>
+              <th class="py-3 px-6 text-left">Hình ảnh</th>
+              <th class="py-3 px-6 text-left">Trạng thái</th>
+              <th class="py-3 px-6 text-left">Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="vehicleList" class="text-gray-600 text-sm font-light"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Modal -->
+  <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
+    <div class="bg-white p-4 rounded shadow-lg max-w-4xl max-h-[90vh] overflow-y-auto relative">
+      <button onclick="closeImageModal()" class="absolute top-2 right-2 text-gray-600 hover:text-black text-xl">×</button>
+      <div id="imageModalContent" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+        <!-- Images go here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    fetch("sidebar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar-container").innerHTML = html;
+      });
+  </script>
+
+  <script defer src="scripts/dashboard.js">
+    window.onload = getPendingVehicles;
+  </script>
+</body>
+</html>

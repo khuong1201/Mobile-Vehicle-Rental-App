@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --tw-bg-opacity: 1;
+  --tw-text-opacity: 1;
+  --tw-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.bg-gray-100 { background-color: rgba(243, 244, 246, var(--tw-bg-opacity)); }
+.bg-gray-200 { background-color: rgba(229, 231, 235, var(--tw-bg-opacity)); }
+.bg-gray-700 { background-color: rgba(55, 65, 81, var(--tw-bg-opacity)); }
+.bg-gray-800 { background-color: rgba(31, 41, 55, var(--tw-bg-opacity)); }
+.bg-blue-500 { background-color: rgba(59, 130, 246, var(--tw-bg-opacity)); }
+.bg-blue-600 { background-color: rgba(37, 99, 235, var(--tw-bg-opacity)); }
+.bg-green-500 { background-color: rgba(34, 197, 94, var(--tw-bg-opacity)); }
+.bg-green-600 { background-color: rgba(22, 163, 74, var(--tw-bg-opacity)); }
+.bg-red-500 { background-color: rgba(239, 68, 68, var(--tw-bg-opacity)); }
+.bg-red-600 { background-color: rgba(220, 38, 38, var(--tw-bg-opacity)); }
+.bg-yellow-500 { background-color: rgba(245, 158, 11, var(--tw-bg-opacity)); }
+.bg-yellow-600 { background-color: rgba(217, 119, 6, var(--tw-bg-opacity)); }
+.text-gray-600 { color: rgba(75, 85, 99, var(--tw-text-opacity)); }
+.text-white { color: rgba(255, 255, 255, var(--tw-text-opacity));}

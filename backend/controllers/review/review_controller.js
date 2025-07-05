@@ -171,7 +171,22 @@ const ReportReview = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+const GetReportedReviews = async (req, res) => {
+  try {
+    const reports = await ReviewReport.find()
+      .populate("reviewId", "comment rating renterId createdAt")
+      .populate("ownerId", "fullName email")
+      .populate("vehicleId", "name");
+
+    res.status(200).json({ success: true, reports });
+  } catch (err) {
+    console.error("Error fetching reported reviews:", err);
+    res.status(500).json({ success: false, message: "Server error", error: err.message });
+  }
+};
+
 module.exports = {
+  GetReportedReviews,
   CreateReview,
   GetReviewsByVehicle,
   DeleteReview,

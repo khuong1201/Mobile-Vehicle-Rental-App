@@ -22,7 +22,7 @@ With increasing demand for smart mobility, this platform offers a **flexible, ef
 ### 🖥 Backend:
 - **Node.js + Express** – RESTful API development, scalable and maintainable
 - **MongoDB** – NoSQL database for flexible data storage
-- **Firebase Auth** – Secure authentication (Email/Password, OTP)
+
 
 ### 📱 Frontend:
 - **Flutter + Dart** – Cross-platform mobile development (iOS & Android)

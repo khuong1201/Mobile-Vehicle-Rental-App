@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:18
 
 WORKDIR /app
 
@@ -7,5 +7,11 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 5173
-CMD ["npm", "run", "dev"]
+
+EXPOSE 5000
+
+# dùng cho dev
+# CMD ["npm", "run", "dev"] 
+
+# production dùng node server.js
+CMD ["npm", "start"]  

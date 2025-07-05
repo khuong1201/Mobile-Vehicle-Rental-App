@@ -1,5 +1,4 @@
 const User = require("../../models/user_model");
-
 const GetAllUsers = async (req, res) => {
   try {
     const users = await User.find({ role: { $ne: "admin" } }).select(
@@ -14,27 +13,48 @@ const GetAllUsers = async (req, res) => {
 const GetUsersWithUnapprovedLicenses = async (req, res) => {
   try {
     const users = await User.find({
-      "license.status": 'pending',
       role: { $ne: "admin" },
-    }).select("-passwordHash -otp -otpExpires -refreshToken");
+      license: { $exists: true, $ne: [] }
+    }).select("fullName email license avatar");
 
-    res.json({ users });
+    const filteredUsers = users
+      .map(user => {
+        const pendingLicenses = user.license.filter(l => l.status === 'pending');
+        if (pendingLicenses.length === 0) return null;
+
+        return {
+          _id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          avatar: user.avatar,
+          license: pendingLicenses.map(l => ({
+            _id: l._id,
+            status: l.status,
+            driverLicenseFront: l.driverLicenseFront,
+            driverLicenseBack: l.driverLicenseBack,
+          }))
+        };
+      })
+      .filter(Boolean); 
+
+    res.json({ users: filteredUsers });
   } catch (err) {
     console.error("Get users with unapproved licenses error:", err.message);
     res.status(400).json({ message: err.message });
   }
 };
+
 const ApproveLicense = async (req, res) => {
   const { userId, licenseId } = req.body;
 
   try {
-    const user = await User.findOne({ userId });
+    const user = await User.findById( userId );
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const license = user.license.find((l) => l.licenseId === licenseId);
+    const license = user.license.find((l) => l._id.toString() === licenseId);
 
     if (!license) {
       return res.status(404).json({ message: "License not found" });
@@ -55,10 +75,10 @@ const RejectLicense = async (req, res) => {
   const { userId, licenseId } = req.body;
 
   try {
-    const user = await User.findOne({ userId });
+    const user = await User.findById( userId );
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const license = user.license.find((l) => l.licenseId === licenseId);
+    const license = user.license.find((l) => l._id.toString() === licenseId);
     if (!license) return res.status(404).json({ message: "License not found" });
 
     license.status = 'rejected';
@@ -135,7 +155,18 @@ const DeleteAccount = async (req, res) => {
       res.status(400).json({ message: err.message });
     }
   };
+
+  const GetTotalUsers = async (req, res) => {
+    try {
+      const totalUsers = await User.countDocuments({ role: { $ne: "admin" } });
+      res.json({ totalUsers });
+    } catch (err) {
+      console.error("Get total users error:", err.message);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
 module.exports = {
+  GetTotalUsers,
   DeleteAccount,
   GetAllUsers,
   GetUsersWithUnapprovedLicenses,

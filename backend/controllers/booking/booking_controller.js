@@ -7,7 +7,27 @@ const convertDate = (str) => {
   const [day, month, year] = str.split("/");
   return `${year}-${month}-${day}`;
 };
-
+const GetMonthlyBookings = async (req, res) => {
+  try {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59
+    );
+    const totalBookings = await Booking.countDocuments({
+      createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+    });
+    res.json({ totalBookingsThisMonth: totalBookings });
+  } catch (err) {
+    console.error("Get monthly bookings error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 // Helper: Calculate total rental days
 const calculateRentalDays = (pickupDate, dropoffDate) => {
   const pickup = new Date(convertDate(pickupDate));
@@ -144,6 +164,7 @@ const getBookingsByRenter = async (req, res) => {
 };
 
 module.exports = {
+  GetMonthlyBookings,
   createBooking,
   getBookingsByOwner,
   getBookingsByRenter,

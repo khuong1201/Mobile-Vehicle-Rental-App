@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="sidebar.css" />
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-6">
+      <header class="mb-6">
+        <h1 class="text-3xl font-semibold text-gray-700">Bảng điều khiển</h1>
+        <p id="error" class="text-red-600 mt-2 hidden"></p>
+      </header>
+
+      <!-- Statistics Section -->
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white shadow card rounded-lg p-6">
+          <h2 class="text-lg font-medium mb-2">Tổng số người dùng</h2>
+          <p id="totalUsers" class="text-4xl font-bold text-blue-600">0</p>
+        </div>
+        <div class="bg-white shadow card rounded-lg p-6">
+          <h2 class="text-lg font-medium mb-2">Tổng số booking trong tháng</h2>
+          <p id="totalBookings" class="text-4xl font-bold text-blue-600">0</p>
+        </div>
+      </section>
+
+      <button onclick="fetchStats()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2 rounded">
+        Làm mới dữ liệu
+      </button>
+    </main>
+  </div>
+  <script>
+    fetch("sidebar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("sidebar-container").innerHTML = html;
+      });
+  </script>
+  <script src="scripts/dashboard.js"></script>
+</body>
+</html>

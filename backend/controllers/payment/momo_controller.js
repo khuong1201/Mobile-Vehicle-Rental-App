@@ -1,5 +1,4 @@
-// paymentController.js
-const mongoose = require("mongoose");
+
 const https = require("https");
 const crypto = require("crypto");
 require("dotenv").config();
