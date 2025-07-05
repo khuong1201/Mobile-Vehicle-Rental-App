@@ -13,19 +13,19 @@ services:
     restart: on-failure
     command: npm run dev
 
-  admin-dashboard:
-    build:
-      context: ../admin-dashboard
-      dockerfile: Dockerfile
-    ports:
-      - "5173:5173"
-    working_dir: /app
-    env_file:
-      - ../admin-dashboard/.env
-    depends_on:
-      - backend
-    restart: on-failure
-    command: npm run dev
+  # admin-dashboard:
+  #   build:
+  #     context: ../admin-dashboard
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5173:5173"
+  #   working_dir: /app
+  #   env_file:
+  #     - ../admin-dashboard/.env
+  #   depends_on:
+  #     - backend
+  #   restart: on-failure
+  #   command: npm run dev
 
   # frontend_flutter:
   #   build:

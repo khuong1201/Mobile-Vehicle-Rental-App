@@ -182,6 +182,13 @@ class _BookingScreenState extends State<BookingScreen> {
                                       size: 18,
                                     ),
                                   ),
+                                  validator: (value){
+                                    if (value == null ||
+                                        value.isEmpty) {
+                                      return 'Please enter pick - up location';
+                                    }
+                                    return null;
+                                  },
                                 ),
                                 const SizedBox(height: 28),
                                 CustomTextBodyMsb(title: 'Drop - Off Location'),
@@ -212,6 +219,13 @@ class _BookingScreenState extends State<BookingScreen> {
                                       size: 18,
                                     ),
                                   ),
+                                  validator: (value){
+                                    if (value == null ||
+                                        value.isEmpty) {
+                                      return 'Please enter drop - off location';
+                                    }
+                                    return null;
+                                  },
                                 ),
                                 const SizedBox(height: 28),
                                 Row(
@@ -234,7 +248,6 @@ class _BookingScreenState extends State<BookingScreen> {
                                                   value.isEmpty) {
                                                 return 'Vui lòng chọn ngày';
                                               }
-
                                               return null;
                                             },
                                           ),

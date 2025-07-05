@@ -2,6 +2,7 @@ import 'package:frontend/models/vehicles/vehicle.dart';
 
 class Car extends Vehicle {
   final String fuelType;
+  final String transmission;
   final double numberOfSeats;
 
   Car({
@@ -26,6 +27,7 @@ class Car extends Vehicle {
     required super.status,
     required super.type,
     required this.fuelType,
+    required this.transmission,
     required this.numberOfSeats,
   });
 
@@ -53,6 +55,7 @@ class Car extends Vehicle {
       status: vehicle.status,
       type: vehicle.type,
       fuelType: json['fuelType'] ?? '',
+      transmission: json['transmission'] ?? '',
       numberOfSeats: (json['numberOfSeats'] as num?)?.toDouble() ?? 0.0,
     );
   }
@@ -61,6 +64,7 @@ class Car extends Vehicle {
     final json = super.toJson();
     json.addAll({
       'fuelType': fuelType,
+      'transmission':transmission,
       'numberOfSeats': numberOfSeats,
     });
     return json;

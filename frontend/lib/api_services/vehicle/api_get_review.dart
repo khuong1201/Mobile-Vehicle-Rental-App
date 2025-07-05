@@ -29,19 +29,43 @@ class ApiGetReviewByVehicle {
 
   debugPrint('📥 Raw Response: ${response.data}');
 
-  if (response.success == true && response.data is List) {
-    final items = response.data as List;
+  // if (response.success == true && response.data is List) {
+  //   final items = response.data as List;
 
-    final List<ReviewModel> reviewList = items
-        .whereType<Map<String, dynamic>>()
-        .map((json) => ReviewModel.fromJson(json))
-        .toList();
+  //   final List<ReviewModel> reviewList = items
+  //       .whereType<Map<String, dynamic>>()
+  //       .map((json) => ReviewModel.fromJson(json))
+  //       .toList();
 
-    return ApiResponse(
-      success: true,
-      data: reviewList,
-      message: '✅ Fetched reviews successfully.',
-    );
+  //   return ApiResponse(
+  //     success: true,
+  //     data: reviewList,
+  //     message: '✅ Fetched reviews successfully.',
+  //   );
+  // }
+
+  if (response.success) {
+    final data = response.data is Map<String, dynamic> ? response.data['reviews'] : response.data;
+    if (data is List) {
+      final List<ReviewModel> reviewList = data
+          .whereType<Map<String, dynamic>>()
+          .map((json) => ReviewModel.fromJson(json))
+          .toList();
+
+      return ApiResponse(
+        success: true,
+        data: reviewList,
+        message: '✅ Fetched reviews successfully.',
+        meta: response.meta,
+      );
+    } else {
+      debugPrint('Error: data is not a List, got ${data.runtimeType}');
+      return ApiResponse(
+        success: false,
+        message: 'Dữ liệu trả về không đúng định dạng (không phải danh sách).',
+        meta: response.meta,
+      );
+    }
   }
 
   return ApiResponse(

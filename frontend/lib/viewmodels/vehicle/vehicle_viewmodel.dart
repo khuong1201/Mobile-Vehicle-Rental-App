@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/api_services/vehicle/api_get_brand.dart';
 import 'package:frontend/api_services/vehicle/api_get_vehicle_by_type.dart';
 import 'package:frontend/api_services/vehicle/get_vehicle.dart';
+import 'package:frontend/api_services/vehicle/update_vehicle.dart';
 import 'package:frontend/models/bank.dart';
 import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/models/vehicles/bike.dart';
@@ -231,6 +232,7 @@ class VehicleViewModel extends ChangeNotifier {
             status: data['status'] as String,
             type: data['type'] ?? 'car',
             fuelType: data['fuelType'] as String? ?? '',
+            transmission: data['transmission'] as String? ?? '',
             numberOfSeats:
                 double.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
           );
@@ -284,6 +286,7 @@ class VehicleViewModel extends ChangeNotifier {
             status: data['status'] as String? ?? 'pending',
             type: data['type'] ?? 'coach',
             fuelType: data['fuelType'] as String? ?? '',
+            transmission: data['transmission'] as String? ?? '',
             numberOfSeats:
                 double.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
           );
@@ -365,6 +368,237 @@ class VehicleViewModel extends ChangeNotifier {
     } catch (e) {
       debugPrint('❌ Error creating vehicle: $e');
       _handleAuthError('Error creating vehicle: $e', context);
+    } finally {
+      _isLoadingVehicles = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateVehicle(
+    BuildContext context, {
+    required String vehicleId,
+    required Map<String, dynamic> data,
+    List<File>? imageFiles,
+  }) async {
+    _isLoadingVehicles = true;
+    notifyListeners();
+
+    try {
+      debugPrint('🚀 Updating vehicle with ID: $vehicleId, data: $data');
+      debugPrint('📎 Files: ${imageFiles?.map((f) => f.path).toList() ?? []}');
+
+      final userViewModel = Provider.of<UserViewModel>(context, listen: false);
+      final user = userViewModel.user;
+      if (user == null) {
+        debugPrint('❌ No user found');
+        _handleAuthError('Please log in again', context);
+        return;
+      }
+
+      final locationData = data['location'];
+      final LocationForVehicle? location = locationData is LocationForVehicle
+          ? locationData
+          : locationData is Map<String, dynamic>
+              ? LocationForVehicle.fromJson(locationData)
+              : null;
+
+      if (location == null) {
+        debugPrint('❌ Invalid location data');
+        _handleAuthError('Invalid location data', context);
+        return;
+      }
+
+      final brandData = data['brand'];
+      final brand = brandData is Map<String, dynamic>
+          ? Brand.fromJson(brandData)
+          : brandData is String && brandData.isNotEmpty
+              ? Brand(id: brandData, brandId: brandData, brandName: 'Unknown')
+              : null;
+
+      if (brand == null) {
+        debugPrint('❌ Invalid brand data');
+        _handleAuthError('Invalid brand data', context);
+        return;
+      }
+
+      BankAccount parseBankAccount(dynamic rawBankAccount) {
+        if (rawBankAccount is BankAccount) return rawBankAccount;
+        if (rawBankAccount is Map<String, dynamic>) {
+          return BankAccount.fromJson(rawBankAccount);
+        }
+        return BankAccount(
+          accountNumber: '',
+          bankName: '',
+          accountHolderName: '',
+        );
+      }
+
+      Vehicle vehicle;
+      switch (data['type']?.toLowerCase()) {
+        case 'car':
+          vehicle = Car(
+            id: vehicleId,
+            vehicleId: vehicleId,
+            vehicleName: data['vehicleName'] ?? 'Default Car',
+            licensePlate: data['licensePlate'] ?? '',
+            brand: brand.id,
+            yearOfManufacture: data['yearOfManufacture']?.toString() ?? '0',
+            images: imageFiles?.map((file) => file.path).toList() ?? [],
+            description: data['description'] ?? 'Default description',
+            location: location,
+            model: data['model'] ?? '',
+            ownerId: user.id,
+            ownerEmail: user.email,
+            ownerName: user.fullName,
+            ownerAvatar: user.imageAvatarUrl,
+            price: (data['price'] as num?)?.toDouble() ?? 0.0,
+            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
+            available: data['available'] as bool? ?? true,
+            status: data['status'] as String? ?? 'pending',
+            type: data['type'] ?? 'car',
+            fuelType: data['fuelType'] as String? ?? '',
+            transmission: data['transmission'] as String? ?? '',
+            numberOfSeats:
+                double.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
+          );
+          break;
+        case 'motor':
+        case 'motorbike':
+          vehicle = Motor(
+            id: vehicleId,
+            vehicleId: vehicleId,
+            vehicleName: data['vehicleName'] ?? 'Default Motor',
+            licensePlate: data['licensePlate'] ?? '',
+            brand: brand.id,
+            yearOfManufacture: data['yearOfManufacture']?.toString() ?? '0',
+            images: imageFiles?.map((file) => file.path).toList() ?? [],
+            description: data['description'] ?? 'Default description',
+            location: location,
+            model: data['model'] ?? '',
+            ownerId: user.id,
+            ownerEmail: user.email,
+            ownerName: user.fullName,
+            ownerAvatar: user.imageAvatarUrl,
+            price: (data['price'] as num?)?.toDouble() ?? 0.0,
+            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
+            available: data['available'] as bool? ?? true,
+            status: data['status'] as String? ?? 'pending',
+            type: data['type'] ?? 'motor',
+            fuelType: data['fuelType'] as String? ?? '',
+          );
+          break;
+        case 'coach':
+          vehicle = Coach(
+            id: vehicleId,
+            vehicleId: vehicleId,
+            vehicleName: data['vehicleName'] ?? 'Default Coach',
+            licensePlate: data['licensePlate'] ?? '',
+            brand: brand.id,
+            yearOfManufacture: data['yearOfManufacture']?.toString() ?? '0',
+            images: imageFiles?.map((file) => file.path).toList() ?? [],
+            description: data['description'] ?? 'Default description',
+            location: location,
+            model: data['model'] ?? '',
+            ownerId: user.id,
+            ownerEmail: user.email,
+            ownerName: user.fullName,
+            ownerAvatar: user.imageAvatarUrl,
+            price: (data['price'] as num?)?.toDouble() ?? 0.0,
+            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
+            available: data['available'] as bool? ?? true,
+            status: data['status'] as String? ?? 'pending',
+            type: data['type'] ?? 'coach',
+            fuelType: data['fuelType'] as String? ?? '',
+            transmission: data['transmission'] as String? ?? '',
+            numberOfSeats:
+                double.tryParse(data['numberOfSeats']?.toString() ?? '0') ?? 0,
+          );
+          break;
+        case 'bike':
+          vehicle = Bike(
+            id: vehicleId,
+            vehicleId: vehicleId,
+            vehicleName: data['vehicleName'] ?? 'Default Bike',
+            licensePlate: data['licensePlate'] ?? '',
+            brand: brand.id,
+            yearOfManufacture: data['yearOfManufacture']?.toString() ?? '0',
+            images: imageFiles?.map((file) => file.path).toList() ?? [],
+            description: data['description'] ?? 'Default description',
+            location: location,
+            model: data['model'] ?? '',
+            ownerId: user.id,
+            ownerEmail: user.email,
+            ownerName: user.fullName,
+            ownerAvatar: user.imageAvatarUrl,
+            price: (data['price'] as num?)?.toDouble() ?? 0.0,
+            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
+            available: data['available'] as bool? ?? true,
+            status: data['status'] as String? ?? 'pending',
+            type: data['type'] ?? 'bike',
+            typeOfBike: data['typeOfBike'] as String? ?? '',
+          );
+          break;
+        default:
+          vehicle = Vehicle(
+            id: vehicleId,
+            vehicleId: vehicleId,
+            vehicleName: data['vehicleName'] ?? 'Default Vehicle',
+            licensePlate: data['licensePlate'] ?? '',
+            brand: brand.id,
+            yearOfManufacture: data['yearOfManufacture']?.toString() ?? '0',
+            images: imageFiles?.map((file) => file.path).toList() ?? [],
+            description: data['description'] ?? 'Default description',
+            location: location,
+            model: data['model'] ?? '',
+            ownerId: user.id,
+            ownerEmail: user.email,
+            ownerName: user.fullName,
+            ownerAvatar: user.imageAvatarUrl,
+            price: (data['price'] as num?)?.toDouble() ?? 0.0,
+            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
+            available: data['available'] as bool? ?? true,
+            status: data['status'] as String? ?? 'pending',
+            type: data['type'] ?? 'car',
+          );
+          break;
+      }
+
+      final response = await ApiVehicleUpdate.updateVehicle(
+        this,
+        authService: authService,
+        vehicleId: vehicleId,
+        vehicle: vehicle,
+        images: imageFiles,
+      );
+
+      if (response.success && response.data != null) {
+        final index = _vehicles.indexWhere((v) => v.id == vehicleId);
+        if (index != -1) {
+          _vehicles[index] = response.data!;
+        } else {
+          _vehicles.add(response.data!);
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              response.message ?? 'Vehicle updated successfully!',
+            ),
+          ),
+        );
+      } else {
+        _handleAuthError(
+          response.message ?? 'Failed to update vehicle',
+          context,
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Error updating vehicle: $e');
+      _handleAuthError('Error updating vehicle: $e', context);
     } finally {
       _isLoadingVehicles = false;
       notifyListeners();

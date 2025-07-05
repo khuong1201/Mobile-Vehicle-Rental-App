@@ -19,6 +19,7 @@
     final TextInputType? keyboardType;
     final ValueChanged<String>? onChanged;
     final Widget? suffixIcon;
+    final int? maxline;
     
 
     const CustomTextField({
@@ -31,6 +32,7 @@
       this.keyboardType,
       this.onChanged,
       this.suffixIcon,
+      this.maxline
       
     });
 
@@ -44,6 +46,7 @@
     @override
     Widget build(BuildContext context) {
       return TextFormField(
+        maxLines: widget.maxline ?? 1,
         controller: widget.controller,
         keyboardType: widget.keyboardType ?? TextInputType.text,
         obscureText: widget.isPassword ? _obscurePassword : false,

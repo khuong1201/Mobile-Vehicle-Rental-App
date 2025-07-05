@@ -16,6 +16,7 @@ class ListVehicle extends StatefulWidget {
 class ListVehicleState extends State<ListVehicle> {
   String? userId;
   bool isLoading = true;
+  bool avaiable = true;
 
   Future<void> fetchData() async {
     final vehicleViewModel = context.read<VehicleViewModel>();
@@ -179,7 +180,7 @@ class ListVehicleState extends State<ListVehicle> {
                           ),
                           const SizedBox(width: 4),
                           SizedBox(
-                            width: 130,
+                            width: 135,
                             child: Text.rich(
                               TextSpan(
                                 text: 
@@ -207,7 +208,18 @@ class ListVehicleState extends State<ListVehicle> {
                               ),
                             ),
                           ),
-                          SizedBox(width: 4),
+                          SizedBox(width: 6),
+                          if(vehicle.status.toLowerCase() == 'available')
+                            Switch(
+                              value: avaiable,
+                              onChanged: (value) {
+                                setState(() {
+                                  avaiable = false;
+                                });
+                              },
+                              activeColor: Color(0xFF4CAF50),
+                              inactiveThumbColor: Color(0xFFD9D9D9)
+                            )
                         ],
                       ),
                     ],

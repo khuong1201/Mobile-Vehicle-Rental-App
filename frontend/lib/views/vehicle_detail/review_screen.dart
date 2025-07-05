@@ -28,7 +28,7 @@ class ReviewScreenState extends State<ReviewScreen> {
       vehicleId: widget.vehicle.id,
       page: 1,
       limit: 10,
-      clearBefore: true,
+      clearBefore: true
     );
   }
 
@@ -53,7 +53,7 @@ class ReviewScreenState extends State<ReviewScreen> {
                 children: [
                   Expanded(
                     child: CustomTextField(
-                      hintText: "Bình luận",
+                      hintText: "Comment",
                       controller: _comment,
                     ),
                   ),
@@ -76,7 +76,7 @@ class ReviewScreenState extends State<ReviewScreen> {
 
                           if (success) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Đánh giá đã được gửi thành công!')),
+                              const SnackBar(content: Text('Review submitted successfully!')),
                             );
                             _comment.clear();
                             await reviewViewModel.fetchReviews(
@@ -90,7 +90,7 @@ class ReviewScreenState extends State<ReviewScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                    'Lỗi: ${reviewViewModel.errorMessage ?? 'Không thể gửi đánh giá'}'),
+                                    'Error: ${reviewViewModel.errorMessage ?? 'Unable to submit review'}'),
                               ),
                             );
                           }
@@ -98,7 +98,7 @@ class ReviewScreenState extends State<ReviewScreen> {
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Vui lòng nhập bình luận trước khi gửi!'),
+                            content: Text('Please enter comment before submitting!'),
                           ),
                         );
                       }
@@ -111,10 +111,11 @@ class ReviewScreenState extends State<ReviewScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 30),
               reviewViewModel.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : reviewViewModel.reviews.isEmpty
-                      ? const Center(child: Text('Chưa có đánh giá nào.'))
+                      ? const Center(child: Text('There are no reviews yet.'))
                       : ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
@@ -222,7 +223,7 @@ class ReviewScreenState extends State<ReviewScreen> {
         return AlertDialog(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           title: const Text(
-            'Đánh giá',
+            'Reviews',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Inter',
@@ -257,7 +258,7 @@ class ReviewScreenState extends State<ReviewScreen> {
                 Navigator.of(context).pop();
               },
               child: const Text(
-                'Hủy',
+                'Cancel',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   color: Color(0xff1976D2),
@@ -271,7 +272,7 @@ class ReviewScreenState extends State<ReviewScreen> {
                 }
               },
               child: const Text(
-                'Đồng ý',
+                'Confirm',
                 style: TextStyle(
                   fontFamily: 'Inter',
                   color: Color(0xff1976D2),

@@ -280,6 +280,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
             CustomTextBodyL(title: 'Description'),
             const SizedBox(height: 8),
             CustomTextField(
+              maxline: 5,
               controller: _descriptionController,
               hintText: 'Description about your car',
               onChanged: (_) => _saveData(),

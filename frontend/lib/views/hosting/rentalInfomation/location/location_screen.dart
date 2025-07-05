@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/viewmodels/location/location_viewmodel.dart';
+import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:provider/provider.dart';
@@ -43,7 +44,7 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   void _goToNextPage() {
-    if (_pageController.page! < 2) {
+    if (_pageController.page! < 3) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -322,25 +323,48 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   Widget _buildDetailLocation(LocationViewModel vm){
+    final _formKey = GlobalKey<FormState>();
     return Column(
       children: [
-        CustomTextField(
-          controller: _detailLocationController,
-          hintText: 'Enter Floor / Apartment number and street name',
+        Form(
+          key:_formKey,
+          child: CustomTextField(
+            controller: _detailLocationController,
+            hintText: 'Enter Floor / Apartment number and street name',
+            validator:(value){
+              if(value == null || value.isEmpty){
+                return "please fill infomation";
+              }
+              return null;
+            }
+          ),
         ),
+        const SizedBox(height: 40,),
         CustomButton(title: 'Save',
+          width: double.infinity,
           onPressed: (){
-            final fullLocation = vm.getFullLocation().toString();
-            final detailAddress = _detailLocationController.text.trim();
-            final combinedAddress = detailAddress.isNotEmpty
-              ? '$detailAddress, $fullLocation'
-              : fullLocation;
-            final locationForVehicle = LocationForVehicle(
-              address: combinedAddress,
-              lat: 0.0,
-              lng: 0.0,
-            );
-            Navigator.pop(context, locationForVehicle);
+            if (_formKey.currentState!.validate()){
+              final fullLocation = vm.getFullLocation().toString();
+              final detailAddress = _detailLocationController.text.trim();
+              final combinedAddress = detailAddress.isNotEmpty
+                ? '$detailAddress, $fullLocation'
+                : fullLocation;
+              final locationForVehicle = LocationForVehicle(
+                address: combinedAddress,
+                lat: 0.0,
+                lng: 0.0,
+              );
+              Navigator.pop(context, locationForVehicle);
+            } else{
+              showDialog(
+                context: context,
+                builder: (context) => CustomAlertDialog(
+                  title: 'Error', 
+                  content: 'Please fill all infomation',
+                  buttonText: 'OK',
+                ),
+              );
+            }
           },
         )
       ],

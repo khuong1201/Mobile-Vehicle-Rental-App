@@ -9,7 +9,7 @@ import 'package:frontend/models/vehicles/coach.dart';
 import 'package:frontend/models/vehicles/bike.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 
-class ApiVehicleService {
+class ApiVehicleUpdate {
   static Future<ApiResponse<Vehicle>> updateVehicle<T extends ChangeNotifier>(
     T viewModel, {
     required AuthService authService,

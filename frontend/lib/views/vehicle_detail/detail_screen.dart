@@ -300,7 +300,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
       infoItems = [
         {
           'title': 'Transmission',
-          'subtitle': 'Automatic', 
+          'subtitle': vehicle.transmission, 
           'icon': 'assets/images/vehicle_detail/Vector (8).svg',
         },
         {
@@ -346,7 +346,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
       infoItems = [
         {
           'title': 'Transmission',
-          'subtitle': 'Automatic', 
+          'subtitle': vehicle.transmission, 
           'icon': 'assets/images/vehicle_detail/Vector (8).svg',
         },
         {
@@ -368,8 +368,8 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     } else if (vehicle is Bike) {
       infoItems = [
         { 
-          'title': 'Type',
-          'subtitle': vehicle.typeOfBike,
+          'title': 'Transmission',
+          'subtitle': 'None',
           'icon': 'assets/images/vehicle_detail/Vector (8).svg',
         },
         {

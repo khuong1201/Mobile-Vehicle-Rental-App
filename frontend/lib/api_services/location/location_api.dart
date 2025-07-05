@@ -151,7 +151,7 @@ class LocationApi {
   }) async {
     try {
       final response = await request();
-      print('URL: ${response.request?.url}, Status Code: ${response.statusCode}, Response: ${response.body}');
+      // print('URL: ${response.request?.url}, Status Code: ${response.statusCode}, Response: ${response.body}');
 
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
