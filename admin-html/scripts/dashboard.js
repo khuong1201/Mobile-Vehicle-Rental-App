@@ -1,5 +1,5 @@
-// const API_BASE = "https://mobile-vehicle-rental-app.onrender.com/api";
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "https://mobile-vehicle-rental-app.onrender.com/api";
+// const API_BASE = "http://localhost:5000/api";
 const DOM = {
   error: document.getElementById("error"),
   totalUsers: document.getElementById("totalUsers"),

@@ -1,4 +1,5 @@
 const authService = require('../../services/auth_service');
+const AppError = require('../../utils/app_error');
 const Register = async (req, res, next) => {
     try {
         const { email, password, fullName } = req.body;
