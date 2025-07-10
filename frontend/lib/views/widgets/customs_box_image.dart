@@ -27,6 +27,7 @@ class CustomBoxImage extends StatelessWidget {
     return GestureDetector(
       onTap: onPickImage,
       child: Container(
+        height: 150,
         decoration: BoxDecoration(
           color: const Color(0xffDDDFE2),
           borderRadius: BorderRadius.circular(8),

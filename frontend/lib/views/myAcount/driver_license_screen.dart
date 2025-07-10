@@ -36,28 +36,6 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
     'License (expire)',
   ];
 
-  String? convertLicenseType(String rawType) {
-    switch (rawType) {
-      case 'LICENSE_EXPIRE':
-        return 'License (expire)';
-      case 'LICENSE_NO_EXPIRE':
-        return 'License (does not expire)';
-      default:
-        return null;
-    }
-  }
-
-  String convertToApiType(String type) {
-    switch (type) {
-      case 'License (expire)':
-        return 'LICENSE_EXPIRE';
-      case 'License (does not expire)':
-        return 'LICENSE_NO_EXPIRE';
-      default:
-        return '';
-    }
-  }
-
   final ImagePicker _picker = ImagePicker();
   XFile? _frontViewPicture;
   XFile? _backViewPicture;
@@ -86,7 +64,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
     if (license != null) {
       _licenseNumberController.text = license.licenseNumber;
       _classController.text = license.classLicense;
-      _slectedTypeDriver = convertLicenseType(license.typeDriverLicense);
+      _slectedTypeDriver = license.typeDriverLicense;
       
 
     }
@@ -190,11 +168,28 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
           title: isEditMode ? 'Update' : 'Create',
           onPressed: () async {
             if (_formKey.currentState?.validate() ?? false) {
-              if (_frontViewPicture != null && _backViewPicture != null) {
-                final result = await userLincenseVM.updateDriverLicense(
-                  typeOfDriverLicense: convertToApiType(_slectedTypeDriver!),
-                  classLicense: _classController.text,
-                  licenseNumber: _licenseNumberController.text,
+              final type =_slectedTypeDriver!;
+              final classLicense = _classController.text;
+              final licenseNumber = _licenseNumberController.text;
+
+              // Nếu là tạo mới
+              if (widget.license == null) {
+                if (_frontViewPicture == null || _backViewPicture == null) {
+                  await showDialog(
+                    context: context,
+                    builder: (context) => CustomAlertDialog(
+                      title: 'Missing image',
+                      content: 'Please upload both front and back images.',
+                      buttonText: 'OK',
+                    ),
+                  );
+                  return;
+                }
+
+                final result = await userLincenseVM.createDriverLicense(
+                  typeOfDriverLicense: type,
+                  classLicense: classLicense,
+                  licenseNumber: licenseNumber,
                   frontImage: File(_frontViewPicture!.path),
                   backImage: File(_backViewPicture!.path),
                 );
@@ -204,7 +199,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                     context: context,
                     builder: (context) => CustomAlertDialog(
                       title: 'Success',
-                      content: "Driver's license saved successfully",
+                      content: "Driver's license created successfully.",
                       buttonText: 'OK',
                       onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
                     ),
@@ -214,14 +209,45 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                     context: context,
                     builder: (context) => CustomAlertDialog(
                       title: 'Error',
-                      content: "Failed to save driver's license",
+                      content: "Failed to create driver's license.",
+                      buttonText: 'OK',
+                    ),
+                  );
+                }
+              }
+              // Nếu là cập nhật
+              else {
+                final result = await userLincenseVM.updateDriverLicense(
+                  typeOfDriverLicense: type,
+                  classLicense: classLicense,
+                  licenseNumber: licenseNumber,
+                  frontImage: _frontViewPicture != null ? File(_frontViewPicture!.path) : null,
+                  backImage: _backViewPicture != null ? File(_backViewPicture!.path) : null,
+                );
+
+                if (result) {
+                  await showDialog(
+                    context: context,
+                    builder: (context) => CustomAlertDialog(
+                      title: 'Success',
+                      content: "Driver's license updated successfully.",
+                      buttonText: 'OK',
+                      onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
+                    ),
+                  );
+                } else {
+                  await showDialog(
+                    context: context,
+                    builder: (context) => CustomAlertDialog(
+                      title: 'Error',
+                      content: "Failed to update driver's license.",
                       buttonText: 'OK',
                     ),
                   );
                 }
               }
             }
-          },
+          }
         ),
       ),
     );

@@ -4,7 +4,6 @@ const { getTaxRateByOwner } = require("../../services/user_revenue_service");
 const AppError = require("../../utils/app_error");
 const convertDate = require("../../utils/convert_date");
 
-
 const GetMonthlyBookings = async (req, res, next) => {
   try {
     const now = new Date();
@@ -62,7 +61,14 @@ const createBooking = async (req, res, next) => {
       !pickupLocation ||
       !dropoffLocation ||
       !basePrice
-    ) return next(new AppError("Missing required booking fields", 400, "MISSING_BOOKING_FIELDS"));
+    )
+      return next(
+        new AppError(
+          "Missing required booking fields",
+          400,
+          "MISSING_BOOKING_FIELDS"
+        )
+      );
     const renter = await User.findById(renterId).select("license");
     if (!renter || !renter.license) {
       return res
@@ -70,7 +76,14 @@ const createBooking = async (req, res, next) => {
         .json({ message: "Người thuê không có thông tin bằng lái xe." });
     }
     const approvedLicense = renter.license.find((l) => l.status === "approved");
-    if (!approvedLicense)  return next(new AppError("Người thuê không có thông tin bằng lái xe", 403, "LICENSE_REQUIRED"));
+    if (!approvedLicense)
+      return next(
+        new AppError(
+          "Người thuê không có thông tin bằng lái xe",
+          403,
+          "LICENSE_REQUIRED"
+        )
+      );
 
     const pickupDateTime = new Date(`${convertDate(pickupDate)}T${pickupTime}`);
     const dropoffDateTime = new Date(
@@ -87,7 +100,28 @@ const createBooking = async (req, res, next) => {
     const taxRate = await getTaxRateByOwner(ownerId, month, year);
     const taxAmount = parsedBasePrice * taxRate;
     const totalPrice = parsedBasePrice + taxAmount;
-    
+    // Trước khi tạo booking mới
+    const existingBooking = await Booking.findOne({
+      vehicleId,
+      status: { $in: ["pending", "approved"] },
+      $or: [
+        {
+          pickupDate: { $lte: dropoffDateTime },
+          dropoffDate: { $gte: pickupDateTime },
+        },
+      ],
+    });
+
+    if (existingBooking) {
+      return next(
+        new AppError(
+          "Đã có đơn đặt xe trùng thời gian đang chờ xử lý hoặc đã được duyệt.",
+          409,
+          "DUPLICATE_BOOKING"
+        )
+      );
+    }
+
     const booking = new Booking({
       vehicleId,
       renterId,
@@ -103,7 +137,7 @@ const createBooking = async (req, res, next) => {
       taxRate,
       taxAmount,
       totalPrice,
-      totalRentalDays, 
+      totalRentalDays,
     });
 
     await booking.save();
@@ -122,7 +156,8 @@ const getBookingsByOwner = async (req, res, next) => {
   try {
     await checkExpiredBookings();
     const { ownerId } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(ownerId)) return next(new AppError("Invalid owner ID", 400, "INVALID_OWNER_ID"));
+    if (!mongoose.Types.ObjectId.isValid(ownerId))
+      return next(new AppError("Invalid owner ID", 400, "INVALID_OWNER_ID"));
     const bookings = await Booking.find({ ownerId })
       .populate("renterId", "_id fullName email")
       .populate("vehicleId");
@@ -136,7 +171,8 @@ const getBookingsByRenter = async (req, res, next) => {
   try {
     await checkExpiredBookings();
     const { renterId } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(renterId)) return next(new AppError("Invalid renter ID", 400, "INVALID_RENTER_ID"));
+    if (!mongoose.Types.ObjectId.isValid(renterId))
+      return next(new AppError("Invalid renter ID", 400, "INVALID_RENTER_ID"));
     const bookings = await Booking.find({ renterId })
       .populate("vehicleId")
       .populate("ownerId", "_id fullName email");

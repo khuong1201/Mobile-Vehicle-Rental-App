@@ -20,6 +20,17 @@ const createVietinBankPayment = async (req, res, next) => {
       if (!booking) {
         return next(new AppError("Không tìm thấy booking", 404, "BOOKING_NOT_FOUND"));
       }
+      const existingPayment = await Payment.findOne({
+        bookingId: _id,
+        provider: "Viettin",
+        status: { $in: ["pending", "success"] },
+      });
+      if (existingPayment) {
+        return res.status(200).json({
+          message: "Đã tồn tại thanh toán VietinBank",
+          paymentId: existingPayment.paymentId,
+        });
+      }
   
       const requestId = "VTB" + Date.now();
   
@@ -28,17 +39,17 @@ const createVietinBankPayment = async (req, res, next) => {
         bookingId: booking._id,
         renterId: booking.renterId,
         amount,
-        provider: "VietinBank",
+        provider: "Viettin",
         status: "pending",
         responseData: {
           resultCode: 0,
-          message: "Tạo thanh toán VietinBank (offline/mock)",
+          message: "Tạo thanh toán VietinBank ",
           orderInfo,
         },
       });
   
       await payment.save();
-  
+      console.log("✅ Tạo thanh toán VietinBank thành công:", payment);
       return res.status(200).json({
         message: "Tạo thanh toán VietinBank thành công",
         paymentId: requestId,
@@ -51,8 +62,8 @@ const createVietinBankPayment = async (req, res, next) => {
   const handleVietinBankIPN = async (req, res, next) => {
     try {
       const {
-        paymentId,     // requestId hoặc mã giao dịch của VietinBank
-        resultCode,    // 0: thành công, khác 0: thất bại
+        paymentId,     
+        resultCode,    
         message = "",
       } = req.body;
   

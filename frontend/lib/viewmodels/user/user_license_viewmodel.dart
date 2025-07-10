@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/client/api_reponse.dart';
+import 'package:frontend/api_services/user/create_license.dart';
+import 'package:frontend/api_services/user/delete_license.dart';
 import 'package:frontend/api_services/user/get_user_profile.dart';
 import 'package:frontend/api_services/user/update_license.dart';
 import 'package:frontend/models/user/userLicense.dart';
@@ -16,12 +18,56 @@ class UserLicenseViewModel extends ChangeNotifier {
 
   UserLicenseViewModel({required this.authService});
 
-  Future<bool> updateDriverLicense({
+  Future<bool> createDriverLicense({
     required String typeOfDriverLicense,
     required String classLicense,
     required String licenseNumber,
     required File frontImage,
     required File backImage,
+  }) async {
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await createDriverLicenseApi(
+        viewModel: this,
+        authService: authService,
+        typeOfDriverLicense: typeOfDriverLicense,
+        classLicense: classLicense,
+        licenseNumber: licenseNumber,
+        frontImage: File(frontImage.path),
+        backImage: File(backImage.path),
+      );
+
+      lastResponse = response;
+
+      if (response.success) {
+        await loadUserLicenseFromProfile();
+        isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        errorMessage = response.message;
+        isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      errorMessage = 'Unexpected error: $e';
+      isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+
+  Future<bool> updateDriverLicense({
+    required String typeOfDriverLicense,
+    required String classLicense,
+    required String licenseNumber,
+    File? frontImage,
+    File? backImage,
   }) async {
     isLoading = true;
     errorMessage = null;
@@ -34,8 +80,8 @@ class UserLicenseViewModel extends ChangeNotifier {
         typeOfDriverLicense: typeOfDriverLicense,
         classLicense: classLicense,
         licenseNumber: licenseNumber,
-        frontImage: File(frontImage.path),
-        backImage: File(backImage.path),
+        frontImage: frontImage,
+        backImage: backImage,
       );
 
       lastResponse = response;
@@ -58,6 +104,41 @@ class UserLicenseViewModel extends ChangeNotifier {
     }
   }
   
+  Future<bool> deleteDriverLicense({
+    required String licenseId,
+  }) async {
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await deleteDriverLicenseApi(
+        viewModel: this,
+        authService: authService,
+        licenseId: licenseId,
+      );
+
+      lastResponse = response;
+
+      if (response.success) {
+        await loadUserLicenseFromProfile(); // Cập nhật danh sách mới
+        isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        errorMessage = response.message;
+        isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      errorMessage = 'Unexpected error: $e';
+      isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<void> loadUserLicenseFromProfile() async {
     isLoading = true;
     notifyListeners();

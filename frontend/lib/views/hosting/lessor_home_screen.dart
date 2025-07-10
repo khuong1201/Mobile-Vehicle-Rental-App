@@ -61,7 +61,7 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
               crossAxisCount: 2,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              childAspectRatio: 2,
+              childAspectRatio: 3,
               children: navItems
                   .where((item) => item['label'] != 'All')
                   .map(
@@ -159,7 +159,9 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
                       const SizedBox(height: 14),
                       SizedBox(
                         height: 40,
-                        child: ListView.builder(
+                        child: 
+                        
+                        ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: navItems.length,
                           itemBuilder: (context, index) {

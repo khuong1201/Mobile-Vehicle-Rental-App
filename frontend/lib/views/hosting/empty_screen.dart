@@ -12,7 +12,7 @@ class EmptyScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Image.asset(
-            'frontend/assets/images/hosting/Lessorhome/empty.png',
+            'assets/images/hosting/Lessorhome/empty.png',
             width: 350,
             height: 250,
           ),
