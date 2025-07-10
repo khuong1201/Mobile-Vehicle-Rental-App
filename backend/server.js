@@ -23,7 +23,11 @@ const { checkExpiredBookings }  = require('./controllers/booking/booking_control
 const { connectDB } = require("./config/database");
 const { initializePassport } = require("./config/passport");
 const initDB = require("./init_db");
-const { cleanupUnverifiedUsers } = require('./services/auth_service');
+const {
+  cleanupUnverifiedUsers,
+  cleanupExpiredPendingBookings,
+  cleanupExpiredPendingPayments
+} = require('./services/cleanupdatabase');
 const cookieParser = require('cookie-parser');
 
 const app = express();
@@ -105,6 +109,22 @@ const startServer = async () => {
             console.log('✅ Cron chạy xong lúc', new Date().toLocaleString());
           } catch (err) {
             console.error('❌ Lỗi khi chạy cron:', err);
+          }
+        });
+        cron.schedule('0 * * * *', async () => {
+          try {
+            await cleanupExpiredPendingPayments();
+            console.log('✅ [1 giờ] cleanup payment pending:', new Date().toLocaleString());
+          } catch (err) {
+            console.error('❌ Lỗi cron 1 giờ:', err);
+          }
+        });
+        cron.schedule('0 2 * * *', async () => {
+          try {
+            await cleanupExpiredPendingBookings();
+            console.log('✅ [Hàng ngày] cleanup booking pending:', new Date().toLocaleString());
+          } catch (err) {
+            console.error('❌ Lỗi cron hàng ngày:', err);
           }
         });
         app.listen(PORT,'0.0.0.0', () => console.log(`Server đang chạy trên cổng ${PORT}`));

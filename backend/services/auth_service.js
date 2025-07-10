@@ -274,44 +274,6 @@ const resetPassword = async ({ email, otp, newPassword }) => {
   return { message: "Password reset successfully" };
 };
 
-const cleanupUnverifiedUsers = async () => {
-  try {
-    const currentTime = new Date();
-    const expiredUsers = await User.find({
-      verified: false,
-      otpExpires: { $lt: currentTime },
-      otp: { $exists: true, $ne: null },
-    }).select("email otp otpExpires");
-
-    if (expiredUsers.length > 0) {
-      console.log(
-        `Tìm thấy ${expiredUsers.length} người dùng không được xác minh với OTP hết hạn:`,
-        expiredUsers.map((u) => ({
-          email: u.email,
-          otp: u.otp,
-          otpExpires: u.otpExpires,
-        }))
-      );
-
-      const result = await User.deleteMany({
-        verified: false,
-        otpExpires: { $lt: currentTime },
-        otp: { $exists: true, $ne: null },
-      });
-      console.log(
-        `Đã xóa ${result.deletedCount} người dùng không được xác minh với OTP hết hạn`
-      );
-    } else {
-      console.log("Không tìm thấy người dùng nào với OTP hết hạn để xóa.");
-    }
-  } catch (err) {
-    console.error(
-      "Lỗi khi dọn dẹp người dùng không được xác minh:",
-      err.message
-    );
-  }
-};
-
 module.exports = {
   registerUser,
   loginUser,
@@ -322,5 +284,4 @@ module.exports = {
   logoutUser,
   requestPasswordReset,
   resetPassword,
-  cleanupUnverifiedUsers,
 };
