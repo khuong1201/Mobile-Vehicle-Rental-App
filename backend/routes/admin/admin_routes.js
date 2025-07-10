@@ -20,6 +20,7 @@ router.get('/get-admin-profile', authenticateWeb, adminMiddleware, adminControll
 router.get("/all-vehicles", authenticateWeb, adminMiddleware, vehicleController.GetAllVehiclesForAdmin);
 router.put("/status/:id", authenticateWeb, adminMiddleware, vehicleController.ChangeVehicleStatus);
 router.get("/pending", authenticateWeb, adminMiddleware, vehicleController.GetVehiclePending);
+router.delete("/delete-vehicle/:id", authenticateWeb, adminMiddleware, vehicleController.DeleteVehicle);
 
 router.get('/get-all-brands', brandController.GetAllBrands);
 router.post('/create-brand', authenticateWeb, adminMiddleware, brandController.CreateBrand);

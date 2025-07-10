@@ -184,27 +184,86 @@ async function getPendingVehicles() {
     data.vehicles.forEach(v => {
       const tr = document.createElement("tr");
       tr.className = "border-b hover:bg-gray-100";
+
+      // Tạo từng cột bằng DOM thay vì innerHTML cho ảnh
       tr.innerHTML = `
         <td class="py-3 px-6">${v.vehicleName}</td>
         <td class="py-3 px-6">${v.licensePlate}</td>
         <td class="py-3 px-6">${v.brand}</td>
         <td class="py-3 px-6">${v.price.toLocaleString()} VND</td>
-        <td class="py-3 px-6">
-          ${v.images?.length
-            ? `<button onclick="openImageModal(${JSON.stringify(v.images)})" class="text-blue-600 underline hover:text-blue-800">Xem ${v.images.length} ảnh</button>`
-            : "Không có ảnh"}
-        </td>
+        <td class="py-3 px-6" id="img-col"></td>
         <td class="py-3 px-6">${v.status}</td>
         <td class="py-3 px-6 flex gap-2">
           <button onclick="approveVehicle('${v.vehicleId}')" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">Duyệt</button>
           <button onclick="rejectVehicle('${v.vehicleId}')" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Từ chối</button>
         </td>
       `;
+
+      // Gán sự kiện xem ảnh đúng cách
+      const imgTd = tr.querySelector("#img-col");
+      if (v.images?.length) {
+        const btn = document.createElement("button");
+        btn.textContent = `Xem ${v.images.length} ảnh`;
+        btn.className = "text-blue-600 underline hover:text-blue-800";
+        btn.addEventListener("click", () => openImageModal(v.images));
+        imgTd.appendChild(btn);
+      } else {
+        imgTd.textContent = "Không có ảnh";
+      }
+
       DOM.vehicleList.appendChild(tr);
     });
   }
 }
 
+async function getAllVehicles() {
+  if (!DOM.vehicleList) return;
+  DOM.vehicleList.innerHTML = "";
+
+  const data = await callApi("/admin/all-vehicles");
+  if (data?.vehicles) {
+    data.vehicles.forEach(v => {
+      const tr = document.createElement("tr");
+      tr.className = "border-b hover:bg-gray-100";
+
+      tr.innerHTML = `
+        <td class="py-3 px-6">${v.vehicleName}</td>
+        <td class="py-3 px-6">${v.licensePlate}</td>
+        <td class="py-3 px-6">${v.brand}</td>
+        <td class="py-3 px-6">${v.price.toLocaleString()} VND</td>
+        <td class="py-3 px-6" id="img-col"></td>
+        <td class="py-3 px-6">${v.status}</td>
+        <td class="py-3 px-6 flex gap-2">
+          <button onclick="deleteVehicle('${v.vehicleId}')" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Xóa</button>
+        </td>
+      `;
+
+      const imgTd = tr.querySelector("#img-col");
+      if (v.images?.length) {
+        const btn = document.createElement("button");
+        btn.textContent = `Xem ${v.images.length} ảnh`;
+        btn.className = "text-blue-600 underline hover:text-blue-800";
+        btn.addEventListener("click", () => openImageModal(v.images));
+        imgTd.appendChild(btn);
+      } else {
+        imgTd.textContent = "Không có ảnh";
+      }
+
+      DOM.vehicleList.appendChild(tr);
+    });
+  }
+}
+
+async function deleteVehicle(vehicleId) {
+  if (!confirm("Bạn có chắc muốn xóa xe này?")) return;
+  const data = await callApi(`/admin/delete-vehicle/${vehicleId}`, "DELETE");
+  if (data?.success) {
+    alert("Xóa xe thành công!");
+    await getAllVehicles();
+  } else {
+    alert("Xóa thất bại.");
+  }
+}
 async function approveVehicle(vehicleId) {
   const data = await callApi(`/admin/status/${vehicleId}`, "PUT", { status: "approved" });
   if (data) {
@@ -350,9 +409,7 @@ function refreshUsers() {
 function refreshPendingLicenses() {
   getPendingUsers();
 }
-function refreshPendingVehicles() {
-  getPendingVehicles();
-}
+
 function refreshBrands() {
   getAllBrands();
 }
@@ -369,6 +426,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (DOM.vehicleList) getPendingVehicles();
   if (DOM.brandList) getAllBrands();
   if (DOM.reportList) getReviewReports();
+  
 });
 
 // Expose functions to global scope for inline event handlers
@@ -382,3 +440,5 @@ window.deleteBrand = deleteBrand;
 window.deleteReview = deleteReview;
 window.openImageModal = openImageModal;
 window.closeImageModal = closeImageModal;
+window.getAllVehicles = getAllVehicles;
+window.deleteVehicle = deleteVehicle;

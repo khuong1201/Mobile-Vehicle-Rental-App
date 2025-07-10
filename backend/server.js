@@ -34,7 +34,7 @@ const app = express();
 app.set('trust proxy', 1);
 console.log("🌱 NODE_ENV:", process.env.NODE_ENV);
 const allowedOrigins = process.env.NODE_ENV === "production"
-  ? ['https://mobile-vehicle-rental-app.onrender.com', 'http://127.0.0.1:5500']
+  ? ['https://mobile-vehicle-rental-app.onrender.com', 'http://127.0.0.1:5500','http://127.0.0.1:52515']
   : ['http://localhost:5500', 'http://127.0.0.1:5500', 'https://mobile-vehicle-rental-app.onrender.com'];
 
 const corsOptions = {
