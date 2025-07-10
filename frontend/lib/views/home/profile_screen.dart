@@ -5,8 +5,8 @@ import 'package:frontend/viewmodels/auth/auth_service.dart';
 import 'package:frontend/viewmodels/user/role_viewmodel.dart';
 import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
 import 'package:frontend/views/address/address_screen.dart';
-import 'package:frontend/views/myAcount/driver_license_screen.dart';
 import 'package:frontend/views/myAcount/infomation_screen.dart';
+import 'package:frontend/views/myAcount/list_license_screen.dart';
 import 'package:frontend/views/widgets/custom_text_body_l.dart';
 import 'package:provider/provider.dart';
 import '/views/hosting/start_screen.dart';
@@ -103,7 +103,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                         'assets/images/homePage/profile/Driver_license.svg',
                         "Driver's license",
                         hasBorder: true,
-                        destination: DriverLicenseScreen(),
+                        destination: DriverLicenseListScreen(),
                       ),
                       _buildInkwellButton(
                         context,

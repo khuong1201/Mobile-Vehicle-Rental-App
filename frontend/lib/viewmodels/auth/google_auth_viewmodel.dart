@@ -66,6 +66,7 @@ class GAuthViewModel extends ChangeNotifier {
 
   Future<void> signOut() async {
     try {
+      await _googleSignIn.disconnect();
       await _googleSignIn.signOut();
       await UserSecureStorage.clearAll();
       user = null;

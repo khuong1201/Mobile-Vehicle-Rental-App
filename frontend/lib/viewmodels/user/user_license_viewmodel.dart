@@ -1,11 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/client/api_reponse.dart';
+import 'package:frontend/api_services/user/get_user_profile.dart';
 import 'package:frontend/api_services/user/update_license.dart';
+import 'package:frontend/models/user/userLicense.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 
 class UserLicenseViewModel extends ChangeNotifier {
   final AuthService authService;
+  UserLicense? userLicense;
+  List<UserLicense> licenses = [];
   bool isLoading = false;
   String? errorMessage;
   ApiResponse? lastResponse;
@@ -51,6 +55,49 @@ class UserLicenseViewModel extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
       return false;
+    }
+  }
+  
+  Future<void> loadUserLicenseFromProfile() async {
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      final response = await getUserProfileApi(
+        viewModel: this,
+        authService: authService,
+      );
+
+      if (response.success && response.data != null) {
+        final userData = response.data;
+        final licenseList = userData['license'] as List?;
+        debugPrint("📋 License data: $licenseList");
+        if (licenseList != null && licenseList.isNotEmpty) {
+          // ✅ Gán danh sách
+          licenses = licenseList.map((json) => UserLicense.fromJson(json)).toList();
+
+          // ✅ Gán bằng lái đầu tiên nếu cần
+          userLicense = licenses.first;
+
+          debugPrint("✅ License loaded: ${userLicense?.licenseNumber}");
+          debugPrint("📋 Tổng số license: ${licenses.length}");
+        } else {
+          debugPrint("⚠️ No license found in response");
+          userLicense = null;
+          licenses = [];
+        }
+      } else {
+        errorMessage = response.message;
+        userLicense = null;
+        licenses = [];
+      }
+    } catch (e) {
+      errorMessage = 'Unexpected error: $e';
+      userLicense = null;
+      licenses = [];
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
   }
 }

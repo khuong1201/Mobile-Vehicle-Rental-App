@@ -8,6 +8,7 @@ class CustomBoxImage extends StatelessWidget {
   final XFile? image;
   final VoidCallback? onPickImage;
   final String? Function(XFile?)? validator;
+  final String? imageUrl;
 
   const CustomBoxImage({
     super.key,
@@ -16,6 +17,7 @@ class CustomBoxImage extends StatelessWidget {
     required this.image,
     this.onPickImage,
     this.validator,
+    this.imageUrl,
   });
 
   @override
@@ -25,8 +27,6 @@ class CustomBoxImage extends StatelessWidget {
     return GestureDetector(
       onTap: onPickImage,
       child: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         decoration: BoxDecoration(
           color: const Color(0xffDDDFE2),
           borderRadius: BorderRadius.circular(8),
@@ -35,14 +35,8 @@ class CustomBoxImage extends StatelessWidget {
             width: 2,
           ),
         ),
-        child: image == null
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(Icons.camera_alt_outlined, color: Color(0xFF555658), size: 24),
-                ],
-              )
-            : FutureBuilder<bool>(
+        child: image != null
+            ? FutureBuilder<bool>(
                 future: File(image!.path).exists(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -53,13 +47,30 @@ class CustomBoxImage extends StatelessWidget {
                       File(image!.path),
                       height: 80,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
+                      errorBuilder: (_, __, ___) =>
                           const Icon(Icons.error, color: Colors.red),
                     );
                   }
                   return const Icon(Icons.error, color: Colors.red);
                 },
-              ),
+              )
+            : (imageUrl != null && imageUrl!.isNotEmpty)
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      imageUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) =>
+                          const Icon(Icons.error, color: Colors.red),
+                    ),
+                )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.camera_alt_outlined,
+                          color: Color(0xFF555658), size: 24),
+                    ],
+                  ),
       ),
     );
   }

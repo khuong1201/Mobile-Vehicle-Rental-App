@@ -474,7 +474,7 @@ class _BookingScreenState extends State<BookingScreen> {
                         builder:
                             (context) => ReviewSummaryScreen(
                               vehicle: widget.vehicle,
-                              bookingData: updatedBookingData!,
+                              bookingData: updatedBookingData,
                             ),
                       ),
                     );
