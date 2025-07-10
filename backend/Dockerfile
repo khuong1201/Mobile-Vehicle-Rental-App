@@ -1,29 +1,33 @@
-# Bước 1: Dùng image tối ưu để build app
+# -----------------------
+# 🔨 BƯỚC 1: Build app
+# -----------------------
 FROM node:18-alpine AS builder
 
 # Tạo thư mục làm việc
 WORKDIR /app
 
-# Copy file cấu hình
+# Copy file cấu hình trước để tận dụng cache
 COPY package*.json ./
 
-# Cài production dependencies
-RUN npm ci --only=production
+# Cài dependencies (cả dev và prod để tránh lỗi thiếu module khi build)
+RUN npm install
 
-# Copy toàn bộ source code
+# Copy toàn bộ source vào container
 COPY . .
 
-# Bước 2: Dùng image tối giản để chạy app
+# -----------------------------
+# 🚀 BƯỚC 2: Image tối giản để chạy
+# -----------------------------
 FROM node:18-alpine
 
 # Tạo thư mục chạy app
 WORKDIR /app
 
-# Copy app từ builder stage
+# Copy code đã cài sẵn module từ builder
 COPY --from=builder /app ./
 
-# Mở port app
+# Chỉ định cổng chạy (tuỳ thuộc app bạn chạy port nào, 5000?)
 EXPOSE 5000
 
-# Chạy app
+# Lệnh khởi chạy server
 CMD ["node", "server.js"]
