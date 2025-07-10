@@ -15,16 +15,24 @@ router.post('/change-password', authenticateToken, userController.ChangePassword
 router.put('/update-personal-info', authenticateToken, userProfileController.UpdatePersonalInfo);
 router.get('/get-user-profile', authenticateToken, userProfileController.GetUserProfile);
 router.put('/update-role', authenticateToken, userUpdateRoleController.UpdateUserRole);
-router.delete(
-    '/delete-license',
-    authenticateToken,
-    userLicenseController.DeleteDriverLicense
-  );
 router.post(
-    '/update-license',
-    authenticateToken,
-    uploadUserLicense,
-    userLicenseController.UpdateDriverLicense
+  '/create-license',
+  authenticateToken,
+  uploadUserLicense,
+  userLicenseController.CreateDriverLicense
+);
+
+router.put(
+  '/update-license',
+  authenticateToken,
+  uploadUserLicense,
+  userLicenseController.UpdateDriverLicense
+);
+
+router.delete(
+  '/delete-license',
+  authenticateToken,
+  userLicenseController.DeleteDriverLicense
 );
 
 router.get('/get-Address', authenticateToken, userAddressController.GetAddresses);

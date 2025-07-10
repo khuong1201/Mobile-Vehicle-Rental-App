@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/api_services/payment/momo_api.dart';
+import 'package:frontend/api_services/payment/vietin_api.dart';
+import 'package:frontend/api_services/payment/viettin_api_IPN.dart';
 import 'package:frontend/models/momo_payment.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
+import 'package:frontend/models/viettin_payment.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 import 'package:frontend/viewmodels/booking/booking_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
@@ -460,6 +463,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                   );
 
                   if (response.success && response.data != null) {
+                    
                     final momo = response.data as MomoPayment;
                     final Uri momoUri = Uri.parse(momo.payUrl);
 
@@ -485,6 +489,55 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                         ),
                       ),
                     );
+                  }
+                } else if (bookingVM.selectedPaymentMethod == 'VTB') {
+                  final response = await PaymentViettinApi.createViettinPayment(
+                    viewModel: bookingVM,
+                    apiAuthService: authService,
+                    paymentData: {
+                      "bookingId": widget.bookingData['bookingId'],
+                      "amount": bookingVM.totalPrice ?? 0,
+                      "orderInfo": "Thanh toán thuê xe",
+                    },
+                  );
+                  
+                  if (response.success && response.data != null) {
+                    debugPrint(
+                      'Viettin payment created successfully; response: ${response.data}',
+                    );
+                    final viettin = response.data as ViettinPayment;
+                    final ipnResponse =
+                        await PaymentViettinApiIPN.viettinpayment(
+                          viewModel: bookingVM,
+                          apiAuthService: authService,
+                          paymentData: {
+                            "paymentId": viettin.paymentId,
+                            "resultCode": 0,
+                            "message": "Thanh toán giả định thành công",
+                          },
+                        );
+
+                    if (ipnResponse.success) {
+                      debugPrint(
+                        'IPN processed successfully; response: ${ipnResponse.data}',
+                      );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) =>
+                                  Confirmationscreen(vehicle: widget.vehicle),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            ipnResponse.message ?? 'Lỗi khi xử lý IPN',
+                          ),
+                        ),
+                      );
+                    }
                   }
                 } else {
                   Navigator.push(

@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const MongoStore = require("connect-mongo");
 const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
@@ -16,6 +17,7 @@ const reviewRoutes = require("./routes/review/review_routes");
 const adminRoutes = require("./routes/admin/admin_routes");
 const bookingRoutes = require("./routes/booking/booking_routes");
 const momoRoutes = require("./routes/payment/momo_routes");
+const viettinRoutes = require("./routes/payment/viettin_routes");
 const errorHandler = require("./middlewares/error_handler");
 const { checkExpiredBookings }  = require('./controllers/booking/booking_controller');
 const { connectDB } = require("./config/database");
@@ -49,16 +51,22 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use(
-    session({
-        secret: process.env.SESSION_SECRET || "your_session_secret",
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            secure: false, 
-            httpOnly: true,
-            sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-          }
-    })
+  session({
+    secret: process.env.SESSION_SECRET || "your_session_secret",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      collectionName: "sessions",
+      ttl: 24 * 60 * 60, 
+    }),
+    cookie: {
+      secure: process.env.NODE_ENV === "production", 
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      maxAge: 24 * 60 * 60 * 1000, 
+    },
+  })
 );
 app.use(passport.session());
 app.use(passport.initialize());
@@ -78,7 +86,7 @@ app.use('/api/google', googleMapsRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/bookings', bookingRoutes);
-app.use('/api/payment', momoRoutes);
+app.use('/api/payment', momoRoutes, viettinRoutes);
 
 app.use(errorHandler);
 // Initialize Passport
