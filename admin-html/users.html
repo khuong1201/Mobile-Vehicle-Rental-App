@@ -15,10 +15,9 @@
     <!-- Main Content -->
     <main class="flex-1 p-6 overflow-y-auto">
       <h1 class="text-3xl font-bold mb-6">Quản lý người dùng & GPLX</h1>
-
+      <button onclick="refreshUsers()" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 mb-2">Làm mới người dùng</button>
       <!-- Thông báo lỗi -->
       <div id="error" class="bg-red-100 text-red-700 px-4 py-2 rounded mb-6 hidden"></div>
-
       <!-- Danh sách người dùng -->
       <section class="mb-12">
         <h2 class="text-xl font-semibold mb-4">Danh sách người dùng</h2>
@@ -39,6 +38,7 @@
       </section>
 
       <!-- Danh sách GPLX chờ duyệt -->
+      <button onclick="refreshPendingLicenses()" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 mb-2">Làm mới giấy phép</button>
       <section>
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-semibold">GPLX đang chờ duyệt</h2>

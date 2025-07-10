@@ -16,6 +16,8 @@ const reviewRoutes = require("./routes/review/review_routes");
 const adminRoutes = require("./routes/admin/admin_routes");
 const bookingRoutes = require("./routes/booking/booking_routes");
 const momoRoutes = require("./routes/payment/momo_routes");
+const errorHandler = require("./middlewares/error_handler");
+const { checkExpiredBookings }  = require('./controllers/booking/booking_controller');
 const { connectDB } = require("./config/database");
 const { initializePassport } = require("./config/passport");
 const initDB = require("./init_db");
@@ -24,15 +26,12 @@ const cookieParser = require('cookie-parser');
 
 const app = express();
 app.set('trust proxy', 1);
-// Middleware
-app.use(express.json());
-app.use(cookieParser());
-
+console.log("🌱 NODE_ENV:", process.env.NODE_ENV);
 const allowedOrigins = process.env.NODE_ENV === "production"
-  ? ['https://mobile-vehicle-rental-app.onrender.com','http://127.0.0.1:5500']
-  : ['http://localhost:5500', 'http://127.0.0.1:5500','https://mobile-vehicle-rental-app.onrender.com'];
+  ? ['https://mobile-vehicle-rental-app.onrender.com', 'http://127.0.0.1:5500']
+  : ['http://localhost:5500', 'http://127.0.0.1:5500', 'https://mobile-vehicle-rental-app.onrender.com'];
 
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -41,10 +40,14 @@ app.use(cors({
       callback(new Error("Không được phép truy cập (CORS)"));
     }
   },
-  credentials: true,
-}));
+  credentials: true
+};
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
-  
+app.use(cookieParser());
+app.use(express.json());
+
 app.use(
     session({
         secret: process.env.SESSION_SECRET || "your_session_secret",
@@ -57,9 +60,13 @@ app.use(
           }
     })
 );
-app.use(passport.initialize());
 app.use(passport.session());
+app.use(passport.initialize());
 
+app.use((err, req, res, next) => {
+  console.error("❌ Error middleware:", err.stack); 
+  res.status(err.status || 500).json({ error: err.message });
+});
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
@@ -72,23 +79,26 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/payment', momoRoutes);
+
+app.use(errorHandler);
 // Initialize Passport
 initializePassport();
 
 const PORT = process.env.PORT || 5000;
 const startServer = async () => {
     try {
-        await connectDB(); // Kết nối MongoDB
-        await initDB();    // Khởi tạo dữ liệu
+        await connectDB(); 
+        await initDB();   
         console.log('Khởi tạo dữ liệu hoàn tất.');
-        // Lên lịch cron job để ghi log người dùng không được xác minh (chạy mỗi giờ)
-        cron.schedule('*/6 * * * *', () => {
-            console.log('Chạy tác vụ dọn dẹp người dùng không được xác minh...');
-            cleanupUnverifiedUsers();
+        cron.schedule('*/6 * * * *', async () => {
+          try {
+            await cleanupUnverifiedUsers();
+            await checkExpiredBookings();
+            console.log('✅ Cron chạy xong lúc', new Date().toLocaleString());
+          } catch (err) {
+            console.error('❌ Lỗi khi chạy cron:', err);
+          }
         });
-        console.log('Cron job để ghi log người dùng không được xác minh đã được lên lịch.');
-
-        // Khởi động server
         app.listen(PORT,'0.0.0.0', () => console.log(`Server đang chạy trên cổng ${PORT}`));
     } catch (err) {
         console.error('Lỗi khi khởi động server:', err);

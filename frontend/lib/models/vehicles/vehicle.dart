@@ -22,7 +22,7 @@ class Vehicle {
   final String ownerName;
   final String ownerAvatar;
   final double price;
-  final BankAccount ownerBankAccount;
+  final BankAccount bankAccount;
   final double rate;
   final double rentals;
   final bool available;
@@ -44,12 +44,12 @@ class Vehicle {
     required this.ownerEmail,
     required this.ownerName,
     required this.price,
-    required this.ownerBankAccount,
+    required this.bankAccount,
     required this.rate,
     this.rentals = 0,
     required this.available,
     required this.status,
-    required this.type, 
+    required this.type,
     required this.ownerAvatar,
   });
 
@@ -92,13 +92,14 @@ class Vehicle {
       ownerName: ownerName,
       ownerAvatar: ownerAvatar,
       price: (json['price'] ?? 0).toDouble(),
-      ownerBankAccount: ownerData is Map<String, dynamic>
-          ? BankAccount.fromJson(ownerData['bankAccount'] ?? {})
-          : BankAccount(
-              accountNumber: '',
-              bankName: '',
-              accountHolderName: '',
-            ),
+      bankAccount:
+          ownerData is Map<String, dynamic>
+              ? BankAccount.fromJson(ownerData['bankAccount'] ?? {})
+              : BankAccount(
+                accountNumber: 'unknown',
+                bankName: 'unknown',
+                accountHolderName: 'unknown',
+              ),
       rate: (json['rate'] ?? 0).toDouble(),
       rentals: (json['rentals'] ?? 0).toDouble(),
       available: json['available'] ?? true,
@@ -119,7 +120,7 @@ class Vehicle {
       'description': description,
       'location': location?.toJson(),
       'price': price,
-      'bankAccount': ownerBankAccount.toJson(),
+      'bankAccount': bankAccount.toJson(),
       'rate': rate,
       'rentals': rentals,
       'available': available,

@@ -1,6 +1,7 @@
 const Review = require("../../models/reivews/review_model");
 const Vehicle = require("../../models/vehicles/vehicle_model");
 const ReviewReport = require("../../models/reivews/report_review_model");
+const AppError = require("../../utils/app_error");
 
 const bannedWords = [
   "http",
@@ -13,29 +14,20 @@ const bannedWords = [
   "zalo",
   "facebook",
 ];
-const CreateReview = async (req, res) => {
+const CreateReview = async (req, res, next) => {
   try {
     const { vehicleId, rating, comment } = req.body;
+    if (!vehicleId || !rating || !comment) return next(new AppError("Thiếu thông tin đánh giá", 400, "MISSING_REVIEW_DATA"));
     const renterId = req.user.id || req.user._id;
     console.log(`data ${vehicleId}, ${rating}, comment: ${comment} `);
     const existingReview = await Review.findOne({ vehicleId, renterId });
-    if (existingReview) {
-      return res
-        .status(400)
-        .json({ message: "You have already rated this car." });
-    }
+    if (existingReview) return next(new AppError("Bạn đã đánh giá xe này rồi", 400, "REVIEW_EXISTS"));
+
 
     const isSpam = bannedWords.some((word) =>
       comment.toLowerCase().includes(word)
     );
-    if (isSpam) {
-      return res
-        .status(400)
-        .json({
-          message: "Review content contains prohibited words or advertising.",
-        });
-    }
-
+    if (isSpam) return next(new AppError("Nội dung đánh giá chứa từ cấm hoặc quảng cáo", 400, "REVIEW_CONTAINS_SPAM"));
     const review = new Review({
       vehicleId,
       renterId,
@@ -55,19 +47,15 @@ const CreateReview = async (req, res) => {
 
     res.status(201).json({ message: "Review created", review });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Something went wrong" });
+    next(err);
   }
 };
-const GetReviewById = async (req, res) => {
+const GetReviewById = async (req, res, next) => {
   try {
     const { reviewId } = req.params;
 
     const review = await Review.findById(reviewId).populate("renterId", "fullName email");
-    if (!review) {
-      return res.status(404).json({ message: "Review not found" });
-    }
-
+    if (!review) return next(new AppError("Không tìm thấy đánh giá", 404, "REVIEW_NOT_FOUND"));
     res.status(200).json(review);
   } catch (err) {
     console.error(err);
@@ -75,27 +63,23 @@ const GetReviewById = async (req, res) => {
   }
 };
 
-const GetReviewsByVehicle = async (req, res) => {
+const GetReviewsByVehicle = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const sort = req.query.sort || "-createdAt";
     const { vehicleId } = req.params;
 
-    // ✅ Tính skip
     const skip = (page - 1) * limit;
 
-    // ✅ Lấy danh sách reviews phân trang
     const reviews = await Review.find({ vehicleId })
       .populate("renterId")
       .sort(sort)
       .skip(skip)
       .limit(limit);
 
-    // ✅ Đếm tổng số review
     const total = await Review.countDocuments({ vehicleId });
 
-    // ✅ Trả kết quả
     res.status(200).json({
       reviews,
       total,
@@ -103,61 +87,45 @@ const GetReviewsByVehicle = async (req, res) => {
       totalPages: Math.ceil(total / limit),
     });
   } catch (err) {
-    console.error("Lỗi khi lấy reviews:", err);
-    res.status(500).json({ message: "Failed to fetch reviews" });
+    next(err);
   }
 };
 
 
-const DeleteReview = async (req, res) => {
+const DeleteReview = async (req, res, next) => {
   try {
     const { reviewId } = req.params;
     const userId = req.user._id;
 
     const review = await Review.findById(reviewId);
 
-    if (!review) return res.status(404).json({ message: "Review not found" });
+    if (!review) return next(new AppError("Đánh giá không tồn tại", 404, "REVIEW_NOT_FOUND"));
 
-    if (review.renterId.toString() !== userId.toString() && !req.user.isAdmin) {
-      return res.status(403).json({ message: "Not authorized" });
-    }
+    if (review.renterId.toString() !== userId.toString() && !req.user.isAdmin) 
+      return next(new AppError("Không có quyền xoá đánh giá", 403, "NOT_AUTHORIZED"));
 
     await review.remove();
 
     res.status(200).json({ message: "Review deleted" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error deleting review" });
+    next(err);
   }
 };
-const ReportReview = async (req, res) => {
+const ReportReview = async (req, res, next) => {
   try {
     const { reviewId, reason } = req.body;
     const ownerId = req.user._id;
 
     const review = await Review.findById(reviewId);
-    if (!review) {
-      return res.status(404).json({ message: "Review does not exist." });
-    }
+    if (!review) return next(new AppError("Đánh giá không tồn tại", 404, "REVIEW_NOT_FOUND"));
 
     const vehicle = await Vehicle.findById(review.vehicleId);
-    if (!vehicle || vehicle.ownerId.toString() !== ownerId.toString()) {
-      return res
-        .status(403)
-        .json({ message: "You do not have permission to report this review." });
-    }
-
+    if (!vehicle || vehicle.ownerId.toString() !== ownerId.toString())  
+      return next(new AppError("Bạn không có quyền báo cáo đánh giá này", 403, "NOT_OWNER"));
+    if (!reason || reason.trim() === "") return next(new AppError("Lý do báo cáo không được để trống", 400, "MISSING_REASON"));
     const existed = await ReviewReport.findOne({ reviewId, ownerId });
-    if (existed) {
-      return res
-        .status(400)
-        .json({ message: "You have already reported this review." });
-    }
-    if (!reason || reason.trim() === "") {
-      return res
-        .status(400)
-        .json({ message: "Reason for reporting is required." });
-    }
+    if (existed) return next(new AppError("Bạn đã báo cáo đánh giá này rồi", 400, "ALREADY_REPORTED"));
+    
     const report = new ReviewReport({
       reviewId,
       vehicleId: review.vehicleId,
@@ -168,10 +136,10 @@ const ReportReview = async (req, res) => {
     await report.save();
     res.status(201).json({ message: "The report has been sent to Admin.", report });
   } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    next(err);
   }
 };
-const GetReportedReviews = async (req, res) => {
+const GetReportedReviews = async (req, res, next) => {
   try {
     const reports = await ReviewReport.find()
       .populate("reviewId", "comment rating renterId createdAt")
@@ -180,8 +148,7 @@ const GetReportedReviews = async (req, res) => {
 
     res.status(200).json({ success: true, reports });
   } catch (err) {
-    console.error("Error fetching reported reviews:", err);
-    res.status(500).json({ success: false, message: "Server error", error: err.message });
+    next(err);
   }
 };
 

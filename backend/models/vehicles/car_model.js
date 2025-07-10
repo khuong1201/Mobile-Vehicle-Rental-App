@@ -7,7 +7,12 @@ const Car = Vehicle.discriminator('Car', new mongoose.Schema({
     required: true,
     trim: true
   },
-  transmission: {type: String, enum: ['Automatic','Manual'],},
+  transmission: {
+    type: String,
+    enum: ['Automatic', 'Manual'],
+    default: 'Manual', 
+  },
+  
   numberOfSeats: { type: Number, required: true },
 }));
 

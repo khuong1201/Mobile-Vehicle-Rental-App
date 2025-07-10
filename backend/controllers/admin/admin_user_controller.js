@@ -1,16 +1,18 @@
 const User = require("../../models/user_model");
-const GetAllUsers = async (req, res) => {
+const AppError = require("../../utils/app_error");
+const GetAllUsers = async (req, res, next) => {
   try {
     const users = await User.find({ role: { $ne: "admin" } }).select(
       "-passwordHash -otp -otpExpires -refreshToken"
     );
+    if( !users || users.length === 0) return next(new AppError("No users found", 404, "USERS_NOT_FOUND"));
     res.json({ users });
   } catch (err) {
     console.error("Get all users error:", err.message);
-    res.status(400).json({ message: err.message });
+    next(err);
   }
 };
-const GetUsersWithUnapprovedLicenses = async (req, res) => {
+const GetUsersWithUnapprovedLicenses = async (req, res, next) => {
   try {
     const users = await User.find({
       role: { $ne: "admin" },
@@ -40,25 +42,21 @@ const GetUsersWithUnapprovedLicenses = async (req, res) => {
     res.json({ users: filteredUsers });
   } catch (err) {
     console.error("Get users with unapproved licenses error:", err.message);
-    res.status(400).json({ message: err.message });
+    next(err);
   }
 };
 
-const ApproveLicense = async (req, res) => {
+const ApproveLicense = async (req, res, next) => {
   const { userId, licenseId } = req.body;
 
   try {
     const user = await User.findById( userId );
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return next(new AppError("User not found", 404, "USER_NOT_FOUND"));
 
     const license = user.license.find((l) => l._id.toString() === licenseId);
 
-    if (!license) {
-      return res.status(404).json({ message: "License not found" });
-    }
+    if (!license) return next(new AppError("License not found", 404, "LICENSE_NOT_FOUND"));
 
     license.status = 'approved';
 
@@ -67,19 +65,19 @@ const ApproveLicense = async (req, res) => {
     res.json({ message: "License approved successfully" });
   } catch (err) {
     console.error("Approve license error:", err.message);
-    res.status(500).json({ message: "Internal server error" });
+    next(err);
   }
 };
 
-const RejectLicense = async (req, res) => {
+const RejectLicense = async (req, res, next) => {
   const { userId, licenseId } = req.body;
 
   try {
     const user = await User.findById( userId );
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return next(new AppError("User not found", 404, "USER_NOT_FOUND"));
 
     const license = user.license.find((l) => l._id.toString() === licenseId);
-    if (!license) return res.status(404).json({ message: "License not found" });
+    if (!license) return next(new AppError("License not found", 404, "LICENSE_NOT_FOUND"));
 
     license.status = 'rejected';
     await user.save();
@@ -87,10 +85,10 @@ const RejectLicense = async (req, res) => {
     res.json({ message: "License rejected successfully" });
   } catch (err) {
     console.error("Reject license error:", err.message);
-    res.status(500).json({ message: "Internal server error" });
+    next(err);
   }
 };
-const GetUser = async (req, res) => {
+const GetUser = async (req, res, next) => {
   const { id } = req.params;
 
   try {
@@ -99,24 +97,20 @@ const GetUser = async (req, res) => {
       role: { $ne: "admin" },
     }).select("-passwordHash -otp -otpExpires -refreshToken");
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return next(new AppError("User not found", 404, "USER_NOT_FOUND"));
 
     res.json({ user });
   } catch (err) {
     console.error("Get user by ID error:", err.message);
-    res.status(500).json({ message: "Internal server error" });
+    next(err);
   }
 };
-const GetAdminProfile = async (req, res) => {
+const GetAdminProfile = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).select(
       "-passwordHash -otp -otpExpires -refreshToken"
     );
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return next(new AppError("User not found", 404, "USER_NOT_FOUND"));
 
     res.json({
       message: "User profile retrieved successfully",
@@ -141,28 +135,26 @@ const GetAdminProfile = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-const DeleteAccount = async (req, res) => {
+const DeleteAccount = async (req, res, next) => {
     try {
       const user = await User.findById(req.user.id);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
+      if (!user) return next(new AppError("User not found", 404, "USER_NOT_FOUND"));
   
       await User.deleteOne({ _id: user._id });
       res.json({ message: "Account deleted successfully" });
     } catch (err) {
       console.error("Delete account error:", err.message);
-      res.status(400).json({ message: err.message });
+      next(err);
     }
   };
 
-  const GetTotalUsers = async (req, res) => {
+  const GetTotalUsers = async (req, res, next) => {
     try {
       const totalUsers = await User.countDocuments({ role: { $ne: "admin" } });
       res.json({ totalUsers });
     } catch (err) {
       console.error("Get total users error:", err.message);
-      res.status(500).json({ message: "Internal server error" });
+      next(err);
     }
   };
 module.exports = {

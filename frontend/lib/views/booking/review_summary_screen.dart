@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frontend/api_services/payment/momo_api.dart';
+import 'package:frontend/models/momo_payment.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
+import 'package:frontend/viewmodels/auth/auth_service.dart';
 import 'package:frontend/viewmodels/booking/booking_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:frontend/views/booking/confirmation_screen.dart';
@@ -11,6 +14,7 @@ import 'package:frontend/views/widgets/custom_text_body_l.dart';
 import 'package:frontend/views/widgets/custom_text_body_s_sb.dart';
 import 'package:frontend/views/widgets/custom_text_body_m_sb.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ReviewSummaryScreen extends StatefulWidget {
   final Vehicle vehicle;
@@ -221,9 +225,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        CustomTextBodySsb(
-                          title: 'Total Rental Days',
-                        ),
+                        CustomTextBodySsb(title: 'Total Rental Days'),
                         Spacer(),
                         CustomTextBodyMsb(
                           title: bookingVM.totalRentalDays?.toString() ?? '0',
@@ -267,7 +269,8 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                         CustomTextBodyMsb(
                           title:
                               bookingVM.taxAmount?.toStringAsFixed(0) ??
-                              '0' ' VNĐ',
+                              '0'
+                                  ' VNĐ',
                         ),
                       ],
                     ),
@@ -438,16 +441,63 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
             const SizedBox(height: 24),
             CustomButton(
               width: double.infinity,
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                final bookingVM = Provider.of<BookingViewModel>(
                   context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) =>
-                            Confirmationscreen(vehicle: widget.vehicle),
-                  ),
+                  listen: false,
                 );
+                final authService = AuthService(context);
+
+                if (bookingVM.selectedPaymentMethod == 'MoMo wallet') {
+                  final response = await PaymentMomoApi.createMomoPayment(
+                    viewModel: bookingVM,
+                    apiAuthService: authService,
+                    paymentData: {
+                      "bookingId": widget.bookingData['bookingId'],
+                      "amount": bookingVM.totalPrice ?? 0,
+                      "orderInfo": "Thanh toán thuê xe",
+                    },
+                  );
+
+                  if (response.success && response.data != null) {
+                    final momo = response.data as MomoPayment;
+                    final Uri momoUri = Uri.parse(momo.payUrl);
+
+                    if (await canLaunchUrl(momoUri)) {
+                      await launchUrl(
+                        momoUri,
+                        mode: LaunchMode.externalApplication,
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Không thể mở liên kết thanh toán MoMo',
+                          ),
+                        ),
+                      );
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          response.message ?? 'Lỗi khi tạo thanh toán',
+                        ),
+                      ),
+                    );
+                  }
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) =>
+                              Confirmationscreen(vehicle: widget.vehicle),
+                    ),
+                  );
+                }
               },
+
               title: 'Pay Now',
             ),
           ],

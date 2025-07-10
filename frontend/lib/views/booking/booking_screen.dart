@@ -182,9 +182,8 @@ class _BookingScreenState extends State<BookingScreen> {
                                       size: 18,
                                     ),
                                   ),
-                                  validator: (value){
-                                    if (value == null ||
-                                        value.isEmpty) {
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
                                       return 'Please enter pick - up location';
                                     }
                                     return null;
@@ -219,9 +218,8 @@ class _BookingScreenState extends State<BookingScreen> {
                                       size: 18,
                                     ),
                                   ),
-                                  validator: (value){
-                                    if (value == null ||
-                                        value.isEmpty) {
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
                                       return 'Please enter drop - off location';
                                     }
                                     return null;
@@ -462,13 +460,21 @@ class _BookingScreenState extends State<BookingScreen> {
                     'Booking response: ${response.success}, ${response.message}, ${response.data}',
                   );
                   if (response.success && bookingVM.bookingResult != null) {
+                    bookingVM.setSelectedVehicle(widget.vehicle);
+                    final bookingId = response.data['bookingId'];
+                    final Map<String,dynamic> updatedBookingData = {
+                      ...response
+                          .data['booking'], // hoặc bookingVM.bookingResult!
+                      'bookingId': bookingId,
+                    };
+                    bookingVM.setSelectedVehicle(widget.vehicle);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder:
                             (context) => ReviewSummaryScreen(
                               vehicle: widget.vehicle,
-                              bookingData: bookingVM.bookingResult!,
+                              bookingData: updatedBookingData!,
                             ),
                       ),
                     );

@@ -34,7 +34,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
 
   String? _vehicleType;
   Brand? _selectedBrand;
-  String? _numberSeats;
+  String? _numberOfSeat;
   String? _typeFuel;
   String? _transMission;
   LocationForVehicle? _locationForVehicle;
@@ -62,11 +62,10 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
       'location': locationData,
       'description': _descriptionController.text,
       'brand': _selectedBrand?.id ?? '',
-      'numberSeats': _numberSeats,
+      'numberOfSeats': _numberOfSeat,
       'fuelType': _typeFuel.toString(),
       'type': widget.vehicleType,
-      'transmission': _transMission
-      
+      'transmission': _transMission.toString(),
     };
 
     widget.onDataChanged(data);
@@ -177,10 +176,10 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                         CustomTextBodyL(title: 'Number of Seats'),
                         const SizedBox(height: 8),
                         CustomDropdownButtonFormField(
-                          value: _numberSeats,
+                          value: _numberOfSeat,
                           onChanged: (value) {
                             setState(() {
-                              _numberSeats == value;
+                              _numberOfSeat = value;
                               _saveData();
                             });
                           },
@@ -204,13 +203,14 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomTextBodyL(title: 'Drivetrain'),
+                  CustomTextBodyL(title: 'Transmission'),
                   const SizedBox(height: 8),
                   CustomDropdownButtonFormField(
                     value: _transMission,
                     onChanged: (value) {
                       setState(() {
                         _transMission = value;
+                        debugPrint('Transmission: $_transMission');
                         _saveData();
                       });
                     },

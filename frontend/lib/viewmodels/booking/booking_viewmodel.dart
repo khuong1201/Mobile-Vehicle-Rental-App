@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/booking/create_booking.dart';
 import 'package:frontend/api_services/client/api_reponse.dart';
+import 'package:frontend/models/vehicles/vehicle.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 
 class BookingViewModel extends ChangeNotifier {
@@ -21,7 +22,12 @@ class BookingViewModel extends ChangeNotifier {
   int? totalRentalDays;
   String? _selectedPaymentMethod;
   String? get selectedPaymentMethod => _selectedPaymentMethod;
+  Vehicle? selectedVehicle;
 
+  void setSelectedVehicle(Vehicle vehicle) {
+    selectedVehicle = vehicle;
+    notifyListeners();
+  }
   Map<String, dynamic>? bookingResult;
 
   void setPaymentMethod(String method) {
@@ -111,6 +117,7 @@ class BookingViewModel extends ChangeNotifier {
     totalRentalDays = null;
     _selectedPaymentMethod = null;
     bookingResult = null;
+    selectedVehicle = null;
     notifyListeners();
   }
 }

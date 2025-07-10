@@ -1,6 +1,7 @@
 const User = require('../../models/user_model'); 
+const AppError = require('../../utils/app_error');
 
-const UpdateUserRole = async (req, res) => {
+const UpdateUserRole = async (req, res, next) => {
   try {
      
     const { newRole } = req.body;
@@ -8,33 +9,26 @@ const UpdateUserRole = async (req, res) => {
     const userId = req.user?.id || req.user?.userId;
     
     if (!userId || !newRole) {
-      return res.status(400).json({ message: "User ID and new role are required" });
+      return next(new AppError("Lỗi khi gửi", 400, "MISSING_FIELDS"));
     }
 
     const allowedRoles = ['renter', 'owner', 'admin'];
-    if (!allowedRoles.includes(newRole)) {
-      return res.status(400).json({ message: "Invalid role" });
-    }
+    if (!allowedRoles.includes(newRole)) return next(new AppError("Vai trò không hợp lệ", 400, "INVALID_ROLE"));
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return next(new AppError("Không tìm thấy người dùng", 404, "USER_NOT_FOUND"));
 
     const isSelf = req.user._id.toString() === user._id.toString();
     const isAdmin = req.user.role === 'admin';
 
-    // ❌ Không ai được chuyển sang admin trừ admin
-    if (newRole === 'admin' && !isAdmin) {
-      return res.status(403).json({ message: "Only admin can assign 'admin' role" });
-    }
+    if (newRole === 'admin' && !isAdmin) 
+      return next(new AppError("Chỉ admin mới có thể gán vai trò admin", 403, "FORBIDDEN_ADMIN_ASSIGNMENT"));
 
-    // ❌ Không ai được đổi role người khác, trừ admin
-    if (!isSelf && !isAdmin) {
-      return res.status(403).json({ message: "You can only change your own role" });
-    }
+    if (!isSelf && !isAdmin) 
+      return next(new AppError("Bạn chỉ được thay đổi vai trò của chính mình", 403, "FORBIDDEN_SELF_ONLY"));
 
-    // ❌ Người thường chỉ được đổi sang 'owner'
     if (!isAdmin && newRole !== 'owner') {
-      return res.status(403).json({ message: "You are only allowed to change your role to 'owner'" });
+      return next(new AppError("Bạn chỉ được chuyển sang vai trò 'owner'", 403, "FORBIDDEN_ROLE_CHANGE"));
     }
 
     user.role = newRole;
@@ -50,8 +44,7 @@ const UpdateUserRole = async (req, res) => {
       }
     });
   } catch (err) {
-    console.error("Update role error:", err.message);
-    res.status(500).json({ message: "Server error" });
+    next(err);
   }
 };
 

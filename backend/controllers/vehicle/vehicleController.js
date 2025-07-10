@@ -4,16 +4,18 @@ const Car = require("../../models/vehicles/car_model");
 const Motor = require("../../models/vehicles/motor_model");
 const Coach = require("../../models/vehicles/coach_model");
 const Bike = require("../../models/vehicles/bike_model");
-
+const AppError = require("../../utils/app_error");
 const Brand = require("../../models/vehicles/brand_model");
+const { checkExpiredBookings } = require("../booking/booking_controller");
 const {
   deleteFileFromCloudinary,
 } = require("../../services/cloudinary_service");
-const paginate = require("../../util/paginate");
+const paginate = require("../../utils/paginate");
 
-// Lấy tất cả xe (có phân trang + sort)
-const GetAllVehicles = async (req, res) => {
+const GetAllVehicles = async (req, res, next) => {
   try {
+    await checkExpiredBookings();
+
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const sort = req.query.sort || "-createdAt";
@@ -22,7 +24,7 @@ const GetAllVehicles = async (req, res) => {
       Vehicle,
       {
         available: true,
-        // status: { $nin: ["pending", "rejected"] },
+        status: { $nin: ["pending", "rejected"] },
       },
       {
         page,
@@ -36,14 +38,11 @@ const GetAllVehicles = async (req, res) => {
     );
 
     res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json({
-      message: "Lỗi khi lấy danh sách xe",
-      error: error.message,
-    });
+  } catch (err) {
+    next(err);
   }
 };
-const GetAllVehiclesForAdmin = async (req, res) => {
+const GetAllVehiclesForAdmin = async (req, res, next) => {
   try {
     const vehicles = await Vehicle.find().populate("brand", "brandName");
 
@@ -60,18 +59,11 @@ const GetAllVehiclesForAdmin = async (req, res) => {
       }))
     });
   } catch (err) {
-    console.error("Get all vehicles error:", err.message);
-    res.status(500).json({ message: "Internal server error" });
+    next(err);
   }
 };
 
-module.exports = {
-  GetAllVehicles,
-  // các hàm khác...
-};
-
-// Lấy các xe chưa duyệt
-const GetVehiclePending = async (req, res) => {
+const GetVehiclePending = async (req, res, next) => {
   try {
     const vehicles = await Vehicle.find({ status: "pending" }).populate("brand", "brandName");
 
@@ -87,55 +79,46 @@ const GetVehiclePending = async (req, res) => {
       }))
     });
   } catch (err) {
-    console.error("Error fetching pending vehicles:", err.message);
-    res.status(500).json({ message: "Internal server error" });
+    next(err);
   }
 };
 
 
-// Cập nhật trạng thái xe (duyệt/hủy...)
-const ChangeVehicleStatus = async (req, res) => {
+const ChangeVehicleStatus = async (req, res, next) => {
   const { id } = req.params;
   const { status } = req.body;
 
   try {
     const vehicle = await Vehicle.findOne({ vehicleId: id });
-    if (!vehicle) return res.status(404).json({ message: "Không tìm thấy xe" });
+    if (!vehicle) return next(new AppError("Không tìm thấy xe", 404, "VEHICLE_NOT_FOUND"));
 
     vehicle.status = status;
     await vehicle.save();
 
     res.json({ message: "Cập nhật trạng thái xe thành công" });
   } catch (err) {
-    console.error("Change status error:", err.message);
-    res.status(500).json({ message: "Lỗi server" });
+    next(err);
   }
 };
 
 
-const CreateVehicle = async (req, res) => {
+const CreateVehicle = async (req, res, next) => {
   try {
     const data = req.body;
     console.log("📥 Dữ liệu xe mới:", data);
-
-    // Lấy và chuẩn hóa type
     const rawType = (data.type || "").toLowerCase();
     if (!["car", "motor", "coach", "bike"].includes(rawType)) {
-      return res.status(400).json({ message: "Loại xe không hợp lệ" });
+      return next(new AppError("Loại xe không hợp lệ", 400, "INVALID_VEHICLE_TYPE"));
     }
-
-    // Kiểm tra brand
     const brandId = data.brand;
     if (!brandId || !mongoose.Types.ObjectId.isValid(brandId)) {
-      return res.status(400).json({ message: "ID thương hiệu không hợp lệ" });
+      return next(new AppError("Thương hiệu không hợp lệ", 400, "INVALID_BRAND_ID"));
     }
-
     const brand = await Brand.findById(brandId);
     if (!brand) {
-      return res.status(400).json({ message: "Thương hiệu không tồn tại" });
+      return next(new AppError("Thương hiệu không tồn tại", 404, "BRAND_NOT_FOUND"));
     }
 
-    // Parse location
     let parsedLocation;
     try {
       parsedLocation =
@@ -161,14 +144,12 @@ const CreateVehicle = async (req, res) => {
       };
     }
 
-    // Xử lý ảnh
     const images = req.files?.images || [];
     const imageInfos = images.map((file) => ({
       url: file.path,
       publicId: file.filename,
     }));
 
-    // Dữ liệu dùng chung cho tất cả các loại xe
     const baseVehicleData = {
       vehicleName: data.vehicleName || "Default Vehicle",
       licensePlate: data.licensePlate,
@@ -190,7 +171,6 @@ const CreateVehicle = async (req, res) => {
 
     let vehicle;
 
-    // Tạo từng loại xe theo type
     switch (rawType) {
       case "car":
         vehicle = await Car.create({
@@ -218,35 +198,28 @@ const CreateVehicle = async (req, res) => {
         break;
 
       case "bike":
-        vehicle = await Bike.create(baseVehicleData);
+        vehicle = await Bike.create({...baseVehicleData});
         break;
 
       default:
-        return res.status(400).json({ message: "Loại xe không hợp lệ" });
+        return next(new AppError("Loại xe không hợp lệ", 400, "INVALID_VEHICLE_TYPE"));
     }
 
     return res.status(201).json(vehicle);
-  } catch (error) {
-    console.error("🔥 Lỗi khi tạo xe mới:", error);
-    return res.status(500).json({
-      message: "Lỗi khi tạo xe mới",
-      error: error.message,
-    });
+  } catch (err) {
+    next(err);
   }
 };
-// Cập nhật xe
-const UpdateVehicle = async (req, res) => {
+const UpdateVehicle = async (req, res, next) => {
   try {
     const { id } = req.params;
     const data = req.body;
 
     const vehicle = await Vehicle.findById(id);
-    if (!vehicle) return res.status(404).json({ message: "Không tìm thấy xe" });
+    if (!vehicle) return next(new AppError("Không tìm thấy xe", 404, "VEHICLE_NOT_FOUND"));
 
     if (vehicle.ownerId.toString() !== req.user.id)
-      return res
-        .status(403)
-        .json({ message: "Bạn không có quyền cập nhật xe này" });
+      return next(new AppError("Bạn không có quyền sửa xe này", 403, "NOT_AUTHORIZED"));
 
     let newImages = vehicle.images;
     let newImagePublicIds = vehicle.imagePublicIds;
@@ -273,43 +246,37 @@ const UpdateVehicle = async (req, res) => {
     );
 
     res.status(200).json(updated);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Lỗi khi cập nhật xe", error: error.message });
+  } catch (err) {
+    next(err);
   }
 };
 
-// Xóa xe
-const DeleteVehicle = async (req, res) => {
+const DeleteVehicle = async (req, res, next) => {
   try {
     const vehicle = await Vehicle.findById(req.params.id);
     if (!vehicle)
-      return res.status(404).json({ message: "Không tìm thấy xe để xóa" });
+      return next(new AppError("Không tìm thấy xe", 404, "VEHICLE_NOT_FOUND"));
 
     if (vehicle.ownerId.toString() !== req.user.id && req.user.role !== "admin")
-      return res.status(403).json({ message: "Bạn không có quyền xóa xe này" });
-
+      return next(new AppError("Bạn không có quyền xóa xe này", 403, "NOT_AUTHORIZED"));
     if (vehicle.imagePublicIds?.length > 0) {
       for (const publicId of vehicle.imagePublicIds) {
         await deleteFileFromCloudinary(publicId);
       }
     }
-
     await Vehicle.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Xóa xe thành công" });
-  } catch (error) {
-    res.status(500).json({ message: "Lỗi khi xóa xe", error: error.message });
+  } catch (err) {
+    next(err);
   }
 };
 
-// Lấy xe theo type (có phân trang)
-const GetVehicleByType = async (req, res) => {
+const GetVehicleByType = async (req, res, next) => {
   try {
     const { type } = req.params;
     const allowed = ["Car", "Motorbike", "Coach", "Bike"];
     if (!allowed.includes(type)) {
-      return res.status(400).json({ message: "Loại xe không hợp lệ" });
+      return next(new AppError("Loại xe không hợp lệ", 400, "INVALID_VEHICLE_TYPE"));
     }
 
     const page = parseInt(req.query.page) || 1;
@@ -331,23 +298,18 @@ const GetVehicleByType = async (req, res) => {
     );
 
     res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json({
-      message: "Lỗi khi lấy xe theo loại",
-      error: error.message,
-    });
+  } catch (err) {
+    next(err);
   }
 };
 
-// ✅ MỚI: Lấy xe không khả dụng (available: false)
-const GetUnavailableVehicles = async (req, res) => {
+const GetUnavailableVehicles = async (req, res, next) => {
   try {
+    await checkExpiredBookings();
     const vehicles = await Vehicle.find({ available: false });
     res.status(200).json(vehicles);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Lỗi khi lấy xe không khả dụng", error: error.message });
+  } catch (err) {
+    next(err);
   }
 };
 

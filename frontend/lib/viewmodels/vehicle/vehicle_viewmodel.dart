@@ -15,7 +15,7 @@ import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:frontend/api_services/vehicle/get_create_vehicle.dart';
+import 'package:frontend/api_services/vehicle/create_vehicle.dart';
 
 class VehicleViewModel extends ChangeNotifier {
   final AuthService authService;
@@ -226,10 +226,10 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            bankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
-            status: data['status'] as String,
+            status: data['status'] as String? ?? 'pending',
             type: data['type'] ?? 'car',
             fuelType: data['fuelType'] as String? ?? '',
             transmission: data['transmission'] as String? ?? '',
@@ -255,7 +255,7 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            bankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
             status: data['status'] as String? ?? 'pending',
@@ -280,7 +280,7 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            bankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
             status: data['status'] as String? ?? 'pending',
@@ -308,7 +308,7 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            bankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
             status: data['status'] as String? ?? 'pending',
@@ -333,7 +333,7 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            bankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
             status: data['status'] as String? ?? 'pending',
@@ -396,9 +396,10 @@ class VehicleViewModel extends ChangeNotifier {
       }
 
       final locationData = data['location'];
-      final LocationForVehicle? location = locationData is LocationForVehicle
-          ? locationData
-          : locationData is Map<String, dynamic>
+      final LocationForVehicle? location =
+          locationData is LocationForVehicle
+              ? locationData
+              : locationData is Map<String, dynamic>
               ? LocationForVehicle.fromJson(locationData)
               : null;
 
@@ -409,9 +410,10 @@ class VehicleViewModel extends ChangeNotifier {
       }
 
       final brandData = data['brand'];
-      final brand = brandData is Map<String, dynamic>
-          ? Brand.fromJson(brandData)
-          : brandData is String && brandData.isNotEmpty
+      final brand =
+          brandData is Map<String, dynamic>
+              ? Brand.fromJson(brandData)
+              : brandData is String && brandData.isNotEmpty
               ? Brand(id: brandData, brandId: brandData, brandName: 'Unknown')
               : null;
 
@@ -452,7 +454,7 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            bankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
             status: data['status'] as String? ?? 'pending',
@@ -481,7 +483,7 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            bankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
             status: data['status'] as String? ?? 'pending',
@@ -506,7 +508,7 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            bankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
             status: data['status'] as String? ?? 'pending',
@@ -534,7 +536,7 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            bankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
             status: data['status'] as String? ?? 'pending',
@@ -559,7 +561,7 @@ class VehicleViewModel extends ChangeNotifier {
             ownerName: user.fullName,
             ownerAvatar: user.imageAvatarUrl,
             price: (data['price'] as num?)?.toDouble() ?? 0.0,
-            ownerBankAccount: parseBankAccount(data['bankAccount']),
+            bankAccount: parseBankAccount(data['bankAccount']),
             rate: (data['rate'] as num?)?.toDouble() ?? 0.0,
             available: data['available'] as bool? ?? true,
             status: data['status'] as String? ?? 'pending',
@@ -585,9 +587,7 @@ class VehicleViewModel extends ChangeNotifier {
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              response.message ?? 'Vehicle updated successfully!',
-            ),
+            content: Text(response.message ?? 'Vehicle updated successfully!'),
           ),
         );
       } else {

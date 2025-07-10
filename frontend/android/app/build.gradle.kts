@@ -6,7 +6,6 @@ val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
-println("✅ DEBUG keystoreProperties: $keystoreProperties")
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -47,7 +46,7 @@ android {
     buildTypes {
     getByName("release") {
         isMinifyEnabled = false
-        isShrinkResources = false // 👈 fix lỗi ở đây
+        isShrinkResources = false 
         signingConfig = signingConfigs.getByName("release")
     }
 }

@@ -3,7 +3,10 @@ const { v4: uuidv4 } = require("uuid");
 const axios = require("axios");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
-
+const Car = require("./models/vehicles/car_model");
+const Motor = require("./models/vehicles/motor_model");
+const Coach = require("./models/vehicles/coach_model");
+const Bike = require("./models/vehicles/bike_model");
 const Brand = require("./models/vehicles/brand_model");
 const Vehicle = require("./models/vehicles/vehicle_model");
 const User = require("./models/user_model");
@@ -243,6 +246,7 @@ const initDB = async () => {
         price: 1800000,
         numberOfSeats: 5,
         fuelType: "Gasoline",
+        type: "Car",
       },
       {
         vehicleName: "E-Class",
@@ -250,6 +254,7 @@ const initDB = async () => {
         price: 2200000,
         numberOfSeats: 5,
         fuelType: "Gasoline",
+        type: "Car",
       },
       {
         vehicleName: "GLC",
@@ -257,6 +262,7 @@ const initDB = async () => {
         price: 2000000,
         numberOfSeats: 5,
         fuelType: "Gasoline",
+        type: "Car",
       },
       {
         vehicleName: "Q5",
@@ -264,6 +270,7 @@ const initDB = async () => {
         price: 1800000,
         numberOfSeats: 5,
         fuelType: "Gasoline",
+        type: "Car",
       },
       {
         vehicleName: "RX",
@@ -271,6 +278,7 @@ const initDB = async () => {
         price: 2500000,
         numberOfSeats: 5,
         fuelType: "Hybrid",
+        type: "Car",
       },
       {
         vehicleName: "VF e34",
@@ -278,6 +286,7 @@ const initDB = async () => {
         price: 700000,
         numberOfSeats: 5,
         fuelType: "Electric",
+        type: "Car",
       },
       {
         vehicleName: "Tucson",
@@ -285,6 +294,7 @@ const initDB = async () => {
         price: 800000,
         numberOfSeats: 5,
         fuelType: "Diesel",
+        type: "Car",
       },
       {
         vehicleName: "Ranger",
@@ -292,53 +302,60 @@ const initDB = async () => {
         price: 800000,
         numberOfSeats: 5,
         fuelType: "Diesel",
+        type: "Car",
       },
     ];
-
+    
     for (const v of vehicles) {
       const licensePlate =
         "TEMP-" +
         Math.floor(Math.random() * 100000)
           .toString()
           .padStart(5, "0");
+    
       const exists = await Vehicle.findOne({ licensePlate });
-      if (!exists) {
-        const newVehicle = await Vehicle.create({
-          ownerId: adminUser._id,
-          vehicleId: uuidv4(),
-          vehicleName: v.vehicleName,
-          brand: brandMap[v.brandName],
-          type: v.type,
-          licensePlate,
-          yearOfManufacture: 2022,
-          description: `Mẫu xe ${v.vehicleName} của hãng ${v.brandName}`,
-          price: v.price,
-          location: {
-            address: "Hà Nội",
-            lat: 21.0278,
-            lng: 105.8342,
-          },
-        });
-        console.log(`🚗 Đã thêm xe: ${v.vehicleName}`);
+      if (exists) continue;
+    
+      // Chọn đúng model
+      let VehicleModel;
+      switch ((v.type || "").toLowerCase()) {
+        case "car":
+          VehicleModel = Car;
+          break;
+        case "motor":
+          VehicleModel = Motor;
+          break;
+        case "coach":
+          VehicleModel = Coach;
+          break;
+        case "bike":
+          VehicleModel = Bike;
+          break;
+        default:
+          console.warn(`❌ Loại xe không hợp lệ: ${v.type}`);
+          continue;
       }
-    }
-    const provinceCount = await Province.countDocuments();
-    if (provinceCount < 63) {
-      await fetchAndStoreData();
-      console.log("✅ Dữ liệu hành chính đã được cập nhật.");
-    } else {
-      console.log("ℹ️ Dữ liệu hành chính đã có trong database.");
-    }
-
-    await InitStatus.findOneAndUpdate(
-      {},
-      {
-        initialized: true,
-        locationDataInitialized: true,
-        lastInit: new Date(),
-      },
-      { upsert: true }
-    );
+    
+      const newVehicle = await VehicleModel.create({
+        ownerId: adminUser._id,
+        vehicleId: uuidv4(),
+        vehicleName: v.vehicleName,
+        brand: brandMap[v.brandName],
+        licensePlate,
+        yearOfManufacture: 2022,
+        description: `Mẫu xe ${v.vehicleName} của hãng ${v.brandName}`,
+        price: v.price,
+        fuelType: v.fuelType,
+        numberOfSeats: v.numberOfSeats,
+        transmission: "Automatic",
+        location: {
+          address: "Hà Nội",
+          lat: 21.0278,
+          lng: 105.8342,
+        },
+      });
+      console.log(`🚗 Đã thêm xe: ${v.vehicleName}`);
+    }    
 
     console.log("🎉 Khởi tạo dữ liệu thành công.");
   } catch (error) {

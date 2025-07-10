@@ -1,5 +1,5 @@
-const baseUrl = "https://mobile-vehicle-rental-app.onrender.com";
-// const baseUrl = "http://localhost:5000";
+// const baseUrl = "https://mobile-vehicle-rental-app.onrender.com";
+const baseUrl = "http://localhost:5000";
 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("loginForm");

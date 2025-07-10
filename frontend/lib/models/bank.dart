@@ -16,9 +16,9 @@ class BankAccount {
   // 👉 Tạo từ JSON
   factory BankAccount.fromJson(Map<String, dynamic> json) {
     return BankAccount(
-      accountNumber: json['accountNumber'] as String? ?? 'unknown',
-      bankName: json['bankName'] as String? ?? 'unknown',
-      accountHolderName: json['accountHolderName'] as String? ?? 'unknown',
+      accountNumber: json['accountNumber']?.toString() ?? 'unknown',
+      bankName: json['bankName']?.toString() ?? 'unknown',
+      accountHolderName: json['accountHolderName']?.toString() ?? 'unknown',
       // routingNumber: json['routingNumber'] as String,
       // swiftCode: json['swiftCode'] as String?, // có thể null
     );
@@ -27,9 +27,9 @@ class BankAccount {
   // 👉 Chuyển thành JSON
   Map<String, dynamic> toJson() {
     return {
-      'accountNumber': accountNumber,
+      'accountNumber': accountNumber.toString(),
       'bankName': bankName,
-      'accountHolderName': accountHolderName,
+      'accountHolderName': accountHolderName.toString(),
       // 'routingNumber': routingNumber,
       // if (swiftCode != null) 'swiftCode': swiftCode, // chỉ thêm nếu có
     };

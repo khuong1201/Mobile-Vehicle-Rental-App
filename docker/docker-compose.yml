@@ -2,20 +2,21 @@ services:
   backend:
     build:
       context: ../backend
-      dockerfile: Dockerfile
+      # dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - "5000:5000"
     working_dir: /app
     env_file:
       - ../backend/.env
-    # volumes:
-    #   - ../backend:/app
-    #   - /app/node_modules
+    # chay development
+    volumes:
+      - ../backend:/app
     # depends_on:
     #   - mongodb
     restart: on-failure
-    # command: npm run dev
-    command: npm run start
+    command: npm run dev
+    # command: npm run start
   frontend:
     build: ../admin-html
     ports:

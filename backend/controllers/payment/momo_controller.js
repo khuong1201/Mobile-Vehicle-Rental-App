@@ -1,12 +1,12 @@
-
 const https = require("https");
 const crypto = require("crypto");
 require("dotenv").config();
-
+const Vehicle = require("../../models/vehicles/vehicle_model");
 const Booking = require("../../models/booking_model");
 const Payment = require("../../models/payment_model");
+const AppError = require("../../utils/app_error");
 
-const createMoMoPayment = async (req, res) => {
+const createMoMoPayment = async (req, res, next) => {
   try {
     const {
       bookingId: _id,
@@ -15,11 +15,9 @@ const createMoMoPayment = async (req, res) => {
       redirectUrl = process.env.MOMO_REDIRECT_URL,
       ipnUrl = process.env.MOMO_IPN_URL,
     } = req.body;
-
+    if (!_id || !amount) return next(new AppError("Thiếu thông tin bookingId hoặc amount", 400, "MISSING_FIELDS"));
     const booking = await Booking.findOne({ _id });
-    if (!booking) {
-      return res.status(404).json({ error: "Booking không tồn tại" });
-    }
+    if (!booking) return next(new AppError("Booking không tồn tại", 404, "BOOKING_NOT_FOUND"));
 
     const partnerCode = process.env.MOMO_PARTNER_CODE;
     const accessKey = process.env.MOMO_ACCESS_KEY;
@@ -69,11 +67,11 @@ const createMoMoPayment = async (req, res) => {
         data += chunk;
       });
       momoRes.on("end", async () => {
+        try {
         const response = JSON.parse(data);
         console.log("MoMo Response:", response);
 
         if (response.resultCode === 0) {
-          // Lưu thông tin thanh toán vào database
           const payment = new Payment({
             paymentId: requestId,
             bookingId: booking._id,
@@ -86,33 +84,77 @@ const createMoMoPayment = async (req, res) => {
           });
 
           await payment.save();
-
           return res.status(200).json({
             message: "Yêu cầu thanh toán MoMo được tạo thành công",
             payUrl: response.payUrl,
             paymentId: requestId,
-            
           });
         } else {
-          return res.status(400).json({
-            error: "Lỗi khi tạo thanh toán MoMo",
-            details: response,
-          });
+          return next(new AppError("Lỗi khi tạo thanh toán MoMo", 400, "MOMO_CREATE_ERROR"));
         }
+      } catch (err) {
+        return next(err);
+      }
       });
     });
 
     momoRequest.on("error", (e) => {
       console.error(`Lỗi yêu cầu MoMo: ${e.message}`);
-      return res.status(500).json({ error: "Lỗi server khi gửi yêu cầu MoMo" });
+      return next(new AppError("Lỗi kết nối đến MoMo", 500, "MOMO_CONNECTION_ERROR"));
     });
 
     momoRequest.write(requestBody);
     momoRequest.end();
-  } catch (error) {
-    console.error("Lỗi:", error);
-    return res.status(500).json({ error: "Lỗi server" });
+  } catch (err) {
+    next(err);
+  }
+};
+const handleMoMoIPN = async (req, res, next) => {
+  try {
+    const {
+      resultCode,
+      orderId,
+      requestId,
+      amount,
+      extraData,
+      message
+    } = req.body;
+
+    console.log("📥 IPN từ MoMo:", req.body);
+
+    const payment = await Payment.findOne({ paymentId: requestId });
+    if (!payment) {
+      return next(new AppError("Không tìm thấy thanh toán với requestId", 404, "PAYMENT_NOT_FOUND"));
+    }
+
+    if (resultCode === 0) {
+      payment.status = "success";
+      payment.responseData = req.body;
+      await payment.save();
+
+      const booking = await Booking.findById(payment.bookingId);
+      if (booking && booking.status !== "approved") {
+        booking.status = "approved";
+        await booking.save();
+      }
+
+      const vehicle = await Vehicle.findById(booking.vehicleId);
+      if (vehicle && vehicle.available !== false) {
+        vehicle.available = false;
+        await vehicle.save();
+      }
+
+      return next(new AppError("Thanh toán thành công từ MoMo", 200, "PAYMENT_SUCCESS"));
+    } else {
+      payment.status = "failed";
+      payment.responseData = req.body;
+      await payment.save();
+      return next(new AppError(`Thanh toán thất bại: ${message}`, 400, "PAYMENT_FAILED"));
+    }
+  } catch (err) {
+    console.error("❌ Lỗi xử lý IPN:", err);
+    return next(new AppError("Lỗi xử lý IPN từ MoMo", 500, "IPN_PROCESSING_ERROR"));
   }
 };
 
-module.exports = { createMoMoPayment };
+module.exports = { createMoMoPayment, handleMoMoIPN,};

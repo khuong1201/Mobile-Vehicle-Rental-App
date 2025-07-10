@@ -1,15 +1,14 @@
 const authService = require('../../services/auth_service');
-const User = require('../../models/user_model');
-const Register = async (req, res) => {
+const Register = async (req, res, next) => {
     try {
         const { email, password, fullName } = req.body;
         const user = await authService.registerUser({ email, password, fullName });
         res.status(201).json({ message: 'Registration successful. Please check your email for the OTP.'});
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        next(err); 
     }
 };
-const WebLogin = async (req, res) => {
+const WebLogin = async (req, res, next) => {
     try {
       const { email, password } = req.body;
       const result = await authService.loginUser({ email, password });
@@ -34,52 +33,48 @@ const WebLogin = async (req, res) => {
           user: result.user,
         });
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      next(err);
     }
   };
   
-const Login = async (req, res) => {
+const Login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         const result = await authService.loginUser({ email, password });
         res.json(result);
     } catch (err) {
-        res.status(400).json({ message: err.message });
+      next(err);
     }
 };
 
-const Verify = async (req, res) => {
+const Verify = async (req, res, next) => {
     try {
         const { email, otp } = req.body;
         await authService.verifyEmail({ email, otp });
         res.json({ message: 'Email verified successfully' });
         
     } catch (err) {
-        res.status(400).json({ message: err.message });
+      next(err);
     }
 };
 
-const Refresh = async (req, res) => {
+const Refresh = async (req, res, next) => {
     try {
         const { refreshToken } = req.body;
         if (!refreshToken) {
-            return res.status(400).json({ message: 'Refresh token required' });
+          return next(new AppError('Refresh token required', 400, 'REFRESH_TOKEN_REQUIRED'));
         }
         const result = await authService.refreshAccessToken(refreshToken);
         res.json(result);
     } catch (err) {
-        res.status(401).json({ message: err.message });
+      next(err);
     }
 };
-const RefreshWebToken = async (req, res) => {
+const RefreshWebToken = async (req, res, next) => {
     try {
       const refreshToken = req.cookies['refreshToken'];
-      if (!refreshToken) {
-        return res.status(400).json({ message: 'Refresh token required' });
-      }
-  
+      if (!refreshToken) return next(new AppError('Refresh token required', 400, 'REFRESH_TOKEN_REQUIRED'));
       const result = await authService.refreshAccessToken(refreshToken);
-  
       const isProduction = process.env.NODE_ENV === 'production';
       res.cookie('accessToken', result.accessToken, {
         httpOnly: true,
@@ -99,11 +94,11 @@ const RefreshWebToken = async (req, res) => {
         refreshToken: result.refreshToken,
       });
     } catch (err) {
-      res.status(401).json({ message: err.message });
+      next(err);
     }
   };
   
-const GoogleLoginEndPoint = async (req, res) => {
+const GoogleLoginEndPoint = async (req, res, next) => {
     try {
       const { googleId, email, fullName, avatar } = req.body;
   
@@ -121,57 +116,48 @@ const GoogleLoginEndPoint = async (req, res) => {
       });
     } catch (err) {
       console.error('🔥 GoogleLoginEndPoint error:', err.message);
-      return res.status(500).json({
-        success: false,
-        message: err.message,
-      });
+      next(err);
     }
   };
-const GoogleLogin = async (req, res) => {
+const GoogleLogin = async (req, res, next) => {
     try {
         const { idToken } = req.body;
-        if (!idToken) {
-            return res.status(400).json({ message: 'Google ID token required' });
-        }
+        if (!idToken) return next(new AppError('Google ID token required', 400, 'GOOGLE_ID_TOKEN_REQUIRED'));
         const result = await authService.googleLogin(idToken);
         res.json(result);
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        next(err);
     }
 };
 
-const Logout = async (req, res) => {
+const Logout = async (req, res, next) => {
     try {
         await authService.logoutUser(req.user.id);
         res.json({ message: 'Logged out successfully' });
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        next(err);
     }
 };
 
-const RequestPasswordReset = async (req, res) => {
+const RequestPasswordReset = async (req, res, next) => {
     try {
         const { email } = req.body;
-        if (!email) {
-            return res.status(400).json({ message: 'Email is required' });
-        }
+        if (!email) return next(new AppError('Email is required', 400, 'EMAIL_REQUIRED'));
         await authService.requestPasswordReset(email);
         res.json({ message: 'Password reset OTP sent to email' });
     } catch (err) {
-        res.status(400).json({ message: err.message });
+      next(err);
     }
 };
 
-const ResetPassword = async (req, res) => {
+const ResetPassword = async (req, res, next) => {
     try {
         const { email, otp, newPassword } = req.body;
-        if (!email || !otp || !newPassword) {
-            return res.status(400).json({ message: 'Email, OTP, and new password are required' });
-        }
+        if (!email || !otp || !newPassword) return next(new AppError('Email, OTP, and new password are required', 400, 'RESET_FIELDS_REQUIRED'));
         await authService.resetPassword({ email, otp, newPassword });
         res.json({ message: 'Password reset successfully' });
     } catch (err) {
-        res.status(400).json({ message: err.message });
+      next(err);
     }
 };
 

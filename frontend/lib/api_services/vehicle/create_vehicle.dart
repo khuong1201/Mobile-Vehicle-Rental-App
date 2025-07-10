@@ -28,11 +28,11 @@ class ApiCreatVehicle {
             ..remove('imagePublicIds');
 
       final fields = <String, String>{};
-      const jsonEncodedKeys = ['location', 'ownerBankAccount'];
+      const jsonEncodedKeys = ['location', 'bankAccount'];
 
       rawFields.forEach((key, value) {
         if (jsonEncodedKeys.contains(key) && value is Map) {
-          fields[key] = jsonEncode(value); // ✅ convert to JSON string
+          fields[key] = jsonEncode(value); 
         } else if (value != null && value.toString().trim().isNotEmpty) {
           fields[key] = value.toString();
         }
@@ -51,8 +51,9 @@ class ApiCreatVehicle {
         debugPrint('⚠️ Type is empty');
         return ApiResponse(success: false, message: 'Type cannot be empty');
       }
-
+      
       debugPrint('📤 Submitting fields: $fields');
+      debugPrint('🔎 Raw fields: $rawFields');
 
       final response = await callProtectedApi<T>(
         viewModel,

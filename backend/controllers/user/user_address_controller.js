@@ -1,43 +1,33 @@
 const User = require("../../models/user_model");
-
-const GetAddresses = async (req, res) => {
+const AppError = require("../../utils/app_error");
+const GetAddresses = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).select('addresses');
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    if (!user) return next(new AppError('Người dùng không tồn tại', 404, "USER_NOT_FOUND"));
 
     res.json({
       message: 'Addresses retrieved successfully',
       addresses: user.addresses || [], // Return empty array if no addresses
     });
   } catch (err) {
-    console.error('Get addresses error:', err.message);
-    res.status(400).json({ message: err.message });
+    next(err);
   }
 };
 
-const DeleteAddress = async (req, res) => {
+const DeleteAddress = async (req, res, next) => {
   try {
     const { addressId } = req.body;
 
-    // Validate input
-    if (!addressId) {
-      return res.status(400).json({ message: "addressId is required" });
-    }
+    if (!addressId)  return next(new AppError("Thiếu addressId", 400, "MISSING_ADDRESS_ID"));
 
     const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return next(new AppError("Người dùng không tồn tại", 404, "USER_NOT_FOUND"));
 
     // Check if address exists
     const addressExists = user.addresses.some(
       (addr) => addr._id.toString() === addressId
     );
-    if (!addressExists) {
-      return res.status(400).json({ message: "Address not found" });
-    }
+    if (!addressExists) return next(new AppError("Không tìm thấy địa chỉ", 400, "ADDRESS_NOT_FOUND"));
 
     // Remove the address
     user.addresses = user.addresses.filter(
@@ -56,11 +46,10 @@ const DeleteAddress = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Delete address error:", err.message);
-    res.status(400).json({ message: err.message });
+    next(err);
   }
 };
-const UpdateAddress = async (req, res) => {
+const UpdateAddress = async (req, res, next) => {
   try {
     if (!req.body) {
       return res.status(400).json({ message: "Request body is missing" });
@@ -73,29 +62,12 @@ const UpdateAddress = async (req, res) => {
       contactName,
       phoneNumber,
     } = req.body;
-    if (!addressType) {
-      return res.status(400).json({ message: "Address type is required" });
-    } else if (!address) {
-      return res.status(400).json({ message: "Address is required" });
-    } else if (!floorOrApartmentNumber) {
-      return res
-        .status(400)
-        .json({ message: "Floor or apartment number is required" });
-    } else if (!contactName) {
-      return res.status(400).json({ message: "Contact name is required" });
-    } else if (!phoneNumber) {
-      return res.status(400).json({ message: "Phone number is required" });
+    if (!addressType || !address || !floorOrApartmentNumber || !contactName || !phoneNumber) {
+      return next(new AppError("Thiếu thông tin địa chỉ", 400, "MISSING_FIELDS"));
     }
-
     const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Ensure addresses array exists
+    if (!user) return next(new AppError("Người dùng không tồn tại", 404, "USER_NOT_FOUND"));
     user.addresses = user.addresses || [];
-
-    // New address object
     const newAddress = {
       addressType,
       address,
@@ -105,19 +77,12 @@ const UpdateAddress = async (req, res) => {
     };
 
     if (addressId) {
-      // Update existing address
       const addressIndex = user.addresses.findIndex(
         (addr) => addr._id.toString() === addressId
       );
-      if (addressIndex === -1) {
-        return res.status(400).json({ message: "Address not found" });
-      }
-      user.addresses[addressIndex] = {
-        ...user.addresses[addressIndex],
-        ...newAddress,
-      };
+      if (addressIndex === -1) return next(new AppError("Không tìm thấy địa chỉ để cập nhật", 400, "ADDRESS_NOT_FOUND"));
+      user.addresses[index] = { ...user.addresses[index], ...newAddress };
     } else {
-      // Add new address
       user.addresses.push(newAddress);
     }
 
@@ -134,8 +99,7 @@ const UpdateAddress = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Update address error:", err.message);
-    res.status(400).json({ message: err.message });
+    next(err);
   }
 };
 module.exports = { DeleteAddress, UpdateAddress, GetAddresses };

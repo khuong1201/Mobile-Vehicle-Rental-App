@@ -1,13 +1,11 @@
 const Booking = require("../../models/booking_model");
 const User = require("../../models/user_model");
 const { getTaxRateByOwner } = require("../../services/user_revenue_service");
+const AppError = require("../../utils/app_error");
+const convertDate = require("../../utils/convert_date");
 
-// Helper: Convert "DD/MM/YYYY" => "YYYY-MM-DD"
-const convertDate = (str) => {
-  const [day, month, year] = str.split("/");
-  return `${year}-${month}-${day}`;
-};
-const GetMonthlyBookings = async (req, res) => {
+
+const GetMonthlyBookings = async (req, res, next) => {
   try {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -25,7 +23,7 @@ const GetMonthlyBookings = async (req, res) => {
     res.json({ totalBookingsThisMonth: totalBookings });
   } catch (err) {
     console.error("Get monthly bookings error:", err);
-    res.status(500).json({ message: "Internal server error" });
+    next(err);
   }
 };
 // Helper: Calculate total rental days
@@ -36,7 +34,7 @@ const calculateRentalDays = (pickupDate, dropoffDate) => {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 để tính cả ngày bắt đầu
 };
 
-const createBooking = async (req, res) => {
+const createBooking = async (req, res, next) => {
   try {
     const {
       vehicleId,
@@ -61,12 +59,10 @@ const createBooking = async (req, res) => {
       !dropoffDate ||
       !pickupTime ||
       !dropoffTime ||
+      !pickupLocation ||
+      !dropoffLocation ||
       !basePrice
-    ) {
-      return res
-        .status(400)
-        .json({ message: "Missing required booking fields." });
-    }
+    ) return next(new AppError("Missing required booking fields", 400, "MISSING_BOOKING_FIELDS"));
     const renter = await User.findById(renterId).select("license");
     if (!renter || !renter.license) {
       return res
@@ -74,30 +70,24 @@ const createBooking = async (req, res) => {
         .json({ message: "Người thuê không có thông tin bằng lái xe." });
     }
     const approvedLicense = renter.license.find((l) => l.status === "approved");
-    if (!approvedLicense) {
-      return res.status(403).json({
-        message: "Bạn chưa có bằng lái nào được phê duyệt.",
-      });
-    }
+    if (!approvedLicense)  return next(new AppError("Người thuê không có thông tin bằng lái xe", 403, "LICENSE_REQUIRED"));
 
-    // 📅 Convert dates to ISO format
     const pickupDateTime = new Date(`${convertDate(pickupDate)}T${pickupTime}`);
     const dropoffDateTime = new Date(
       `${convertDate(dropoffDate)}T${dropoffTime}`
     );
 
-    // Calculate total rental days
     const totalRentalDays = calculateRentalDays(pickupDate, dropoffDate);
 
     const now = new Date();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
-
-    const parsedBasePrice = parseFloat(basePrice) * totalRentalDays; // Adjust basePrice for total days
+    const endTime = new Date(`${convertDate(dropoffDate)}T${dropoffTime}`);
+    const parsedBasePrice = parseFloat(basePrice) * totalRentalDays;
     const taxRate = await getTaxRateByOwner(ownerId, month, year);
     const taxAmount = parsedBasePrice * taxRate;
     const totalPrice = parsedBasePrice + taxAmount;
-
+    
     const booking = new Booking({
       vehicleId,
       renterId,
@@ -108,62 +98,73 @@ const createBooking = async (req, res) => {
       pickupTime,
       dropoffDate: dropoffDateTime,
       dropoffTime,
+      endTime,
       basePrice: parsedBasePrice,
       taxRate,
       taxAmount,
       totalPrice,
-      totalRentalDays, // Add to booking model
+      totalRentalDays, 
     });
 
     await booking.save();
 
     res.status(201).json({
       message: "Booking created successfully.",
+      bookingId: booking._id,
       booking: booking.toJSON(),
     });
   } catch (err) {
-    console.error("🔥 Error creating booking:", err.message);
-    console.error("📛 Stack trace:", err.stack);
-    res.status(500).json({
-      message: "Error creating booking.",
-      error: err.message,
-    });
+    next(err);
   }
 };
 
-const getBookingsByOwner = async (req, res) => {
+const getBookingsByOwner = async (req, res, next) => {
   try {
+    await checkExpiredBookings();
     const { ownerId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(ownerId)) return next(new AppError("Invalid owner ID", 400, "INVALID_OWNER_ID"));
     const bookings = await Booking.find({ ownerId })
       .populate("renterId", "_id fullName email")
       .populate("vehicleId");
-
     res.status(200).json(bookings.map((b) => b.toJSON()));
   } catch (err) {
-    res.status(500).json({
-      message: "Error fetching bookings for owner.",
-      error: err.message,
-    });
+    next(err);
   }
 };
 
-const getBookingsByRenter = async (req, res) => {
+const getBookingsByRenter = async (req, res, next) => {
   try {
+    await checkExpiredBookings();
     const { renterId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(renterId)) return next(new AppError("Invalid renter ID", 400, "INVALID_RENTER_ID"));
     const bookings = await Booking.find({ renterId })
       .populate("vehicleId")
       .populate("ownerId", "_id fullName email");
-
     res.status(200).json(bookings.map((b) => b.toJSON()));
   } catch (err) {
-    res.status(500).json({
-      message: "Error fetching bookings for renter.",
-      error: err.message,
-    });
+    next(err);
   }
 };
+const checkExpiredBookings = async () => {
+  const now = new Date();
+  const expiredBookings = await Booking.find({
+    status: "approved",
+    endTime: { $lte: now },
+  });
 
+  for (const booking of expiredBookings) {
+    const vehicle = await Vehicle.findById(booking.vehicleId);
+    if (vehicle && !vehicle.available) {
+      vehicle.available = true;
+      await vehicle.save();
+    }
+
+    booking.status = "completed";
+    await booking.save();
+  }
+};
 module.exports = {
+  checkExpiredBookings,
   GetMonthlyBookings,
   createBooking,
   getBookingsByOwner,

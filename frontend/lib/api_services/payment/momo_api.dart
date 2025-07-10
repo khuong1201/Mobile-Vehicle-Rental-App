@@ -15,7 +15,7 @@ class PaymentMomoApi {
       final response = await callProtectedApi(
         viewModel,
         authService: apiAuthService,
-        endpoint: '/api/payments/create-momo-payment',
+        endpoint: '/api/payment/momo-create',
         method: 'POST',
         body: paymentData,
       );

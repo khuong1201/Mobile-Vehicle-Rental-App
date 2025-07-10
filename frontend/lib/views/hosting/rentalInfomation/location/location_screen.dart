@@ -323,11 +323,11 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   Widget _buildDetailLocation(LocationViewModel vm){
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     return Column(
       children: [
         Form(
-          key:_formKey,
+          key:formKey,
           child: CustomTextField(
             controller: _detailLocationController,
             hintText: 'Enter Floor / Apartment number and street name',
@@ -343,7 +343,7 @@ class _LocationScreenState extends State<LocationScreen> {
         CustomButton(title: 'Save',
           width: double.infinity,
           onPressed: (){
-            if (_formKey.currentState!.validate()){
+            if (formKey.currentState!.validate()){
               final fullLocation = vm.getFullLocation().toString();
               final detailAddress = _detailLocationController.text.trim();
               final combinedAddress = detailAddress.isNotEmpty

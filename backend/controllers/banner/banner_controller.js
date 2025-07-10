@@ -1,21 +1,17 @@
 const mongoose = require("mongoose");
 const Banner = require("../../models/Banner_model");
 const { cloudinary } = require("../../config/cloudinary_instance");
+const AppError = require("../../utils/app_error");
 
-// 🟢 Create Banner
-const CreateBanner = async (req, res) => {
+const CreateBanner = async (req, res, next) => {
   try {
     const { bannerName } = req.body;
     const file = req.file;
 
-    if (!bannerName || !file) {
-      return res.status(400).json({ success: false, message: "Missing name or image" });
-    }
+    if (!bannerName || !file) return next(new AppError("Missing name or image", 400, "MISSING_NAME_OR_IMAGE"));
 
     const exists = await Banner.findOne({ bannerName });
-    if (exists) {
-      return res.status(400).json({ success: false, message: "Banner name already exists" });
-    }
+    if (exists) return next(new AppError("Banner name already exists", 400, "BANNER_NAME_EXISTS"));
 
     const newBanner = await Banner.create({
       bannerName,
@@ -29,29 +25,21 @@ const CreateBanner = async (req, res) => {
       message: "Banner created successfully",
     });
   } catch (e) {
-    res.status(500).json({
-      success: false,
-      message: "Error creating banner",
-      error: e.message,
-    });
+    next(err);
   }
 };
 
 // 🟡 Update Banner
-const UpdateBanner = async (req, res) => {
+const UpdateBanner = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { bannerName } = req.body;
     const file = req.file;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, message: "Invalid ID" });
-    }
+    if (!mongoose.Types.ObjectId.isValid(id))  return next(new AppError("Invalid ID", 400, "INVALID_ID"));
 
     const banner = await Banner.findById(id);
-    if (!banner) {
-      return res.status(404).json({ success: false, message: "Banner not found" });
-    }
+    if (!banner) return next(new AppError("Banner not found", 404, "BANNER_NOT_FOUND"));
 
     // Xoá ảnh cũ nếu có file mới
     if (file && banner.bannerPublicId) {
@@ -70,27 +58,19 @@ const UpdateBanner = async (req, res) => {
       message: "Banner updated successfully",
     });
   } catch (e) {
-    res.status(500).json({
-      success: false,
-      message: "Error updating banner",
-      error: e.message,
-    });
+    next(err);
   }
 };
 
 // 🔴 Delete Banner
-const DeleteBanner = async (req, res) => {
+const DeleteBanner = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, message: "Invalid ID" });
-    }
+    if (!mongoose.Types.ObjectId.isValid(id)) return next(new AppError("Invalid ID", 400, "INVALID_ID"));
 
     const banner = await Banner.findByIdAndDelete(id);
-    if (!banner) {
-      return res.status(404).json({ success: false, message: "Banner not found" });
-    }
+    if (!banner) return next(new AppError("Banner not found", 404, "BANNER_NOT_FOUND"));
 
     if (banner.bannerPublicId) {
       await cloudinary.uploader.destroy(`banners/${banner.bannerPublicId}`);
@@ -101,16 +81,12 @@ const DeleteBanner = async (req, res) => {
       message: "Banner deleted successfully",
     });
   } catch (e) {
-    res.status(500).json({
-      success: false,
-      message: "Error deleting banner",
-      error: e.message,
-    });
+    next(err);
   }
 };
 
 // 🔍 Get All Banners
-const GetAllBanner = async (req, res) => {
+const GetAllBanner = async (req, res, next) => {
   try {
     const banners = await Banner.find();
     res.status(200).json({
@@ -119,11 +95,7 @@ const GetAllBanner = async (req, res) => {
       message: "Fetched all banners successfully",
     });
   } catch (e) {
-    res.status(500).json({
-      success: false,
-      message: "Error fetching banners",
-      error: e.message,
-    });
+    next(err);
   }
 };
 
