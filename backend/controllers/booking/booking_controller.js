@@ -189,7 +189,7 @@ const checkExpiredBookings = async () => {
   });
 
   for (const booking of expiredBookings) {
-    const vehicle = await Vehicle.findById(booking.vehicleId);
+    const vehicle = await vehicle.findById(booking.vehicleId);
     if (vehicle && !vehicle.available) {
       vehicle.available = true;
       await vehicle.save();

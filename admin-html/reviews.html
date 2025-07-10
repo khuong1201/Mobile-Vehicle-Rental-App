@@ -4,19 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - Đánh giá & Báo cáo</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="sidebar.css" />
 </head>
 <body class="bg-gray-100 font-sans text-gray-900">
   <div class="flex h-screen">
-    <!-- Sidebar -->
     <div id="sidebar-container"></div>
-
-    <!-- Main Content -->
-    <main class="flex-1 p-6 overflow-y-auto">
+    <main class="flex-1 p-6 overflow-y-auto ml-64">
       <h1 class="text-3xl font-bold mb-6">Quản lý đánh giá & báo cáo</h1>
-      <button onclick="refreshReviewReports()" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 mb-2">Làm mới đánh giá</button>
-      <!-- Danh sách đánh giá -->
+      <button onclick="refreshReviewReports()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4">Làm mới đánh giá</button>
       <section class="mb-12">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-semibold">Danh sách đánh giá</h2>
@@ -35,8 +31,6 @@
           </table>
         </div>
       </section>
-
-      <!-- Danh sách đánh giá bị báo cáo -->
       <section>
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-semibold">Đánh giá bị báo cáo</h2>
@@ -60,7 +54,6 @@
       </section>
     </main>
   </div>
-
   <script>
     fetch("sidebar.html")
       .then(res => res.text())

@@ -1,25 +1,111 @@
 .sidebar {
-    transition: all 0.3s ease;
-    width: 64px; /* collapsed mặc định */
+  width: 250px;
+  background-color: #2d3748;
+  color: #e2e8f0;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  transition: width 0.3s ease;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.sidebar.collapsed {
+  width: 64px;
+}
+
+.sidebar .sidebar-header {
+  padding: 1.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1a202c;
+}
+
+.sidebar .sidebar-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: inline;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-header h2 {
+  opacity: 0;
+}
+
+.sidebar .toggle-btn {
+  background: none;
+  border: none;
+  color: #e2e8f0;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: #e2e8f0;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar-link:hover {
+  background-color: #4a5568;
+  transform: translateX(5px);
+}
+
+.sidebar-link.active {
+  background-color: #4a5568;
+  font-weight: 600;
+}
+
+.sidebar-link svg {
+  width: 24px;
+  height: 24px;
+  margin-right: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.sidebar.collapsed .sidebar-link svg {
+  margin-right: 0;
+}
+
+.sidebar .sidebar-text {
+  display: inline;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-text {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 64px;
   }
-  
-  .sidebar:hover {
-    width: 250px; /* mở rộng khi hover */
+
+  .sidebar.collapsed {
+    width: 64px;
   }
-  
-  .sidebar .sidebar-text {
+
+  .sidebar .sidebar-text, .sidebar .sidebar-header h2 {
     display: none;
   }
-  
-  .sidebar:hover .sidebar-text {
-    display: inline;
+
+  .sidebar .sidebar-header {
+    justify-content: center;
   }
-  
-  .sidebar svg {
-    transition: transform 0.2s ease;
+
+  .flex-1.ml-64 {
+    margin-left: 64px;
   }
-  
-  .sidebar:hover svg {
-    transform: scale(1.05);
-  }
-  
+}

@@ -2,35 +2,28 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - Thương hiệu</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="sidebar.css" />
 </head>
 <body class="bg-gray-100 font-sans">
   <div class="flex h-screen">
-    <!-- Sidebar -->
     <div id="sidebar-container"></div>
-
-    <!-- Main Content -->
-    <div class="flex-1 p-6 overflow-auto">
+    <div class="flex-1 p-6 overflow-auto ml-64">
       <h1 class="text-2xl font-bold mb-6">Quản lý thương hiệu</h1>
-
-      <!-- Buttons -->
       <div class="flex gap-4 mb-4">
         <button onclick="getAllBrands()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
           📋 Tất cả thương hiệu
         </button>
-        <button onclick="refreshBrands()" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 mb-2">Làm mới thương hiệu</button>
+        <button onclick="refreshBrands()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Làm mới thương hiệu</button>
       </div>
-
-      <!-- Form -->
       <div class="bg-white p-6 rounded-lg shadow-md mb-8 max-w-xl">
         <h3 class="text-lg font-semibold mb-4">Thêm / Cập nhật thương hiệu</h3>
         <form id="brandForm" class="space-y-4" enctype="multipart/form-data">
           <input type="hidden" id="brandId" name="brandId" />
           <div>
-            <input id="brandName" name="brandName" type="text" placeholder="Tên thương hiệu" class="w-full p-2 border border-gray-300 rounded" />
+            <input id="brandName" name="brandName" type="text" placeholder="Tên thương hiệu" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
           <div>
             <input id="brandLogo" name="logo" type="file" accept="image/*" class="w-full p-2 border border-gray-300 rounded bg-white" />
@@ -39,8 +32,6 @@
           <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Lưu</button>
         </form>
       </div>
-
-      <!-- Brand Table -->
       <div class="overflow-x-auto">
         <table class="w-full bg-white shadow-md rounded">
           <thead>
@@ -55,8 +46,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Sidebar -->
   <script>
     fetch("sidebar.html")
       .then(res => res.text())
@@ -64,13 +53,11 @@
         document.getElementById("sidebar-container").innerHTML = html;
       });
   </script>
-
-  <!-- Script -->
   <script src="scripts/dashboard.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    getAllBrands();
-  });
-</script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      getAllBrands();
+    });
+  </script>
 </body>
 </html>
