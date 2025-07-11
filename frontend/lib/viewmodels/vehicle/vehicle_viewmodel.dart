@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/vehicle/api_get_brand.dart';
 import 'package:frontend/api_services/vehicle/api_get_vehicle_by_type.dart';
+import 'package:frontend/api_services/vehicle/delete_vehicle.dart';
 import 'package:frontend/api_services/vehicle/get_vehicle.dart';
 import 'package:frontend/api_services/vehicle/update_vehicle.dart';
 import 'package:frontend/models/bank.dart';
@@ -604,4 +605,25 @@ class VehicleViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> deleteVehicleById(
+    BuildContext context, {
+    required String vehicleId,
+  }) async {
+    final response = await ApiDeleteVehicleService.deleteVehicle(
+      this,
+      authService: authService,
+      vehicleId: vehicleId,
+    );
+
+    if (response.success) {
+      _vehicles.removeWhere((v) => v.id == vehicleId);
+      notifyListeners();
+      return true;
+    } else {
+      _handleAuthError(response.message, context);
+      return false;
+    }
+  }
+
 }

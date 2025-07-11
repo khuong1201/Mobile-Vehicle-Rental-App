@@ -184,7 +184,7 @@ class _DriverLicenseListScreenState extends State<DriverLicenseListScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                    vm.errorMessage ?? 'Xoá thất bại',
+                                    vm.errorMessage ?? 'Delete failed',
                                   ),
                                 ),
                               );
@@ -194,7 +194,7 @@ class _DriverLicenseListScreenState extends State<DriverLicenseListScreen> {
                         itemBuilder: (context) => [
                           const PopupMenuItem(
                             value: 'delete',
-                            child: Text('Xoá'),
+                            child: Text('Delete'),
                           ),
                         ],
                       ),

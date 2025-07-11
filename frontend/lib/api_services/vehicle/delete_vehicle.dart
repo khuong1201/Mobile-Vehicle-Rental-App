@@ -3,7 +3,7 @@ import 'package:frontend/api_services/client/api_reponse.dart';
 import 'package:frontend/api_services/util/api_util.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 
-class ApiVehicleService {
+class ApiDeleteVehicleService {
   static Future<ApiResponse<void>> deleteVehicle<T extends ChangeNotifier>(
     T viewModel, {
     required AuthService authService,
