@@ -237,30 +237,30 @@ class ListVehicleState extends State<ListVehicle> {
               ),
             ),
           ),
-          // Positioned(
-          //     top: 8,
-          //     right: 8,
-          //     child: PopupMenuButton<String>(
-          //       icon: Icon(Icons.more_vert, color: Colors.black),
-          //       onSelected: (value) async {
-          //         if (value == 'delete') {
-          //           final vm = context.read<VehicleViewModel>();
-          //           final success = await vm.deleteVehicleById(context, vehicleId: vehicle.id);
-          //           if (!success) {
-          //             ScaffoldMessenger.of(context).showSnackBar(
-          //               SnackBar(content: Text('Delete vehicle failed')),
-          //             );
-          //           }
-          //         }
-          //       },
-          //       itemBuilder: (context) => [
-          //         const PopupMenuItem(
-          //           value: 'delete',
-          //           child: Text('Delete'),
-          //         ),
-          //       ],
-          //     ),
-          //   )
+          Positioned(
+              top: 8,
+              right: 8,
+              child: PopupMenuButton<String>(
+                icon: Icon(Icons.more_vert, color: Colors.black),
+                onSelected: (value) async {
+                  if (value == 'delete') {
+                    final vm = context.read<VehicleViewModel>();
+                    final success = await vm.deleteVehicleById(context, vehicleId: vehicle.id);
+                    if (!success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Delete vehicle failed')),
+                      );
+                    }
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Text('Delete'),
+                  ),
+                ],
+              ),
+            )
           ],
         );
       },
