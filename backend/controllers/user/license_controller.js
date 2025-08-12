@@ -52,6 +52,7 @@ const CreateDriverLicense = async (req, res, next) => {
 
 const UpdateDriverLicense = async (req, res, next) => {
   try {
+    
     const { classLicense, typeOfDriverLicense, licenseNumber } = req.body;
     const frontFile = req.files?.driverLicenseFront?.[0];
     const backFile = req.files?.driverLicenseBack?.[0];

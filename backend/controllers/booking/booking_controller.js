@@ -84,7 +84,16 @@ const createBooking = async (req, res, next) => {
           "LICENSE_REQUIRED"
         )
       );
-
+      const vehicle = await Vehicle.findById(vehicleId);
+      if (!vehicle || !vehicle.available) {
+        return next(
+          new AppError(
+            "Xe này hiện không khả dụng để đặt.",
+            403,
+            "VEHICLE_NOT_AVAILABLE"
+          )
+        );
+      }
     const pickupDateTime = new Date(`${convertDate(pickupDate)}T${pickupTime}`);
     const dropoffDateTime = new Date(
       `${convertDate(dropoffDate)}T${dropoffTime}`

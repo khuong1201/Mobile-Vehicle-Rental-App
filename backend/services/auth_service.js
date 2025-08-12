@@ -33,7 +33,7 @@ const registerUser = async ({ email, password, fullName }) => {
 
   const passwordHash = await bcrypt.hash(password, 10);
   const otp = generateOTP();
-  const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // OTP hết hạn sau 10 phút
+  const otpExpires = new Date(Date.now() + 10 * 60 * 1000); 
 
   user = await User.create({
     email,

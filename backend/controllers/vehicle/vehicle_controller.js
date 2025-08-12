@@ -253,7 +253,8 @@ const UpdateVehicle = async (req, res, next) => {
 
 const DeleteVehicle = async (req, res, next) => {
   try {
-    const vehicle = await Vehicle.findById(req.params.id);
+    const { id } = req.body;
+    const vehicle = await Vehicle.findById(id);
     if (!vehicle)
       return next(new AppError("Không tìm thấy xe", 404, "VEHICLE_NOT_FOUND"));
 

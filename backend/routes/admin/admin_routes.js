@@ -3,9 +3,9 @@ const router = express.Router();
 
 const adminController = require('../../controllers/admin/admin_user_controller');
 const adminMiddleware = require('../../middlewares/admin_middleware');
-const vehicleController = require('../../controllers/vehicle/vehicleController');
+const vehicleController = require('../../controllers/vehicle/vehicle_controller');
 const reviewController = require('../../controllers/review/review_controller');
-const brandController = require('../../controllers/vehicle/brandController');
+const brandController = require('../../controllers/vehicle/brand_controller');
 const bookingController = require('../../controllers/booking/booking_controller');
 const authenticateWeb = require('../../middlewares/auth_web_middleware');
 
