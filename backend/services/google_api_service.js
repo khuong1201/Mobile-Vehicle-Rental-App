@@ -1,7 +1,6 @@
 const axios = require('axios');
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 
-// 🔍 1. Tìm kiếm địa điểm theo từ khóa (Text Search API)
 const searchPlace = async (req, res) => {
   const { keyword } = req.body;
 

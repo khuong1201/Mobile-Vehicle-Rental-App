@@ -20,6 +20,7 @@ class GAuthViewModel extends ChangeNotifier {
 
   Future<User?> signInWithGoogle() async {
     try {
+      await _googleSignIn.signOut();
       final googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return null;
 
@@ -66,8 +67,8 @@ class GAuthViewModel extends ChangeNotifier {
 
   Future<void> signOut() async {
     try {
-      await _googleSignIn.disconnect();
       await _googleSignIn.signOut();
+      await _googleSignIn.disconnect();
       await UserSecureStorage.clearAll();
       user = null;
       notifyListeners();

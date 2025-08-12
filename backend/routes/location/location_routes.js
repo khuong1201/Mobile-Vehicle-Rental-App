@@ -1,16 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const locationController = require('../../controllers/location/location_controller');
+const {
+  getAllProvinces,
+  getDistrictsByProvince,
+  getWardsByDistrict,
+  postDistrictsByProvince,
+  postWardsByDistrict
+} = require('../../controllers/location/location_controller');
 
+router.get('/provinces', getAllProvinces);
+router.get('/provinces/:provinceCode/districts', getDistrictsByProvince);
+router.get('/districts/:districtCode/wards', getWardsByDistrict);
 
-router.get('/provinces', locationController.getAllProvinces);
-
-router.get('/districts/:provinceCode', locationController.getDistrictsByProvince);
-
-router.get('/wards/:districtCode', locationController.getWardsByDistrict);
-
-router.post('/districts', locationController.postDistrictsByProvince);
-
-router.post('/wards', locationController.postWardsByDistrict);
+router.post('/provinces/districts', postDistrictsByProvince);
+router.post('/districts/wards', postWardsByDistrict);
 
 module.exports = router;

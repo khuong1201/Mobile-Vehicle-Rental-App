@@ -8,10 +8,10 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get(
   '/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
-  authController.GoogleOAuthCallback
+  authController.googleOAuthCallback
 );
 
-router.post('/google-login', authController.GoogleLogin);
-router.post('/google-login-endpoint', authController.GoogleLoginEndPoint);
+router.post('/google-login', authController.googleLogin);
+router.post('/google-login-endpoint', authController.googleLoginEndpoint);
 
 module.exports = router;

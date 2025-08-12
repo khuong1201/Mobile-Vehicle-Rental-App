@@ -41,7 +41,7 @@ const cleanupUnverifiedUsers = async () => {
 };
 const cleanupExpiredPendingBookings = async () => {
   try {
-    const cutoffDate = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 giờ trước
+    const cutoffDate = new Date(Date.now() - 24 * 60 * 60 * 1000); 
     const expiredBookings = await Booking.find({
       status: "pending",
       createdAt: { $lt: cutoffDate },

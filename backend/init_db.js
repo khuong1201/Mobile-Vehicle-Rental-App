@@ -52,7 +52,6 @@ async function fetchAndStoreData() {
         console.log(`✅ Tỉnh/thành: ${province.name}`);
       }
 
-      // ➕ Bọc từng request districts
       let districts = [];
       try {
         const districtsResponse = await axios.get(

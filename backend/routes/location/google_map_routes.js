@@ -1,11 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { searchPlace, reverseGeocode, forwardGeocode } = require('../../services/google_api_service');
+const { 
+  searchPlace, 
+  reverseGeocode, 
+  forwardGeocode 
+} = require('../../services/google_api_service');
 const authMiddleware = require('../../middlewares/auth_middleware');
-router.post('/search-place',authMiddleware, searchPlace);
 
-router.post('/reverse-geocode',authMiddleware, reverseGeocode);
+router.post('/searchPlace', authMiddleware, searchPlace);
 
-router.post('/forward-geocode',authMiddleware, forwardGeocode);
+router.post('/reverseGeocode', authMiddleware, reverseGeocode);
+
+router.post('/forwardGeocode', authMiddleware, forwardGeocode);
 
 module.exports = router;

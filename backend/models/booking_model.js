@@ -22,7 +22,6 @@ const BookingSchema = new mongoose.Schema({
   isTaxDeducted: { type: Boolean, default: false },
 },{ timestamps: true });
 
-// Ẩn _id và __v khi trả JSON
 BookingSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj._id;

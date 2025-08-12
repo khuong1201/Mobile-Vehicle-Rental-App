@@ -321,10 +321,10 @@ class _BookingScreenState extends State<BookingScreen> {
                                                   dropOffDate == null) {
                                                 return 'Ngày không hợp lệ';
                                               }
-                                              if (dropOffDate.isBefore(
+                                              if (!dropOffDate.isAfter(
                                                 pickUpDate,
                                               )) {
-                                                return 'Ngày trả không được chọn trước ngày nhận';
+                                                return 'Ngày trả phải sau ngày nhận (không được trùng)';
                                               }
                                               return null;
                                             },
@@ -462,7 +462,7 @@ class _BookingScreenState extends State<BookingScreen> {
                   if (response.success && bookingVM.bookingResult != null) {
                     bookingVM.setSelectedVehicle(widget.vehicle);
                     final bookingId = response.data['bookingId'];
-                    final Map<String,dynamic> updatedBookingData = {
+                    final Map<String, dynamic> updatedBookingData = {
                       ...response
                           .data['booking'], // hoặc bookingVM.bookingResult!
                       'bookingId': bookingId,

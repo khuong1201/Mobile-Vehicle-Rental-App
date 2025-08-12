@@ -3,14 +3,14 @@ const router = express.Router();
 const authController = require('../../controllers/auth/auth_controller');
 const authenticateToken = require('../../middlewares/auth_middleware');
 
-router.post('/register', authController.Register);
-router.post('/login', authController.Login);
-router.post('/web-login', authController.WebLogin);
-router.post('/verify', authController.Verify);
+router.post('/register', authController.register);
+router.post('/login', authController.login);
+router.post('/web-login', authController.webLogin);
+router.post('/verify', authController.verify);
 
-router.post('/refresh-token', authController.Refresh);
-router.post('/refresh-web-token', authController.RefreshWebToken);
+router.post('/refresh-token', authController.refreshToken);
+router.post('/refresh-web-token', authController.refreshWebToken);
 
-router.post('/logout', authenticateToken, authController.Logout);
+router.post('/logout', authenticateToken, authController.logout);
 
 module.exports = router;

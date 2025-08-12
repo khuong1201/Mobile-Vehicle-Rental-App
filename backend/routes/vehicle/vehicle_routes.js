@@ -5,16 +5,18 @@ const authenticateToken = require("../../middlewares/auth_middleware");
 const adminOrOwnerMiddleware = require("../../middlewares/admin_or_owner_middleware");
 const uploadVehicle = require("../../middlewares/multer/upload_vehicle");
 
-router.get("/", authenticateToken, vehicleController.GetAllVehicles);
+router.use(authenticateToken);
 
-router.get("/unavailable", authenticateToken, vehicleController.GetUnavailableVehicles);
+router.get("/", vehicleController.getAllVehicles);
 
-router.get("/type/:type", authenticateToken, vehicleController.GetVehicleByType);
+router.get("/unavailable", vehicleController.getUnavailableVehicles);
 
-router.post("/", authenticateToken, adminOrOwnerMiddleware, uploadVehicle, vehicleController.CreateVehicle);
+router.get("/type/:type", vehicleController.getVehicleByType);
 
-router.put("/:id", authenticateToken, adminOrOwnerMiddleware, uploadVehicle, vehicleController.UpdateVehicle);
+router.post("/", adminOrOwnerMiddleware, uploadVehicle, vehicleController.createVehicle);
 
-router.delete("/:id", authenticateToken, adminOrOwnerMiddleware, vehicleController.DeleteVehicle);
+router.put("/:id", adminOrOwnerMiddleware, uploadVehicle, vehicleController.updateVehicle);
+
+router.delete("/:id", adminOrOwnerMiddleware, vehicleController.deleteVehicle);
 
 module.exports = router;
