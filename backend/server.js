@@ -7,7 +7,7 @@ const session = require("express-session");
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
 const cron = require("node-cron");
-
+const responseFormatter = require("./middlewares/response_formatter");
 const { connectDB } = require("./config/database");
 const { initializePassport } = require("./config/passport");
 const initDB = require("./init_db");
@@ -22,6 +22,11 @@ const {
 
 const app = express();
 app.set("trust proxy", 1);
+
+app.use((req, res, next) => {
+  console.log('Request:', { url: req.url, method: req.method, body: req.body, headers: req.headers });
+  next();
+});
 
 const allowedOrigins =
   process.env.NODE_ENV === "production"
@@ -41,17 +46,17 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.error(`❌ Blocked by CORS: ${origin}`);
       callback(new Error("Không được phép truy cập (CORS)"));
     }
   },
   credentials: true
 };
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+// app.options("*", cors(corsOptions));
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(responseFormatter);
 
 app.use(
   session({
@@ -76,18 +81,23 @@ initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/api/auth", require("./routes/auth/auth_routes"));
-app.use("/api/user", require("./routes/user/user_routes"));
-app.use("/api/brands", require("./routes/vehicle/brand_routes"));
-app.use("/api/vehicles", require("./routes/vehicle/vehicle_routes"));
-app.use("/api/banners", require("./routes/banner/banner_routes"));
-app.use("/api/locations", require("./routes/location/location_routes"));
-app.use("/api/google", require("./routes/location/google_map_routes"));
-app.use("/api/reviews", require("./routes/review/review_routes"));
-app.use("/api/admin", require("./routes/admin/admin_routes"));
-app.use("/api/bookings", require("./routes/booking/booking_routes"));
-app.use("/api/payment/momo", require("./routes/payment/momo_routes"));
-app.use("/api/payment/viettin", require("./routes/payment/viettin_routes"));
+const addRoute = (path, router) => {
+  console.log(`Adding route prefix: /${path}`);
+  app.use(`/api/${path}`, router);
+};
+
+addRoute("auth", require("./routes/auth/auth_routes"));
+addRoute("user", require("./routes/user/user_routes"));
+addRoute("brands", require("./routes/vehicle/brand_routes"));
+addRoute("vehicles", require("./routes/vehicle/vehicle_routes"));
+addRoute("banners", require("./routes/banner/banner_routes"));
+addRoute("locations", require("./routes/location/location_routes"));
+addRoute("google", require("./routes/location/google_map_routes"));
+addRoute("reviews", require("./routes/review/review_routes"));
+addRoute("admin", require("./routes/admin/admin_routes"));
+addRoute("bookings", require("./routes/booking/booking_routes"));
+addRoute("payment/momo", require("./routes/payment/momo_routes"));
+addRoute("payment/viettin", require("./routes/payment/viettin_routes"));
 
 app.use(errorHandler);
 

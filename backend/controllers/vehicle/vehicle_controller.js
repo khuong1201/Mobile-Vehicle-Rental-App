@@ -14,32 +14,42 @@ const asyncHandler = require("../../utils/async_handler");
 const getAllVehicles = asyncHandler(async (req, res) => {
   await checkExpiredBookings();
 
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const sort = req.query.sort || "-createdAt";
+  const { page = 1, limit = 10, sort = "-createdAt", search, brand, type, available } = req.query;
+  const query = { status: { $nin: ["pending", "rejected"] } };
+  if (search) {
+    query.vehicleName = { $regex: search, $options: "i" };
+  }
 
-  const result = await paginate(
-    Vehicle,
-    { available: true, status: { $nin: ["pending", "rejected"] } },
-    {
-      page,
-      limit,
-      sort,
-      populate: [
-        { path: "brand", select: "_id brandId brandName brandLogo" },
-        { path: "ownerId", select: "_id fullName email role" },
-      ],
-    }
-  );
+  if (brand) {
+    query.brand = brand;
+  }
 
-  res.status(200).json(result);
+  if (type) {
+    query.type = type;
+  }
+
+  if (available !== undefined) {
+    query.available = available === "true";
+  }
+
+  const result = await paginate(Vehicle, query, {
+    page: parseInt(page),
+    limit: parseInt(limit),
+    sort,
+    populate: [
+      { path: "brand", select: "_id brandId brandName brandLogo" },
+      { path: "ownerId", select: "_id fullName email role" },
+    ],
+  });
+
+  res.success("Fetched vehicles successfully", result);
 });
 
 const getAllVehiclesForAdmin = asyncHandler(async (req, res) => {
   const vehicles = await Vehicle.find().populate("brand", "brandName");
 
-  res.json({
-    vehicles: vehicles.map(v => ({
+  res.success(
+    vehicles.map(v => ({
       vehicleId: v.vehicleId,
       vehicleName: v.vehicleName,
       licensePlate: v.licensePlate,
@@ -49,14 +59,15 @@ const getAllVehiclesForAdmin = asyncHandler(async (req, res) => {
       images: v.images,
       createdAt: v.createdAt,
     })),
-  });
+    "Fetched all vehicles for admin"
+  );
 });
 
 const getVehiclePending = asyncHandler(async (req, res) => {
   const vehicles = await Vehicle.find({ status: "pending" }).populate("brand", "brandName");
 
-  res.json({
-    vehicles: vehicles.map(v => ({
+  res.success(
+    vehicles.map(v => ({
       vehicleId: v.vehicleId,
       vehicleName: v.vehicleName,
       licensePlate: v.licensePlate,
@@ -65,7 +76,8 @@ const getVehiclePending = asyncHandler(async (req, res) => {
       images: v.images,
       status: v.status,
     })),
-  });
+    "Fetched pending vehicles"
+  );
 });
 
 const changeVehicleStatus = asyncHandler(async (req, res, next) => {
@@ -80,7 +92,7 @@ const changeVehicleStatus = asyncHandler(async (req, res, next) => {
   vehicle.status = status;
   await vehicle.save();
 
-  res.json({ message: "Cập nhật trạng thái xe thành công" });
+  res.success(vehicle, "Cập nhật trạng thái xe thành công");
 });
 
 const createVehicle = asyncHandler(async (req, res, next) => {
@@ -143,7 +155,7 @@ const createVehicle = asyncHandler(async (req, res, next) => {
       break;
   }
 
-  res.status(201).json(vehicle);
+  res.success(vehicle, "Vehicle created successfully", 201);
 });
 
 const updateVehicle = asyncHandler(async (req, res, next) => {
@@ -173,7 +185,7 @@ const updateVehicle = asyncHandler(async (req, res, next) => {
     { new: true }
   );
 
-  res.status(200).json(updated);
+  res.success(updated, "Vehicle updated successfully");
 });
 
 const deleteVehicle = asyncHandler(async (req, res, next) => {
@@ -190,7 +202,7 @@ const deleteVehicle = asyncHandler(async (req, res, next) => {
   }
 
   await Vehicle.findByIdAndDelete(id);
-  res.status(200).json({ message: "Xóa xe thành công" });
+  res.success(null, "Xóa xe thành công");
 });
 
 const getVehicleByType = asyncHandler(async (req, res, next) => {
@@ -218,13 +230,13 @@ const getVehicleByType = asyncHandler(async (req, res, next) => {
     }
   );
 
-  res.status(200).json(result);
+  res.success(result, "Fetched vehicles by type successfully");
 });
 
 const getUnavailableVehicles = asyncHandler(async (req, res) => {
   await checkExpiredBookings();
   const vehicles = await Vehicle.find({ available: false });
-  res.status(200).json(vehicles);
+  res.success(vehicles, "Fetched unavailable vehicles");
 });
 
 module.exports = {

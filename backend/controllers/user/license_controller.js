@@ -18,10 +18,7 @@ const getDriverLicenses = asyncHandler(async (req, res, next) => {
     return next(new AppError("Không tìm thấy người dùng", 404, "USER_NOT_FOUND"));
   }
 
-  res.json({
-    message: "Lấy danh sách giấy phép lái xe thành công",
-    license: user.license || [],
-  });
+  return res.success("Lấy danh sách giấy phép lái xe thành công", { licenses: user.license || [] }, { code: "LICENSES_FETCHED" });
 });
 
 const createDriverLicense = asyncHandler(async (req, res, next) => {
@@ -38,7 +35,9 @@ const createDriverLicense = asyncHandler(async (req, res, next) => {
   }
 
   const user = await User.findById(req.user.id);
-  if (!user) return next(new AppError("Không tìm thấy người dùng", 404, "USER_NOT_FOUND"));
+  if (!user) {
+    return next(new AppError("Không tìm thấy người dùng", 404, "USER_NOT_FOUND"));
+  }
 
   const exists = user.license?.some((l) => l.classLicense === classLicense);
   if (exists) {
@@ -59,25 +58,31 @@ const createDriverLicense = asyncHandler(async (req, res, next) => {
   user.license.push(newLicense);
   await user.save();
 
-  res.json({
-    message: "Tạo giấy phép lái xe thành công",
-    license: user.license,
-  });
+  return res.success("Tạo giấy phép lái xe thành công", { licenses: user.license }, { code: "LICENSE_CREATED" });
 });
 
 const updateDriverLicense = asyncHandler(async (req, res, next) => {
-  const { classLicense, typeOfDriverLicense, licenseNumber } = req.body;
+  const { licenseId, typeOfDriverLicense, classLicense, licenseNumber } = req.body;
   const frontFile = req.files?.driverLicenseFront?.[0];
   const backFile = req.files?.driverLicenseBack?.[0];
 
-  if (!classLicense || !typeOfDriverLicense || !licenseNumber) {
+  if (!typeOfDriverLicense || !classLicense || !licenseNumber) {
     return next(new AppError("Thiếu trường bắt buộc", 400, "MISSING_FIELDS"));
   }
 
   const user = await User.findById(req.user.id);
-  if (!user) return next(new AppError("Không tìm thấy người dùng", 404, "USER_NOT_FOUND"));
+  if (!user) {
+    return next(new AppError("Không tìm thấy người dùng", 404, "USER_NOT_FOUND"));
+  }
 
-  const index = user.license?.findIndex((l) => l.classLicense === classLicense);
+  // Prefer licenseId if provided; otherwise fall back to classLicense
+  let index = -1;
+  if (licenseId) {
+    index = user.license?.findIndex((l) => String(l._id) === String(licenseId));
+  } else {
+    index = user.license?.findIndex((l) => l.classLicense === classLicense);
+  }
+
   if (index === -1) {
     return next(new AppError("Không tìm thấy license", 404, "LICENSE_NOT_FOUND"));
   }
@@ -86,27 +91,20 @@ const updateDriverLicense = asyncHandler(async (req, res, next) => {
   await deleteOldLicenseImages(license);
 
   user.license[index] = {
-    ...license,
+    ...license.toObject?.() || license,
     typeOfDriverLicense,
+    classLicense,
     licenseNumber,
-    classLicense: classLicense || license.classLicense,
     driverLicenseFront: frontFile ? frontFile.path : license.driverLicenseFront,
     driverLicenseBack: backFile ? backFile.path : license.driverLicenseBack,
-    driverLicenseFrontPublicId: frontFile
-      ? frontFile.filename
-      : license.driverLicenseFrontPublicId,
-    driverLicenseBackPublicId: backFile
-      ? backFile.filename
-      : license.driverLicenseBackPublicId,
+    driverLicenseFrontPublicId: frontFile ? frontFile.filename : license.driverLicenseFrontPublicId,
+    driverLicenseBackPublicId: backFile ? backFile.filename : license.driverLicenseBackPublicId,
     status: "pending",
   };
 
   await user.save();
 
-  res.json({
-    message: "Cập nhật giấy phép lái xe thành công",
-    license: user.license,
-  });
+  return res.success("Cập nhật giấy phép lái xe thành công", { licenses: user.license }, { code: "LICENSE_UPDATED" });
 });
 
 const deleteDriverLicense = asyncHandler(async (req, res, next) => {
@@ -116,9 +114,11 @@ const deleteDriverLicense = asyncHandler(async (req, res, next) => {
   }
 
   const user = await User.findById(req.user.id);
-  if (!user) return next(new AppError("Không tìm thấy người dùng", 404, "USER_NOT_FOUND"));
+  if (!user) {
+    return next(new AppError("Không tìm thấy người dùng", 404, "USER_NOT_FOUND"));
+  }
 
-  const index = user.license?.findIndex((l) => l.licenseId === licenseId);
+  const index = user.license?.findIndex((l) => String(l._id) === String(licenseId));
   if (index === -1) {
     return next(new AppError("Không tìm thấy license", 404, "LICENSE_NOT_FOUND"));
   }
@@ -129,10 +129,7 @@ const deleteDriverLicense = asyncHandler(async (req, res, next) => {
   user.license.splice(index, 1);
   await user.save();
 
-  res.json({
-    message: "Xoá giấy phép thành công",
-    license: user.license,
-  });
+  return res.success("Xoá giấy phép thành công", { licenses: user.license }, { code: "LICENSE_DELETED" });
 });
 
 module.exports = {

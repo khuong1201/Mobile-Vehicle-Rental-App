@@ -1,13 +1,20 @@
+const { v4: uuidv4 } = require("uuid");
 module.exports = (err, req, res, next) => {
   const statusCode = err.statusCode || 500;
-  const errorCode = err.errorCode || 'INTERNAL_ERROR';
-  const message = err.message || 'Something went wrong';
-  if (process.env.NODE_ENV === 'development') {
+  const errorCode = err.errorCode || "INTERNAL_ERROR";
+  const message = err.message || "Something went wrong";
+
+  if (process.env.NODE_ENV === "development") {
     console.error("🔥 Error:", err);
   }
-  res.status(statusCode).json({
+
+  return res.status(statusCode).json({
     success: false,
+    message,
     errorCode,
-    message
+    data: null,
+    meta: {},
+    timestamp: new Date().toISOString(),
+    requestId: req.id || uuidv4(),
   });
 };

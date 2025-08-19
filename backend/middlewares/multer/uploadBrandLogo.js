@@ -5,7 +5,7 @@ const cloudinary = require('../../config/cloudinary_instance');
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'brands', // 👈 đặt logo thương hiệu vào folder `brands`
+    folder: 'brands',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
     public_id: (req, file) => `${Date.now()}_${file.originalname}`,
   },

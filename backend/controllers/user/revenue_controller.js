@@ -1,4 +1,4 @@
-const { GetRevenueByOwner } = require("../../services/user_revenue_service");
+const { GetRevenueByOwner } = require("../../utils/revenue");
 const AppError = require("../../utils/app_error");
 const asyncHandler = require("../../utils/async_handler");
 
@@ -21,10 +21,10 @@ const checkOwnerMonthlyTax = asyncHandler(async (req, res, next) => {
 
   const data = await GetRevenueByOwner(userId, parsedMonth, parsedYear);
 
-  res.json({
-    message: `Tax & Revenue for owner ${userId} in ${data.month}/${data.year}`,
-    ...data,
-  });
+  return res.success(
+    `Tax & Revenue for owner ${userId} in ${data.month}/${data.year}`,
+    data
+  );
 });
 
 module.exports = { checkOwnerMonthlyTax };

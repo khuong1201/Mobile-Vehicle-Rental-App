@@ -11,14 +11,14 @@ const storage = new CloudinaryStorage({
       folder = `vehicles/${req.user.id}`;
     }
     const cleanFileName = file.originalname.replace(/\.[^/.]+$/, "");
-    const ext = path.extname(file.originalname).toLowerCase() || ".jpg"; // Mặc định .jpg nếu không có phần mở rộng
+    const ext = path.extname(file.originalname).toLowerCase() || ".jpg";
 
     return {
       folder,
       allowed_formats: ["jpg", "jpeg", "png"],
       public_id: `${Date.now()}_${cleanFileName}`,
       resource_type: "image",
-      format: ext.replace(".", ""), // Đảm bảo định dạng khớp với Cloudinary
+      format: ext.replace(".", ""),
     };
   },
 });
@@ -30,7 +30,6 @@ const fileFilter = (req, file, cb) => {
   const allowedExtensions = [".jpg", ".jpeg", ".png"];
   const fileExt = path.extname(file.originalname).toLowerCase();
   
-  // Kiểm tra cả MIME type và phần mở rộng
   if (!allowedMimeTypes.includes(file.mimetype) || !allowedExtensions.includes(fileExt)) {
     console.log(`❌ File rejected: ${file.originalname}, Ext: ${fileExt}, MIME: ${file.mimetype}`);
     return cb(new Error("Chỉ chấp nhận tệp JPG hoặc PNG"), false);
@@ -42,7 +41,7 @@ const fileFilter = (req, file, cb) => {
 
 const uploadVehicle = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // Giới hạn 5MB
+  limits: { fileSize: 5 * 1024 * 1024 }, 
   fileFilter,
 });
 

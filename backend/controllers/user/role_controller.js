@@ -24,26 +24,29 @@ const updateUserRole = asyncHandler(async (req, res, next) => {
   const isAdmin = req.user.role === "admin";
 
   if (newRole === "admin" && !isAdmin) {
-    return next(new AppError("Chỉ admin mới có thể gán vai trò admin", 403, "FORBIDDEN_ADMIN_ASSIGNMENT"));
+    return next(
+      new AppError("Chỉ admin mới có thể gán vai trò admin", 403, "FORBIDDEN_ADMIN_ASSIGNMENT")
+    );
   }
   if (!isSelf && !isAdmin) {
-    return next(new AppError("Bạn chỉ được thay đổi vai trò của chính mình", 403, "FORBIDDEN_SELF_ONLY"));
+    return next(
+      new AppError("Bạn chỉ được thay đổi vai trò của chính mình", 403, "FORBIDDEN_SELF_ONLY")
+    );
   }
   if (!isAdmin && newRole !== "owner") {
-    return next(new AppError("Bạn chỉ được chuyển sang vai trò 'owner'", 403, "FORBIDDEN_ROLE_CHANGE"));
+    return next(
+      new AppError("Bạn chỉ được chuyển sang vai trò 'owner'", 403, "FORBIDDEN_ROLE_CHANGE")
+    );
   }
 
   user.role = newRole;
   await user.save();
 
-  res.json({
-    message: "User role updated successfully",
-    updatedUser: {
-      id: user._id,
-      email: user.email,
-      fullName: user.fullName,
-      role: user.role,
-    },
+  return res.success("User role updated successfully", {
+    id: user._id,
+    email: user.email,
+    fullName: user.fullName,
+    role: user.role,
   });
 });
 

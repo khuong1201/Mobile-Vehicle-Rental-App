@@ -7,28 +7,21 @@ servers:
 
 paths:
   /admin:
-    $ref: './swagger/admin.yaml#/paths/~1admin'
-  
+    $ref: './swagger/admin.yaml#/paths'
   /auth:
-    $ref: './swagger/auth.yaml#/paths/~1auth'
-
+    $ref: './swagger/auth.yaml#/paths'
   /banner:
-    $ref: './swagger/banner.yaml#/paths/~1banner'
-
+    $ref: './swagger/banner.yaml#/paths'
   /booking:
-    $ref: './swagger/booking.yaml#/paths/~1booking'
-
+    $ref: './swagger/booking.yaml#/paths'
   /location:
-    $ref: './swagger/location.yaml#/paths/~1location'
-
+    $ref: './swagger/location.yaml#/paths'
   /payment:
-    $ref: './swagger/payment.yaml#/paths/~1payment'
-
+    $ref: './swagger/payment.yaml#/paths'
   /review:
-    $ref: './swagger/review.yaml#/paths/~1review'
-
+    $ref: './swagger/review.yaml#/paths'
   /user:
-    $ref: './swagger/user.yaml#/paths/~1user'
-
+    $ref: './swagger/user.yaml#/paths'
   /vehicle:
-    $ref: './swagger/vehicle.yaml#/paths/~1vehicle'
+    $ref: './swagger/vehicle.yaml#/paths'
+

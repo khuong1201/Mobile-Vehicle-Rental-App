@@ -3,6 +3,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user_model");
+const EmailVerification = require("../models/email_verification");
 const emailService = require("./email_service");
 
 const generateTokens = (user) => {
@@ -40,10 +41,14 @@ const registerUser = async ({ email, password, fullName }) => {
     passwordHash,
     fullName,
     verified: false,
-    otp,
-    otpExpires,
     role: "renter",
     points: 0,
+  });
+  await EmailVerification.create({
+    userId: user._id,
+    otp,
+    expiresAt: otpExpires,
+    isUsed: false,
   });
 
   await emailService.sendOTP({ email, otp, purpose: "registration" });
@@ -76,7 +81,6 @@ const loginUser = async ({ email, password }) => {
 
   return {
     accessToken,
-    refreshToken,
     user: {
       id: user._id,
       userId: user.userId,
@@ -91,20 +95,35 @@ const loginUser = async ({ email, password }) => {
 };
 
 const verifyEmail = async ({ email, otp }) => {
-  const user = await User.findOne({ email, otp });
+  const user = await User.findOne({ email });
   if (!user) {
-    throw new Error("Invalid OTP or email");
+    throw new Error("User not found");
   }
 
-  if (user.otpExpires < Date.now()) {
-    throw new Error("OTP has expired");
-  }
+  const verification = await EmailVerification.findOne({
+    userId: user._id,
+    otp,
+    isUsed: false,
+    expiresAt: { $gt: new Date() },
+  });
 
+  if (!verification) {
+    throw new Error("Invalid or expired OTP");
+  }
   user.verified = true;
-  user.otp = undefined;
-  user.otpExpires = undefined;
   await user.save();
-  return user;
+
+  verification.isUsed = true;
+  await verification.save();
+
+  return {
+    message: "Email verified successfully",
+    user: {
+      id: user._id,
+      email: user.email,
+      verified: user.verified,
+    },
+  };
 };
 
 const refreshAccessToken = async (refreshToken) => {
