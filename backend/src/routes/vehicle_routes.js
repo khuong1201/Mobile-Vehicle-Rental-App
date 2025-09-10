@@ -23,6 +23,7 @@ router.use(authenticateJWT);
 router.get("/", vehicleController.getAllVehicles);
 router.get("/unavailable", vehicleController.getUnavailableVehicles);
 router.get("/type/:type", vehicleController.getVehicleByType);
+router.get("/:userId", vehicleController.getVehicleByOwner);
 
 router.post(
     "/",

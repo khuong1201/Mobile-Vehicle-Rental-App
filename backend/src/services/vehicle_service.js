@@ -61,6 +61,9 @@
       return this.vehicleRepo.find(filter);
     }
 
+    async getVehicleByOwner(id){
+      return this.vehicleRepo.findVehicleByOwnerId(id);
+    }
     async getVehicleByType(type) {
       return this.vehicleRepo.find({ type: type });
     }
