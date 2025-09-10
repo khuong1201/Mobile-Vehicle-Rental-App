@@ -4,4 +4,5 @@ export default class IVehicleRepo extends IRepo {
     async findByType(type) { throw new Error("Not implemented"); }
     async findUnavailable() { throw new Error("Not implemented"); }
     async createByType(type, data) { throw new Error("Not implemented"); }
+    async findVehicleByOwnerId(userId) { throw new Error("Not implemented"); }
 }
