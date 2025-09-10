@@ -1,0 +1,6 @@
+node_modules
+config/serviceAccountKey.json
+.env
+google-service.json
+package-lock.json
+rental-vehicle-app-firebase-adminsdk-fbsvc-c318e5e84c.json
