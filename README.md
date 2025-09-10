@@ -1,124 +1,238 @@
-# 🚗 Mobile Vehicle Rental App
+# 🚗 Vehicle Rental App
 
-**Mobile Vehicle Rental App** is an innovative, cross-platform solution designed to streamline the vehicle rental process. It enables users to easily **browse, book, and manage rentals** for cars, motorcycles, and electric bicycles. This project is ideal for **startups or businesses** aiming to launch a **scalable and modern vehicle rental service**.
+**Vehicle Rental App** is a comprehensive full-stack application designed for users to register, search for, and book various types of vehicles (motorbikes, cars, etc.). Users can also become hosts and list their own vehicles for rent.
 
 ---
 
 ## 📱 Project Overview
 
-The app provides:
+Features include:
 
-- 🔍 Browsing and filtering vehicles by type, location, and rental duration  
-- 📆 Viewing and managing **rental history** and **reservations**  
-- 🗺️ Map integration for selecting pickup locations  
-- 💳 (Planned) Integration with online payment services  
-
-With increasing demand for smart mobility, this platform offers a **flexible, efficient**, and **user-friendly** rental experience.
+* 🔍 Search and browse vehicles
+* 📝 Register as a user or host
+* 🗖️ Book and manage reservations
+* 📊 View rental and transaction history
+* 📍 Discover vehicles via map
+* 💳 MoMo integration for secure payments
 
 ---
 
-## 🔧 Technologies Used
+## 🛠️ Tech Stack
 
-### 🖥 Backend:
-- **Node.js + Express** – RESTful API development, scalable and maintainable
-- **MongoDB** – NoSQL database for flexible data storage
+### Backend:
 
+* Node.js
+* Express
+* MongoDB (Mongoose)
 
-### 📱 Frontend:
-- **Flutter + Dart** – Cross-platform mobile development (iOS & Android)
+### Frontend:
 
-### Figma: 
-- **UI/UX design and prototyping
+* Flutter
+* Dart
 
-### 🐳 Deployment:
-- **Docker + Docker Compose** – Containerized deployment for consistent environments
+### Dev & Cloud:
+
+* Docker, Docker Compose
+* Postman
+* Git, GitHub, GitHub Actions
+* Google Cloud Console (OAuth)
+* Cloudinary (image uploads)
 
 ---
 
 ## 🏗️ Architecture Overview
 
-### 📲 Frontend – MVVM Architecture
-The frontend is built using the **MVVM (Model-View-ViewModel)** design pattern:
+### 📲 Frontend – MVVM
 
-- **Model**: Data retrieved from the API/backend
-- **View**: UI screens and Flutter widgets
-- **ViewModel**: Handles logic, state management, and communication between View and Model
+* **Model**: API data models
+* **View**: UI components
+* **ViewModel**: Logic & state management
 
-### 🖥 Backend – MVC Architecture
-The backend follows the **MVC (Model-View-Controller)** structure:
+### 👥 Backend – MVC
 
-- **Model**: MongoDB schemas (via Mongoose)
-- **Controller**: Business logic and data operations
-- **Routes**: Defines RESTful API endpoints returning JSON
+* **Model**: Mongoose schemas
+* **Controller**: Business logic
+* **Routes**: RESTful APIs
 
 ---
 
-## 🔄 Frontend–Backend Communication
+## 🔌 API & Integrations
 
-- **Protocol**: RESTful API over HTTPS  
-- **Authentication**: Firebase ID Token passed via `Authorization` header  
-- **Data Format**: JSON responses for easy parsing in Flutter  
-
----
-
-## 🛠️ Docker – Simplified Deployment
-
-The full system is containerized with **Docker**, making it easy to deploy across development and production environments. Using **Docker Compose**, the app runs as isolated services:
-
-- `backend` – Node.js API server  
-- `frontend` – Flutter app build (web or mobile preview)  
-- `mongodb` – NoSQL database  
-
-This setup ensures consistency, simplifies scaling, and reduces configuration errors.
+* RESTful API with Express
+* Google OAuth for authentication
+* Cloudinary for image hosting
+* Postman for testing
+* JSON format for data exchange
 
 ---
 
-## 📌 Core Features
+## 🐳 Dockerized Deployment
 
-- 🚘 Vehicle browsing with filters for type, location, and availability
-- 📆 Rental history and active booking management
-- 💳 Planned integration with payment gateways
-- 🧾 Transaction and booking history
-- 📍 Map support for pickup location selection
-- 🧩 Clean, modular architecture – easy to scale and maintain
+* `backend`, `frontend`, `mongodb` containers
+* Managed via Docker Compose
+* Fully isolated and portable environment
 
 ---
+
+## 🔄 CI/CD Pipeline
+
+* Git & GitHub for version control
+* GitHub Actions for automated build/test/deploy
+
+---
+
+## 📋 Core Features
+
+* 👤 User registration & login
+* 🏠 Host your own vehicles
+* 🔍 Smart filters: type, location, availability
+* 🗕️ Reservation system
+* 💰 MoMo-based payment support
+* 📍 Map integration
+* 📱 Mobile responsive UI
+
+---
+
 ## 📁 Project Structure
-```plaintext
-  mobile-vehicle-rental-app/
-  │
-  ├── backend/                      
-  │   ├── controllers/            
-  │   ├── models/              
-  │   ├── routes/                
-  │   ├── middlewares/          
-  │   ├── utils/                   
-  │   ├── config/                   
-  │   ├── services/                  
-  │   ├── app.js                     
-  │   └── server.js                  
-  │
-  ├── frontend/                     
-  │   ├── lib/
-  │   │   ├── models/            
-  │   │   ├── views/            
-  │   │   ├── viewmodels/            
-  │   │   ├── services/            
-  │   │   ├── utils/               
-  │   │   ├── routes/            
-  │   │   └── main.dart        
-  │   └── pubspec.yaml             
-  │
-  ├── docker/                       
-  │   ├── backend.Dockerfile
-  │   ├── frontend.Dockerfile
-  │   └── docker-compose.yml
-  │
-  ├── mongodb/                       
-  │   └── init-db.js
-  │
-  └── README.md                   
+
+```
+vehicle-rental-app/
+│
+├── backend/                      
+│   ├── controllers/             
+│   ├── models/                  
+│   ├── routes/                  
+│   ├── middlewares/            
+│   ├── utils/                   
+│   ├── config/                  
+│   ├── services/                
+│   ├── app.js                   
+│   └── server.js                
+│
+├── frontend/                    
+│   ├── lib/
+│   │   ├── models/              
+│   │   ├── views/               
+│   │   ├── viewmodels/          
+│   │   ├── services/            
+│   │   ├── utils/               
+│   │   ├── routes/              
+│   │   └── main.dart            
+│   └── pubspec.yaml             
+│
+├── docker/                      
+│   ├── backend.Dockerfile       
+│   ├── frontend.Dockerfile      
+│   └── docker-compose.yml       
+│
+├── mongodb/                     
+│   └── init-db.js               
+│
+└── .github/                     
+    └── workflows/              
+        └── ci-cd.yml
+```
+
+---
+
+## 🚀 Installation & Setup
+
+### Prerequisites
+
+* Node.js (v16+)
+* Flutter SDK (v3+)
+* Docker + Docker Compose
+* MongoDB (local/cloud)
+* Google Cloud Console & Cloudinary accounts
+
+### 🔧 Backend Setup
+
+```bash
+cd backend
+npm install
+cp .env.example .env # fill in your env variables
+npm run dev
+```
+
+### 📱 Frontend Setup
+
+```bash
+cd frontend
+flutter pub get
+# create .env file with:
+# API_BASE_URL=http://localhost:5000
+# GOOGLE_CLIENT_ID=your_google_client_id
+flutter run
+```
+
+### 🐳 Docker Setup
+
+```bash
+docker-compose up --build
+```
+
+* Backend: [http://localhost:5000](http://localhost:5000)
+* Flutter: Access via emulator or device
+
+### 🧰 API Testing
+
+* Import `postman_collection.json` from `backend/`
+* Set `API_BASE_URL` in Postman
+
+---
+
+## 🔐 Environment Variables
+
+Example `.env` for backend:
+
+```env
+PORT=5000
+NODE_ENV=development
+SESSION_SECRET=your_secret
+MONGO_URI=mongodb://localhost:27017/vehicle-rental-db
+
+JWT_SECRET=your_jwt
+JWT_REFRESH_SECRET=your_refresh_secret
+ACCESS_TOKEN_EXPIRES=15m
+REFRESH_TOKEN_EXPIRES=7d
+
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_password
+
+CLOUDINARY_CLOUD_NAME=your_cloud
+CLOUDINARY_API_KEY=your_key
+CLOUDINARY_API_SECRET=your_secret
+
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_client_secret
+GOOGLE_API_KEY=your_api_key
+CALLBACK_URL=http://localhost:5000/api/auth/google/callback
+
+MOMO_PARTNER_CODE=MOMO
+MOMO_ACCESS_KEY=F8BBA842ECF85
+MOMO_SECRET_KEY=K951B6PE1waDMi640xX08PD3vg6EkVlz
+MOMO_REDIRECT_URL=vehiclerental://payment-success
+MOMO_IPN_URL=https://your-domain.com/api/payment/momo/ipn
+```
+
+---
+
+## 🛡️ Notes & Recommendations
+
+* ❌ Never commit `.env` files (add to `.gitignore`)
+* ✅ Use separate secrets for development & production
+* 🔐 Store secrets with tools like Vault, dotenv-safe, etc.
+* 🌐 Use HTTPS in production
+* 🗲️ For MoMo, replace test keys with your real credentials when going live
+
+---
 
 ## 📄 License
 
-This project is released under the **MIT License**. See the [LICENSE](./LICENSE) file for more information.
+Released under the **MIT License** – see [LICENSE](./LICENSE) for details.
+
+---
+
+## 📬 Contact
+
+For feedback or questions, connect via [GitHub](https://github.com/your-username) or email.

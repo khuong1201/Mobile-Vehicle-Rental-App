@@ -2,28 +2,28 @@ services:
   backend:
     build:
       context: ../backend
-      dockerfile: Dockerfile
-      # dockerfile: Dockerfile.dev
+      # dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - "5000:5000"
     working_dir: /app
     env_file:
       - ../backend/.env
     # chay development
-    # volumes:
-    #   - ../backend:/app
+    volumes:
+      - ../backend:/app
     # depends_on:
     #   - mongodb
     restart: on-failure
-    # command: npm run dev
-    command: npm run start
-  # frontend:
-  #   build: ../admin-html
-  #   ports:
-  #     - "5500:80"
-  #   volumes:
-  #     - ../admin-html:/usr/share/nginx/html:ro
-  #   restart: unless-stopped
+    command: npm run dev
+    # command: npm run start
+  frontend:
+    build: ../admin-html
+    ports:
+      - "5500:80"
+    volumes:
+      - ../admin-html:/usr/share/nginx/html:ro
+    restart: unless-stopped
 
 
   # frontend_flutter:

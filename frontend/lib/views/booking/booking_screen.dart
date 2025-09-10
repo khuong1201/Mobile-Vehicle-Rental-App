@@ -462,7 +462,7 @@ class _BookingScreenState extends State<BookingScreen> {
                   if (response.success && bookingVM.bookingResult != null) {
                     bookingVM.setSelectedVehicle(widget.vehicle);
                     final bookingId = response.data['bookingId'];
-                    final Map<String,dynamic> updatedBookingData = {
+                    final Map<String, dynamic> updatedBookingData = {
                       ...response
                           .data['booking'], // hoặc bookingVM.bookingResult!
                       'bookingId': bookingId,
