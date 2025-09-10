@@ -77,12 +77,7 @@ class _RootAppState extends State<RootApp> {
         ChangeNotifierProvider(create: (_) => GAuthViewModel()),
         ChangeNotifierProvider(create: (_) => UserViewModel()..loadUser()),
         Provider(create: (context) => AuthService(context)),
-        ChangeNotifierProvider(
-          create:
-              (context) => VehicleViewModel(
-                Provider.of<AuthService>(context, listen: false),
-              ),
-        ),
+        ChangeNotifierProvider(create:(context) => VehicleViewModel(Provider.of<AuthService>(context, listen: false))),
         ChangeNotifierProvider(create: (_) => PersonalInfoViewModel()),
         ChangeNotifierProvider(
           create:
@@ -108,18 +103,20 @@ class _RootAppState extends State<RootApp> {
       child: MaterialApp(
         title: 'Vehicle Rental App',
         debugShowCheckedModeBanner: false,
-        initialRoute: '/splash',
-        routes: {
-          '/splash': (context) => const SplashScreen(),
-          '/welcome': (context) => const WelcomeScreen(),
-          '/home': (context) => const HomePage(),
-          '/login': (context) => const SignInScreen(),
-        },
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
+        home: SignInScreen(),
+        // initialRoute: '/splash',
+        // routes: {
+        //   '/splash': (context) => const SplashScreen(),
+        //   '/welcome': (context) => const WelcomeScreen(),
+        //   '/home': (context) => const HomePage(),
+        //   '/login': (context) => const SignInScreen(),
+        // },
+
+        // localizationsDelegates: const [
+        //   GlobalMaterialLocalizations.delegate,
+        //   GlobalWidgetsLocalizations.delegate,
+        //   GlobalCupertinoLocalizations.delegate,
+        // ],
         supportedLocales: const [Locale('en'), Locale('vi')],
       ),
     );

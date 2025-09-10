@@ -74,9 +74,13 @@ class _SignInScreenState extends State<SignInScreen> {
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _emailController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
+                          }
+                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                            return 'Please enter a valid email';
                           }
                           return null;
                         },
@@ -88,9 +92,17 @@ class _SignInScreenState extends State<SignInScreen> {
                       CustomTextField(
                         controller: _passwordController,
                         isPassword: true,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your Password';
+                          }
+                          if (value.length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+                          final regex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$');
+                          if (!regex.hasMatch(value)) {
+                            return 'Password must include upper, lower, number and special character';
                           }
                           return null;
                         },
@@ -110,8 +122,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                   });
                                 },
                                 visualDensity: VisualDensity(horizontal: -4),
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
+                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 side: BorderSide(
                                   color: Color(0xFFD5D7DB),
                                   width: 2,
