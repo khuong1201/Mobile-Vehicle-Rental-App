@@ -37,7 +37,7 @@ export default class VehicleRepositoryMongo extends IVehicleRepo {
     }
 
     async findVehicleByOwnerId(id){
-        return await VehicleModel.findOne({ownerId: id, deleted: false}).lean();
+        return await VehicleModel.find({ownerId: id, deleted: false}).lean();
     }
 
     async update(id, data) {
