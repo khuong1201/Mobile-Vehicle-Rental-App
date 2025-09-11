@@ -20,6 +20,10 @@ export default class DeviceRepositoryMongo extends IDeviceRepository {
         return DeviceModel.findOne({ deviceId, deleted: false })
     }
 
+    async findByImei(imei){
+        return DeviceModel.findOne({ imei: imei, deleted: false})
+    }
+
     async update(id, data) {
         return DeviceModel.findOneAndUpdate(
             { deviceId: id },

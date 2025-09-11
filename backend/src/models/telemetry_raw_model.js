@@ -4,7 +4,7 @@
     deviceId: { type: String, required: true, ref: "Device" },
     ts: { type: Date, default: Date.now },
     payload: { type: Schema.Types.Mixed },
-    }, { timestamps: true });
+    }, { timestamps: true }, { strict: true });
 
     TelemetryRawSchema.index({ deviceId: 1, ts: -1 });
 

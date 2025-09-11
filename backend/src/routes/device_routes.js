@@ -12,13 +12,14 @@ const { DeviceRepository, VehicleRepository } = await getRepositories();
 const validator = new DeviceValidator();
 const deviceService = new DeviceService(DeviceRepository, VehicleRepository, validator)
 const deviceController = new DeviceController(deviceService);
-
+router.get("/check-imei/:imei", deviceController.checkImei);
 router.use(authenticateJWT);
 router.use(authorizeRoles("admin", "owner"));
 router.post("/", deviceController.create);
 router.get("/", deviceController.getDevice);
 // router.get("/:id", deviceController.getDeviceById);
 router.get("/:deviceId", deviceController.getDeviceByDeviceId);
+router.patch("/:deviceId/status", deviceController.updateStatus);
 router.patch("/:deviceId", deviceController.updateDevice);
 router.delete("/:deviceId", deviceController.deleteDevice);
 
