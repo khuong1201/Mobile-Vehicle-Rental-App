@@ -22,6 +22,16 @@ CREATE TABLE users(
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE email_otps (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    otp VARCHAR(10) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    is_used BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 CREATE TABLE address(
 	id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -90,6 +100,7 @@ CREATE TABLE location(
     address VARCHAR(255),
     lat DOUBLE,
     lng DOUBLE,
+    deleted BOOL DEFAULT FALSE,
     FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
 );
 
@@ -183,6 +194,7 @@ CREATE TABLE reviews(
 
 CREATE TABLE review_report(
 	id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
     review_id INT,
     reason VARCHAR(255),
     status ENUM('pending','rejected','reviewed') DEFAULT 'pending',

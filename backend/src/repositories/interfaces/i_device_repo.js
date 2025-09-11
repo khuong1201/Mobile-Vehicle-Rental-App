@@ -4,4 +4,7 @@ export default class IDeviceRepository extends IRepo{
     async findByDeviceId(deviceId){
         throw new Error("Not implemented.");
     }
+    async findByImei(imei){
+        throw new Error("Not implemented");
+    }
 }

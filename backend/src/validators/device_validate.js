@@ -2,12 +2,9 @@ import AppError from "../utils/app_error.js";
 
 export default class DeviceValidator {
   validateCreate(payload) {
-    const { imei, simNumber, vehicleId } = payload;
+    const { imei, vehicleId } = payload;
     if (!imei || typeof imei !== "string" || imei.trim() === "") {
       throw new AppError("IMEI is required and must be a non-empty string.", 400);
-    }
-    if (simNumber !== undefined && typeof simNumber !== "string") {
-      throw new AppError("SIM number must be a string.", 400);
     }
     if (vehicleId !== undefined && typeof vehicleId !== "string") {
       throw new AppError("Vehicle ID must be a string.", 400);

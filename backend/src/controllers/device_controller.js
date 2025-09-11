@@ -8,6 +8,8 @@ export default class DeviceController{
         this.getDeviceById = asyncHandler(this.getDeviceById.bind(this));
         this.getDeviceByDeviceId = asyncHandler(this.getDeviceByDeviceId.bind(this));
         this.getDevice = asyncHandler(this.getDevice.bind(this));
+        this.checkImei = asyncHandler(this.checkImei.bind(this));
+        this.updateStatus = asyncHandler(this.updateStatus.bind(this));
         this.updateDevice = asyncHandler(this.updateDevice.bind(this));
         this.deleteDevice = asyncHandler(this.deleteDevice.bind(this))
     }
@@ -35,6 +37,16 @@ export default class DeviceController{
         res.json({ status: "success", data: device})
     }
 
+    async checkImei(req,res){
+        const device = await this.deviceService.checkImei(req.params.imei);
+        res.json({ status: "success", data: device});
+    }
+    
+    async updateStatus(req, res){
+        const updated = await this.deviceService.updateDevice(req.params.deviceId, req.body);
+        if(!updated) throw new AppError("Device not found", 404);
+        res.json({ status: "success", data: updated})
+    }
     async updateDevice(req, res){
         const updated = await this.deviceService.updateDevice(req.params.deviceId, req.body);
         if(!updated) throw new AppError("Device not found", 404);

@@ -27,7 +27,8 @@ class DriverLicenseScreen extends StatefulWidget {
 class _DriverLicenseScreen extends State<DriverLicenseScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _classController = TextEditingController();
-  final TextEditingController _licenseNumberController = TextEditingController();
+  final TextEditingController _licenseNumberController =
+      TextEditingController();
   final _formKey = GlobalKey<FormState>();
   String? _slectedTypeDriver;
 
@@ -65,14 +66,15 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
       _licenseNumberController.text = license.licenseNumber;
       _classController.text = license.classLicense;
       _slectedTypeDriver = license.typeDriverLicense;
-      
-
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final userLincenseVM = Provider.of<UserLicenseViewModel>(context, listen: false);
+    final userLincenseVM = Provider.of<UserLicenseViewModel>(
+      context,
+      listen: false,
+    );
     final isEditMode = widget.license != null;
 
     return Scaffold(
@@ -96,16 +98,25 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                 CustomTextField(
                   controller: _nameController,
                   hintText: 'Enter your name',
-                  validator: (value) => (value == null || value.isEmpty) ? 'Please enter your name' : null,
+                  validator:
+                      (value) =>
+                          (value == null || value.isEmpty)
+                              ? 'Please enter your name'
+                              : null,
                 ),
                 const SizedBox(height: 24),
                 CustomTextBodyMsb(title: "Type of Driver's License"),
                 const SizedBox(height: 8),
                 CustomDropdownButtonFormField(
                   value: _slectedTypeDriver,
-                  onChanged: (value) => setState(() => _slectedTypeDriver = value),
+                  onChanged:
+                      (value) => setState(() => _slectedTypeDriver = value),
                   items: _typeDriver,
-                  validator: (value) => (value == null || value.isEmpty) ? 'Please select' : null,
+                  validator:
+                      (value) =>
+                          (value == null || value.isEmpty)
+                              ? 'Please select'
+                              : null,
                 ),
                 const SizedBox(height: 24),
                 CustomTextBodyMsb(title: "License Number"),
@@ -113,7 +124,11 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                 CustomTextField(
                   controller: _licenseNumberController,
                   hintText: 'Exp: 123456789',
-                  validator: (value) => (value == null || value.isEmpty) ? 'Please enter your License Number' : null,
+                  validator:
+                      (value) =>
+                          (value == null || value.isEmpty)
+                              ? 'Please enter your License Number'
+                              : null,
                 ),
                 const SizedBox(height: 24),
                 CustomTextBodyMsb(title: 'Class'),
@@ -121,7 +136,11 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                 CustomTextField(
                   controller: _classController,
                   hintText: 'Exp: A1',
-                  validator: (value) => (value == null || value.isEmpty) ? 'Please enter your Class' : null,
+                  validator:
+                      (value) =>
+                          (value == null || value.isEmpty)
+                              ? 'Please enter your Class'
+                              : null,
                 ),
                 const SizedBox(height: 24),
                 CustomTextBodyMsb(title: 'Images'),
@@ -129,7 +148,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: Container(
+                      child: SizedBox(
                         height: 120,
                         child: CustomBoxImage(
                           title: 'Front',
@@ -137,13 +156,17 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                           image: _frontViewPicture,
                           imageUrl: widget.license?.frontImage,
                           onPickImage: () => _pickImage('front'),
-                          validator: (image) => (!isEditMode && image == null) ? 'Image is required' : null,
+                          validator:
+                              (image) =>
+                                  (!isEditMode && image == null)
+                                      ? 'Image is required'
+                                      : null,
                         ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Container(
+                      child: SizedBox(
                         height: 120,
                         child: CustomBoxImage(
                           title: 'Back',
@@ -151,7 +174,11 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                           image: _backViewPicture,
                           imageUrl: widget.license?.backImage,
                           onPickImage: () => _pickImage('back'),
-                          validator: (image) => (!isEditMode && image == null) ? 'Image is required' : null,
+                          validator:
+                              (image) =>
+                                  (!isEditMode && image == null)
+                                      ? 'Image is required'
+                                      : null,
                         ),
                       ),
                     ),
@@ -168,7 +195,7 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
           title: isEditMode ? 'Update' : 'Create',
           onPressed: () async {
             if (_formKey.currentState?.validate() ?? false) {
-              final type =_slectedTypeDriver!;
+              final type = _slectedTypeDriver!;
               final classLicense = _classController.text;
               final licenseNumber = _licenseNumberController.text;
 
@@ -177,11 +204,12 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                 if (_frontViewPicture == null || _backViewPicture == null) {
                   await showDialog(
                     context: context,
-                    builder: (context) => CustomAlertDialog(
-                      title: 'Missing image',
-                      content: 'Please upload both front and back images.',
-                      buttonText: 'OK',
-                    ),
+                    builder:
+                        (context) => CustomAlertDialog(
+                          title: 'Missing image',
+                          content: 'Please upload both front and back images.',
+                          buttonText: 'OK',
+                        ),
                   );
                   return;
                 }
@@ -197,21 +225,27 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                 if (result) {
                   await showDialog(
                     context: context,
-                    builder: (context) => CustomAlertDialog(
-                      title: 'Success',
-                      content: "Driver's license created successfully.",
-                      buttonText: 'OK',
-                      onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
-                    ),
+                    builder:
+                        (context) => CustomAlertDialog(
+                          title: 'Success',
+                          content: "Driver's license created successfully.",
+                          buttonText: 'OK',
+                          onPressed:
+                              () => Navigator.popUntil(
+                                context,
+                                (route) => route.isFirst,
+                              ),
+                        ),
                   );
                 } else {
                   await showDialog(
                     context: context,
-                    builder: (context) => CustomAlertDialog(
-                      title: 'Error',
-                      content: "Failed to create driver's license.",
-                      buttonText: 'OK',
-                    ),
+                    builder:
+                        (context) => CustomAlertDialog(
+                          title: 'Error',
+                          content: "Failed to create driver's license.",
+                          buttonText: 'OK',
+                        ),
                   );
                 }
               }
@@ -221,33 +255,45 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                   typeOfDriverLicense: type,
                   classLicense: classLicense,
                   licenseNumber: licenseNumber,
-                  frontImage: _frontViewPicture != null ? File(_frontViewPicture!.path) : null,
-                  backImage: _backViewPicture != null ? File(_backViewPicture!.path) : null,
+                  frontImage:
+                      _frontViewPicture != null
+                          ? File(_frontViewPicture!.path)
+                          : null,
+                  backImage:
+                      _backViewPicture != null
+                          ? File(_backViewPicture!.path)
+                          : null,
                 );
 
                 if (result) {
                   await showDialog(
                     context: context,
-                    builder: (context) => CustomAlertDialog(
-                      title: 'Success',
-                      content: "Driver's license updated successfully.",
-                      buttonText: 'OK',
-                      onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
-                    ),
+                    builder:
+                        (context) => CustomAlertDialog(
+                          title: 'Success',
+                          content: "Driver's license updated successfully.",
+                          buttonText: 'OK',
+                          onPressed:
+                              () => Navigator.popUntil(
+                                context,
+                                (route) => route.isFirst,
+                              ),
+                        ),
                   );
                 } else {
                   await showDialog(
                     context: context,
-                    builder: (context) => CustomAlertDialog(
-                      title: 'Error',
-                      content: "Failed to update driver's license.",
-                      buttonText: 'OK',
-                    ),
+                    builder:
+                        (context) => CustomAlertDialog(
+                          title: 'Error',
+                          content: "Failed to update driver's license.",
+                          buttonText: 'OK',
+                        ),
                   );
                 }
               }
             }
-          }
+          },
         ),
       ),
     );
