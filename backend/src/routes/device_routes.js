@@ -16,7 +16,7 @@ router.get("/check-imei/:imei", deviceController.checkImei);
 router.use(authenticateJWT);
 router.use(authorizeRoles("admin", "owner"));
 router.post("/", deviceController.create);
-router.get("/", deviceController.getDevice);
+router.get("/get-device/:vehicleId", deviceController.getDevice);
 // router.get("/:id", deviceController.getDeviceById);
 router.get("/:deviceId", deviceController.getDeviceByDeviceId);
 router.patch("/:deviceId/status", deviceController.updateStatus);
