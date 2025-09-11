@@ -20,6 +20,7 @@
     final ValueChanged<String>? onChanged;
     final Widget? suffixIcon;
     final int? maxline;
+    final AutovalidateMode ? autovalidateMode;
     
 
     const CustomTextField({
@@ -32,7 +33,8 @@
       this.keyboardType,
       this.onChanged,
       this.suffixIcon,
-      this.maxline
+      this.maxline,
+      this.autovalidateMode
       
     });
 
@@ -50,6 +52,7 @@
         controller: widget.controller,
         keyboardType: widget.keyboardType ?? TextInputType.text,
         obscureText: widget.isPassword ? _obscurePassword : false,
+        autovalidateMode: widget.autovalidateMode ?? AutovalidateMode.disabled,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
           hintText: widget.hintText,

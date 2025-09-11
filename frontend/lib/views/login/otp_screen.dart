@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/views/login/new_password_screen.dart';
 import 'package:frontend/views/login/sign_in_screen.dart';
+import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
@@ -24,6 +25,9 @@ class _OtpScreenState extends State<OtpScreen> {
     final viewmodel = Provider.of<AuthViewModel>(context, listen: true);
     return Scaffold(
       extendBodyBehindAppBar: true,
+      appBar: CustomAppbar(
+        title: 'Verify your email',
+      ),
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -33,34 +37,6 @@ class _OtpScreenState extends State<OtpScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 40),
-                AppBar(
-                  leading: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xffD1E4F6),
-                        shape: BoxShape.circle,
-                      ),
-                      padding: EdgeInsets.all(4),
-                      child: Icon(Icons.arrow_back, color: Color(0xff1976D2)),
-                    ),
-                  ),
-                  title: Text(
-                    'Verify your email',
-                    style: TextStyle(
-                      color: Color(0xff212121),
-                      fontSize: 28,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  centerTitle: true,
-                ),
                 const SizedBox(height: 40),
                 Image.asset(
                   'assets/images/login/otp.png',

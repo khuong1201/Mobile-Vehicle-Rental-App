@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/views/widgets/custom_appbar.dart';
 
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
@@ -22,6 +23,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
+      appBar: CustomAppbar(
+        title: 'Forgot Password',
+
+      ),
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -32,34 +37,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
-                AppBar(
-                  leading: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xffD1E4F6),
-                        shape: BoxShape.circle,
-                      ),
-                      padding: EdgeInsets.all(4),
-                      child: Icon(Icons.arrow_back, color: Color(0xff1976D2)),
-                    ),
-                  ),
-                  title: Text(
-                    'Forgot Password',
-                    style: TextStyle(
-                      color: Color(0xff212121),
-                      fontSize: 28,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  centerTitle:true,
-                ),
                 const SizedBox(height: 40),
                 Image.asset('assets/images/login/Forgot password-amico 1.png',
                   width: 300,
@@ -86,9 +63,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       const SizedBox(height: 8),
                       CustomTextField(
                         controller: _emailController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
+                          }
+                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{3,4}$').hasMatch(value)) {
+                            return 'Please enter a valid email';
                           }
                           return null;
                         },

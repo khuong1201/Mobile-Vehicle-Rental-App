@@ -67,6 +67,8 @@ class _BookingScreenState extends State<BookingScreen> {
         color: Color(0xffFCFCFC),
         child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               CustomAppbar(title: 'Booking'),
               const SizedBox(height: 28),
@@ -321,10 +323,8 @@ class _BookingScreenState extends State<BookingScreen> {
                                                   dropOffDate == null) {
                                                 return 'Ngày không hợp lệ';
                                               }
-                                              if (!dropOffDate.isAfter(
-                                                pickUpDate,
-                                              )) {
-                                                return 'Ngày trả phải sau ngày nhận (không được trùng)';
+                                              if (dropOffDate.difference(pickUpDate).inDays < 1) {
+                                                return 'Ngày trả phải cách ngày nhận ít nhất 1 ngày';
                                               }
                                               return null;
                                             },
