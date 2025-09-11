@@ -14,8 +14,8 @@ class GAuthViewModel extends ChangeNotifier {
 
   Future<bool> isLoggedIn() async {
     final accessToken = await UserSecureStorage.getAccessToken();
-    final user = await UserSecureStorage.getUser();
-    return accessToken != null && user != null;
+    final storeUser = await UserSecureStorage.getUser();
+    return accessToken != null && storeUser != null;
   }
 
   Future<User?> signInWithGoogle() async {
@@ -35,10 +35,9 @@ class GAuthViewModel extends ChangeNotifier {
       );
       if (response.success && response.data != null) {
         final accessToken = response.data!['accessToken'] as String?;
-        final refreshToken = response.data!['refreshToken'] as String?;
         final userData = response.data!['user'] as Map<String, dynamic>?;
 
-        if (accessToken == null || refreshToken == null || userData == null) {
+        if (accessToken == null || userData == null) {
           return null;
         }
 
@@ -49,7 +48,6 @@ class GAuthViewModel extends ChangeNotifier {
         );
         debugPrint('🧪 User ID: ${user?.id}');
         await UserSecureStorage.saveAccessToken(accessToken);
-        await UserSecureStorage.saveRefreshToken(refreshToken);
         notifyListeners();
         return user;
       }

@@ -11,7 +11,7 @@ class ApiLoginWithGoogle {
     String fullName,
     String avatar,
   ) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/api/auth/google-login-endpoint');
+    final url = Uri.parse('${ApiClient.baseUrl}/api/auth/oauth/google-login-endpoint');
     try {
       final response = await ApiClient().client.post(
         url,
@@ -29,9 +29,8 @@ class ApiLoginWithGoogle {
         return ApiResponse(
           success: data['success'] ?? true,
           data: {
-            'accessToken': data['accessToken'],
-            'refreshToken': data['refreshToken'],
-            'user': data['user'],
+            'accessToken': data?['accessToken'],
+            'user': data?['user'],
           },
           message: data['message'] ?? 'Đăng nhập thành công',
         );
