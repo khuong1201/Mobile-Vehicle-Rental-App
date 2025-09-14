@@ -9,7 +9,7 @@ class ApiLogin {
   static final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   static Future<ApiResponse<Map<String, dynamic>>> login(String email, String password) async {
-    final url = Uri.parse('${ApiClient.`6`}/api/auth/login');
+    final url = Uri.parse('${ApiClient}/api/auth/login');
     try {
       // Validate input
       if (email.isEmpty || password.isEmpty) {
