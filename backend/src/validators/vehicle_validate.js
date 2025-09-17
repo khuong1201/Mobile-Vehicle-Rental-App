@@ -13,7 +13,7 @@ export default class VehicleValidator {
       bankAccount,
       vehicleName
     } = payload;
-
+    console.log(typeof payload.location, payload.location);
     if (!licensePlate || typeof licensePlate !== "string") {
       throw new AppError("licensePlate is required and must be a string", 400);
     }
@@ -42,7 +42,7 @@ export default class VehicleValidator {
     }
 
     if (location) {
-      if (typeof location !== "object" || !location.coordinates || !Array.isArray(location.coordinates) || location.coordinates.length !== 2) {
+      if ( !location.coordinates || !Array.isArray(location.coordinates) || location.coordinates.length !== 2) {
         throw new AppError("location must be an object with a coordinates array of two numbers", 400);
       }
     }

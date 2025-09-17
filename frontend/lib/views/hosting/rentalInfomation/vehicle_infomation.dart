@@ -49,27 +49,21 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
   }
 
   void _saveData() {
-    Map<String, dynamic>? locationData;
-  locationData = LocationForVehicle(
-    address: _locationController.text.toString(),
-    lat: 0.0,
-    lng: 0.0,
-  ).toJson();
-    final data = {
-      'licensePlate': _licensePlateController.text,
-      'vehicleName': _vehicleNameController.text,
-      'yearOfManufacture': _yearController.text,
-      'location': locationData,
-      'description': _descriptionController.text,
-      'brand': _selectedBrand?.id ?? '',
-      'numberOfSeats': _numberOfSeat,
-      'fuelType': _typeFuel.toString(),
-      'type': widget.vehicleType,
-      'transmission': _transMission.toString(),
-    };
+  final data = {
+    'licensePlate': _licensePlateController.text,
+    'vehicleName': _vehicleNameController.text,
+    'yearOfManufacture': int.tryParse(_yearController.text) ?? 0,
+    'location': _locationForVehicle?.toJson(), // dùng object thực
+    'description': _descriptionController.text,
+    'brandId': _selectedBrand?.brandId ?? '',
+    'numberOfSeats': _numberOfSeat,
+    'fuelType': _typeFuel,
+    'type': widget.vehicleType,
+    'transmission': _transMission,
+  };
 
-    widget.onDataChanged(data);
-  }
+  widget.onDataChanged(data);
+}
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +106,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
               itemBuilder: (brand) => Row(
                 children: [
                   if (brand.brandImage != null)
-                    SvgPicture.network(brand.brandImage!, width: 24, height: 24),
+                    Image.network(brand.brandImage!, width: 24, height: 24),
                   const SizedBox(width: 8),
                   Text(brand.brandName),
                 ],
@@ -183,7 +177,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                               _saveData();
                             });
                           },
-                          items: ['4', '5', '7', '9', '16', '30'],
+                          items: ['2','4', '5', '7', '9', '16', '30'],
                           hintText: 'Number',
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -258,23 +252,22 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
               },
               suffixIcon: IconButton(
                 onPressed: () async {
-                final result = await Navigator.push<LocationForVehicle?>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LocationScreen(),
-                  ),
-                );
-                if (result != null) {
-                  setState(() {
-                    _locationController.text = result.address;
-                    _locationForVehicle = result;
-                    //_locationController.text = result.toString();
-                    _saveData();
-                  });
-                }
-              },
-                icon: Icon(Icons.arrow_forward_ios, size: 18)
-              )
+                  final result = await Navigator.push<LocationForVehicle?>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LocationScreen(),
+                    ),
+                  );
+                  if (result != null) {
+                    setState(() {
+                      _locationController.text = result.address;
+                      _locationForVehicle = result;
+                      _saveData();
+                    });
+                  }
+                },
+                icon: const Icon(Icons.arrow_forward_ios, size: 18),
+              ),
             ),
             const SizedBox(height: 16),
             CustomTextBodyL(title: 'Description'),

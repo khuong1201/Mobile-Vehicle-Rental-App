@@ -51,7 +51,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     final int itemCount = _navItems.length;
     final brands = Provider.of<VehicleViewModel>(context).brands;
     final Brand brand = brands.firstWhere(
-      (b) => b.id == widget.vehicle.brand,
+      (b) => b.brandId == widget.vehicle.brandId,
       orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
     );
     return Scaffold(
@@ -103,7 +103,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                                 Row(
                                   children: [
                                     Text(
-                                      widget.vehicle.rate.toString(),
+                                      widget.vehicle.averageRating.toStringAsFixed(1),
                                       style: TextStyle(
                                         color: const Color(0xFF2B2B2C),
                                         fontSize: 10,
@@ -130,9 +130,9 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                                 SizedBox(
                                   width: 28,
                                   height: 28,
-                                  child: SvgPicture.network(
+                                  child: Image.network(
                                     '${brand.brandImage}',
-                                    placeholderBuilder: (context) => Icon(Icons.error),
+                                    
                                   ),
                                 ),
                                 const SizedBox(width: 4),
@@ -315,7 +315,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
         },
         {
           'title': 'Model',
-          'subtitle': vehicle.yearOfManufacture,
+          'subtitle': vehicle.yearOfManufacture.toString(),
           'icon': 'assets/images/vehicle_detail/Vector (11).svg',
         },
       ];

@@ -23,7 +23,7 @@ class ReceiptScreen extends StatelessWidget {
     final user = userVM.user;
     final brands = Provider.of<VehicleViewModel>(context).brands;
     final Brand brand = brands.firstWhere(
-      (b) => b.id == vehicle.brand,
+      (b) => b.id == vehicle.brandId,
       orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
     );
     return Scaffold(

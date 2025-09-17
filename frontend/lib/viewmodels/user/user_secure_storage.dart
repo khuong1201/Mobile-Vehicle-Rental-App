@@ -44,7 +44,7 @@ class UserSecureStorage {
   }
   static Future<String?> getUserId() async {
     final user = await UserSecureStorage.getUser();
-    return user?.id;
+    return user?.userId;
   }
   static Future<String?> getUserRole() async {
     final user = await getUser();

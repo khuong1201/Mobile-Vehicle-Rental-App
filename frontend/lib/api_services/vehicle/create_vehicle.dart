@@ -1,16 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/client/api_reponse.dart';
 import 'package:frontend/api_services/util/api_util.dart';
-import 'package:frontend/models/vehicles/bike.dart';
-import 'package:frontend/models/vehicles/car.dart';
-import 'package:frontend/models/vehicles/coach.dart';
-import 'package:frontend/models/vehicles/motorbike.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
+import 'dart:convert';
+
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 
-class ApiCreatVehicle {
+class ApiCreateVehicle {
   static Future<ApiResponse<Vehicle>> createVehicle<T extends ChangeNotifier>(
     T viewModel, {
     required AuthService authService,
@@ -21,64 +18,86 @@ class ApiCreatVehicle {
       debugPrint('🚀 Creating vehicle: ${vehicle.toJson()}');
       debugPrint('📎 Image files: ${imageFiles.map((f) => f.path).toList()}');
 
-      // Chuyển đổi dữ liệu vehicle thành Map<String, String>
-      final rawFields =
-          vehicle.toJson()
-            ..remove('images')
-            ..remove('imagePublicIds');
+      // Sử dụng toApiJson để chuẩn bị dữ liệu
+      final fields = vehicle.toApiJson();
 
-      final fields = <String, String>{};
-      const jsonEncodedKeys = ['location', 'bankAccount'];
-
-      rawFields.forEach((key, value) {
-        if (jsonEncodedKeys.contains(key) && value is Map) {
-          fields[key] = jsonEncode(value); 
-        } else if (value != null && value.toString().trim().isNotEmpty) {
-          fields[key] = value.toString();
-        }
-      });
-
-      // Đảm bảo các trường bắt buộc
-      if (vehicle.brand.isNotEmpty) {
-        fields['brand'] = vehicle.brand;
-      } else {
-        debugPrint('⚠️ Brand is empty');
-        return ApiResponse(success: false, message: 'Brand cannot be empty');
+      // Kiểm tra các trường bắt buộc
+      if (vehicle.brandId.isEmpty) {
+        debugPrint('⚠️ BrandId is empty');
+        return ApiResponse(success: false, message: 'BrandId cannot be empty');
       }
-      if (vehicle.type.isNotEmpty) {
-        fields['type'] = vehicle.type;
-      } else {
+      if (vehicle.type.isEmpty) {
         debugPrint('⚠️ Type is empty');
         return ApiResponse(success: false, message: 'Type cannot be empty');
       }
-      
-      debugPrint('📤 Submitting fields: $fields');
-      debugPrint('🔎 Raw fields: $rawFields');
+      if (vehicle.vehicleName.isEmpty) {
+        debugPrint('⚠️ VehicleName is empty');
+        return ApiResponse(success: false, message: 'VehicleName cannot be empty');
+      }
+      if (vehicle.licensePlate.isEmpty) {
+        debugPrint('⚠️ LicensePlate is empty');
+        return ApiResponse(success: false, message: 'LicensePlate cannot be empty');
+      }
+      if (vehicle.ownerId.isEmpty) {
+        debugPrint('⚠️ OwnerId is empty');
+        return ApiResponse(success: false, message: 'OwnerId cannot be empty');
+      }
+      if (vehicle.location == null) {
+        return ApiResponse(success: false, message: 'Location is required');
+      }
+      if (vehicle.location!.coordinates.length != 2) {
+        return ApiResponse(success: false, message: 'Location coordinates invalid');
+      }
 
-      final response = await callProtectedApi<T>(
+      debugPrint('📤 Submitting vehicle data: ${jsonEncode(fields)}');
+
+      // Request 1: Gửi dữ liệu vehicle với JSON
+      final vehicleResponse = await callProtectedApi<T>(
         viewModel,
-        endpoint: '/api/vehicles/create-vehicle',
+        endpoint: '/api/vehicles/',
         authService: authService,
         method: 'POST',
-        isMultipart: true,
-        fields: fields,
-        files: {'images': imageFiles},
+        isMultipart: false,
+        body: fields, // Gửi location dưới dạng object
       );
 
-      if (!response.success ||
-          response.data == null ||
-          response.data is! Map<String, dynamic>) {
-        debugPrint('❌ API response failed: ${response.message}');
+      if (!vehicleResponse.success ||
+          vehicleResponse.data == null ||
+          vehicleResponse.data is! Map<String, dynamic>) {
+        debugPrint('❌ API response failed: ${vehicleResponse.message}');
         return ApiResponse(
           success: false,
-          message: response.message ?? 'Failed to create vehicle',
+          message: vehicleResponse.message ?? 'Failed to create vehicle',
         );
       }
 
-      final data = response.data as Map<String, dynamic>;
-      final createdVehicle = parseVehicle(data['data'] ?? data);
+      final data = vehicleResponse.data as Map<String, dynamic>;
+      final createdVehicle = Vehicle.fromJson(data['data'] ?? data);
+      final vehicleId = createdVehicle.vehicleId; // Lấy vehicleId
 
       debugPrint('✅ Vehicle created: ${createdVehicle.vehicleName}');
+
+      // Request 2: Gửi hình ảnh nếu có
+      if (imageFiles.isNotEmpty) {
+        debugPrint('📤 Uploading images for vehicleId: $vehicleId');
+        final imageResponse = await callProtectedApi<T>(
+          viewModel,
+          endpoint: '/api/vehicles/$vehicleId/images',
+          authService: authService,
+          method: 'POST',
+          isMultipart: true,
+          fields: {'vehicleId': vehicleId},
+          files: {'images': imageFiles},
+        );
+
+        if (!imageResponse.success) {
+          debugPrint('❌ Image upload failed: ${imageResponse.message}');
+          // Vehicle đã được tạo, nhưng có thể thông báo lỗi upload ảnh
+        } else {
+          debugPrint('✅ Images uploaded successfully');
+        }
+      }
+
       return ApiResponse(
         success: true,
         data: createdVehicle,
@@ -90,25 +109,6 @@ class ApiCreatVehicle {
         success: false,
         message: 'Failed to create vehicle: $e',
       );
-    }
-  }
-
-  static Vehicle parseVehicle(Map<String, dynamic> item) {
-    final type = (item['type'] ?? '').toString().toLowerCase();
-    debugPrint('🔍 Parsing vehicle type: $type');
-    switch (type) {
-      case 'car':
-        return Car.fromJson(item);
-      case 'motor':
-      case 'motorbike':
-        return Motor.fromJson(item);
-      case 'coach':
-        return Coach.fromJson(item);
-      case 'bike':
-        return Bike.fromJson(item);
-      default:
-        debugPrint('⚠️ Unknown vehicle type: $type, fallback to Vehicle');
-        return Vehicle.fromJson(item);
     }
   }
 }

@@ -37,7 +37,7 @@ class _CustomDateFormFieldState extends State<CustomDateFormField> {
 
     if (selectedDate != null) {
       widget.controller.text =
-          "${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year}";
+          "${selectedDate.day.toString().padLeft(2, '0')}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.year}";
     }
   }
 
@@ -49,7 +49,7 @@ class _CustomDateFormFieldState extends State<CustomDateFormField> {
       readOnly: true,
       onTap: _selectDate,
       decoration: InputDecoration(
-        hintText: widget.hintText,
+        hintText: widget.hintText,  
         hintStyle: const TextStyle(
           color: Color(0xFFAAACAF),
           fontSize: 14,

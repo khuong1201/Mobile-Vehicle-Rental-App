@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
-import '../home/home_page.dart';
+import '../Home/home_page.dart';
 import 'sign_up_screen.dart';
 import 'forgot_password_screen.dart';
 
@@ -97,13 +97,13 @@ class _SignInScreenState extends State<SignInScreen> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your Password';
                           }
-                          if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
+                          if (value.length < 5) {
+                            return 'Password must be at least 4 characters';
                           }
-                          final regex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$');
-                          if (!regex.hasMatch(value)) {
-                            return 'Password must include upper, lower, number and special character';
-                          }
+                          // final regex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$');
+                          // if (!regex.hasMatch(value)) {
+                          //   return 'Password must include upper, lower, number and special character';
+                          // }
                           return null;
                         },
                         hintText: "Enter your Password",

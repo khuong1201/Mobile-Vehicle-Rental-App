@@ -35,10 +35,11 @@ class _BookingScreenState extends State<BookingScreen> {
   final TextEditingController _pickUpTimeController = TextEditingController();
   final TextEditingController _dropOffTimeController = TextEditingController();
 
-  final dateFormat = DateFormat("dd/MM/yyyy");
+  final dateFormat = DateFormat("dd-MM-yyyy");
+
   DateTime? parseDate(String input) {
     try {
-      return DateFormat("dd/MM/yyyy").parseStrict(input);
+      return DateFormat("dd-MM-yyyy").parseStrict(input);
     } catch (_) {
       return null;
     }
@@ -51,7 +52,7 @@ class _BookingScreenState extends State<BookingScreen> {
     final bookingVM = Provider.of<BookingViewModel>(context);
     final brands = Provider.of<VehicleViewModel>(context).brands;
     final Brand brand = brands.firstWhere(
-      (b) => b.id == widget.vehicle.brand,
+      (b) => b.brandId == widget.vehicle.brandId,
       orElse:
           () => Brand(
             id: '',
@@ -106,7 +107,7 @@ class _BookingScreenState extends State<BookingScreen> {
                               Row(
                                 children: [
                                   Text(
-                                    widget.vehicle.rate.toString(),
+                                    widget.vehicle.averageRating.toString(),
                                     style: TextStyle(
                                       color: const Color(0xFF2B2B2C),
                                       fontSize: 10,
@@ -133,7 +134,7 @@ class _BookingScreenState extends State<BookingScreen> {
                               SizedBox(
                                 width: 28,
                                 height: 28,
-                                child: SvgPicture.network(
+                                child: Image.network(
                                   '${brand.brandImage}',
                                 ),
                               ),
@@ -297,15 +298,9 @@ class _BookingScreenState extends State<BookingScreen> {
                                           const SizedBox(height: 10),
                                           CustomDateFormField(
                                             controller: _dropOffDateController,
-                                            firstDate:
-                                                _pickUpDateController
-                                                        .text
-                                                        .isNotEmpty
-                                                    ? parseDate(
-                                                      _pickUpDateController
-                                                          .text,
-                                                    )!
-                                                    : DateTime.now(),
+                                            firstDate: _pickUpDateController.text.isNotEmpty
+                                              ? (parseDate(_pickUpDateController.text) ?? DateTime.now())
+                                              : DateTime.now(),
                                             validator: (value) {
                                               if (value == null ||
                                                   value.isEmpty) {
@@ -439,14 +434,11 @@ class _BookingScreenState extends State<BookingScreen> {
               onPressed: () async {
                 final authService = AuthService(context);
                 final userId = await authService.getUserIdFromStorage();
-                debugPrint('userId: $userId');
-                debugPrint('vehicleId: ${widget.vehicle.id}');
-                debugPrint('ownerId: ${widget.vehicle.ownerId}');
                 if (_formKey.currentState!.validate()) {
-                  final response = await bookingVM.createBooking(
-                    ownerId: widget.vehicle.ownerId,
+                  bookingVM.saveData(
+                    vehicleId: widget.vehicle.vehicleId,
                     renterId: userId!,
-                    vehicleId: widget.vehicle.id,
+                    ownerId: widget.vehicle.ownerId,
                     pickUpLocation: _pickUpLocationController.text,
                     dropOffLocation: _dropOffLocationController.text,
                     pickUpDate: _pickUpDateController.text,
@@ -454,36 +446,26 @@ class _BookingScreenState extends State<BookingScreen> {
                     pickUpTime: _pickUpTimeController.text,
                     dropOffTime: _dropOffTimeController.text,
                     basePrice: widget.vehicle.price,
-                    authService: authService,
                   );
-                  debugPrint(
-                    'Booking response: ${response.success}, ${response.message}, ${response.data}',
-                  );
-                  if (response.success && bookingVM.bookingResult != null) {
-                    bookingVM.setSelectedVehicle(widget.vehicle);
-                    final bookingId = response.data['bookingId'];
-                    final Map<String, dynamic> updatedBookingData = {
-                      ...response
-                          .data['booking'], // hoặc bookingVM.bookingResult!
-                      'bookingId': bookingId,
-                    };
+                  debugPrint('userId: $userId');
+                  debugPrint('vehicleId: ${widget.vehicle.vehicleId}');
+                  debugPrint('ownerId: ${widget.vehicle.ownerId}');
+                  debugPrint('pickUpDate: ${_pickUpDateController.text}');
+                  if (bookingVM.tempBookingData != null) {
                     bookingVM.setSelectedVehicle(widget.vehicle);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder:
-                            (context) => ReviewSummaryScreen(
-                              vehicle: widget.vehicle,
-                              bookingData: updatedBookingData,
-                            ),
+                        builder: (context) => ReviewSummaryScreen(
+                          vehicle: widget.vehicle,
+                          bookingData: bookingVM.tempBookingData!,
+                        ),
                       ),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(
-                          response.message ?? 'Lỗi khi tạo booking',
-                        ),
+                        content: Text('Lỗi khi lưu dữ liệu đặt xe'),
                       ),
                     );
                   }

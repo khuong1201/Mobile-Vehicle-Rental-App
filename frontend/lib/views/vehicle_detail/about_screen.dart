@@ -23,7 +23,7 @@ class AboutScreen extends StatelessWidget {
                   children: [
                     ClipOval(
                       child: Image.network(
-                        vehicle.ownerAvatar,
+                        'vehicle.ownerAvatar',
                         width: 50,
                         height: 50,
                         fit: BoxFit.contain,
@@ -41,7 +41,7 @@ class AboutScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          vehicle.ownerEmail,
+                          'vehicle.ownerEmail',
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 14,
@@ -52,7 +52,7 @@ class AboutScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          vehicle.ownerName,
+                          'vehicle.ownerName',
                           style: TextStyle(
                             color: const Color(0xFFAAACAF),
                             fontSize: 12,

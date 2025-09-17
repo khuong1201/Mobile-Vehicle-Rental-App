@@ -1,31 +1,34 @@
+import 'dart:convert';
+
 import 'package:frontend/models/bank.dart';
 import 'package:frontend/models/location/location_for_vehicle.dart';
-import 'package:frontend/models/vehicles/brand.dart';
-
+import 'package:frontend/models/vehicles/bike.dart';
+import 'package:frontend/models/vehicles/car.dart';
+import 'package:frontend/models/vehicles/coach.dart';
+import 'package:frontend/models/vehicles/motorbike.dart';
 import 'package:intl/intl.dart';
 
 final currencyFormatter = NumberFormat.currency(locale: 'vi_VN', symbol: 'VNĐ');
 
-class Vehicle {
+abstract class Vehicle {
   final String id;
   final String vehicleId;
   final String vehicleName;
   final String licensePlate;
-  final String brand;
-  final String yearOfManufacture;
+  final String brandId; // Đổi từ brand sang brandId để khớp với JSON
+  final String model;
+  final int yearOfManufacture;
   final List<String> images;
+  final List<String> imagePublicIds;
   final String description;
   final LocationForVehicle? location;
-  final String model;
   final String ownerId;
-  final String ownerEmail;
-  final String ownerName;
-  final String ownerAvatar;
   final double price;
-  final BankAccount bankAccount;
-  final double rate;
-  final double rentals;
+  final BankAccount? bankAccount; // Cho phép null
+  final double averageRating; // Đổi từ rate sang averageRating
+  final int reviewCount; // Đổi từ rentals sang reviewCount
   final bool available;
+  final bool deleted;
   final String status;
   final String type;
 
@@ -34,102 +37,81 @@ class Vehicle {
     required this.vehicleId,
     required this.vehicleName,
     required this.licensePlate,
-    required this.brand,
+    required this.brandId,
+    required this.model,
     required this.yearOfManufacture,
     required this.images,
+    required this.imagePublicIds,
     required this.description,
-    required this.location,
-    required this.model,
+    this.location,
     required this.ownerId,
-    required this.ownerEmail,
-    required this.ownerName,
     required this.price,
-    required this.bankAccount,
-    required this.rate,
-    this.rentals = 0,
+    this.bankAccount,
+    required this.averageRating,
+    required this.reviewCount,
     required this.available,
+    required this.deleted,
     required this.status,
     required this.type,
-    required this.ownerAvatar,
   });
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
-    final ownerData = json['ownerId'];
-    final ownerId =
-        ownerData is String ? ownerData : (ownerData?['_id']?.toString() ?? '');
-    final ownerEmail =
-        ownerData is Map<String, dynamic>
-            ? ownerData['email']?.toString() ?? ''
-            : '';
-    final ownerName =
-        ownerData is Map<String, dynamic>
-            ? ownerData['fullName']?.toString() ?? ''
-            : '';
-    final ownerAvatar =
-        ownerData is Map<String, dynamic>
-            ? ownerData['avatar']?.toString() ?? ''
-            : '';
-    return Vehicle(
-      id: json['_id']?.toString() ?? '',
-      vehicleId: json['vehicleId']?.toString() ?? '',
-      vehicleName: json['vehicleName']?.toString() ?? '',
-      licensePlate: json['licensePlate']?.toString() ?? '',
-      brand:
-          json['brand'] is Map<String, dynamic>
-              ? Brand.fromJson(json['brand'] as Map<String, dynamic>).id
-              : json['brand']?.toString() ?? '',
-      yearOfManufacture: json['yearOfManufacture']?.toString() ?? '',
-      images: List<String>.from(json['images'] ?? []),
-      description: json['description']?.toString() ?? '',
-      location:
-          (json['location'] != null && json['location'] is Map<String, dynamic>)
-              ? LocationForVehicle.fromJson(json['location'])
-              : null,
-
-      model: json['model']?.toString() ?? '',
-      ownerId: ownerId,
-      ownerEmail: ownerEmail,
-      ownerName: ownerName,
-      ownerAvatar: ownerAvatar,
-      price: (json['price'] ?? 0).toDouble(),
-      bankAccount:
-          ownerData is Map<String, dynamic>
-              ? BankAccount.fromJson(ownerData['bankAccount'] ?? {})
-              : BankAccount(
-                accountNumber: 'unknown',
-                bankName: 'unknown',
-                accountHolderName: 'unknown',
-              ),
-      rate: (json['rate'] ?? 0).toDouble(),
-      rentals: (json['rentals'] ?? 0).toDouble(),
-      available: json['available'] ?? true,
-      status: json['status']?.toString() ?? 'pending',
-      type: json['type']?.toString() ?? '',
-    );
+    final type = (json['type'] ?? '').toString().toLowerCase();
+    switch (type) {
+      case 'car':
+        return Car.fromJson(json);
+      case 'motor':
+      case 'motorbike':
+        return Motor.fromJson(json);
+      case 'coach':
+        return Coach.fromJson(json);
+      case 'bike':
+        return Bike.fromJson(json);
+      default:
+        throw Exception('Unknown vehicle type: $type');
+    }
   }
 
   Map<String, dynamic> toJson() {
     return {
+      '_id': id,
       'vehicleId': vehicleId,
       'vehicleName': vehicleName,
       'licensePlate': licensePlate,
-      'brand': brand,
+      'brandId': brandId,
       'model': model,
       'yearOfManufacture': yearOfManufacture,
       'images': images,
+      'imagePublicIds': imagePublicIds,
       'description': description,
       'location': location?.toJson(),
+      'ownerId': ownerId,
       'price': price,
-      'bankAccount': bankAccount.toJson(),
-      'rate': rate,
-      'rentals': rentals,
+      'bankAccount': bankAccount?.toJson(),
+      'averageRating': averageRating,
+      'reviewCount': reviewCount,
       'available': available,
+      'deleted': deleted,
       'status': status,
       'type': type,
-      'ownerId': ownerId,
-      'ownerEmail': ownerEmail,
     };
   }
 
+  Map<String, dynamic> toApiJson() {
+    final json = toJson()
+      ..remove('images')
+      ..remove('imagePublicIds')
+      ..remove('_id')
+      ..remove('vehicleId')
+      ..remove('createdAt')
+      ..remove('__v');
+    final result = <String, dynamic>{};
+    json.forEach((key, value) {
+      if (value != null) {
+        result[key] = value;
+      }
+    });
+    return result;
+  }
   String get formattedPrice => currencyFormatter.format(price);
 }

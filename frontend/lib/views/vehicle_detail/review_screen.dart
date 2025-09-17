@@ -25,10 +25,10 @@ class ReviewScreenState extends State<ReviewScreen> {
     final reviewViewModel = context.read<ReviewViewModel>();
     await reviewViewModel.fetchReviews(
       context,
-      vehicleId: widget.vehicle.id,
+      vehicleId: widget.vehicle.vehicleId,
       page: 1,
       limit: 10,
-      clearBefore: true
+      clearBefore: true,
     );
   }
 
@@ -40,15 +40,14 @@ class ReviewScreenState extends State<ReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return 
-    Consumer<ReviewViewModel>(
+    return Consumer<ReviewViewModel>(
       builder: (context, reviewViewModel, _) {
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomTextBodyL(title: 'Review'),
-              const SizedBox(height: 16,),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
@@ -69,7 +68,7 @@ class ReviewScreenState extends State<ReviewScreen> {
                           final commentText = _comment.text.trim();
                           bool success = await reviewViewModel.createReview(
                             context,
-                            vehicleId: widget.vehicle.id,
+                            vehicleId: widget.vehicle.vehicleId,
                             rating: selectedRating,
                             comment: commentText,
                           );
@@ -78,14 +77,10 @@ class ReviewScreenState extends State<ReviewScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Review submitted successfully!')),
                             );
-                            _comment.clear();
-                            await reviewViewModel.fetchReviews(
-                              context,
-                              vehicleId: widget.vehicle.id,
-                              page: 1,
-                              limit: 10,
-                              clearBefore: true,
-                            );
+                            setState(() {
+                              _comment.clear();
+                            });
+                            await fetchData();
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -202,12 +197,23 @@ class ReviewScreenState extends State<ReviewScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 8),
+                                  Row(
+                                    children: List.generate(5, (starIndex) {
+                                      return Icon(
+                                        Icons.star,
+                                        color: starIndex < review.rating
+                                            ? Colors.amber
+                                            : Colors.grey,
+                                        size: 20,
+                                      );
+                                    }),
+                                  ),
+                                  const SizedBox(height: 8),
                                 ],
                               ),
                             );
                           },
                         ),
-              
             ],
           ),
         );

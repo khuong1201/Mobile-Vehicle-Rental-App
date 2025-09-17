@@ -1,35 +1,29 @@
 class LocationForVehicle {
+  final String type;
+  final List<double> coordinates; // [lng, lat]
   final String address;
-  final double lat;
-  final double lng;
 
   LocationForVehicle({
+    required this.type,
+    required this.coordinates,
     required this.address,
-    required this.lat,
-    required this.lng,
   });
 
   factory LocationForVehicle.fromJson(Map<String, dynamic> json) {
     return LocationForVehicle(
+      type: json['type']?.toString() ?? 'Point',
+      coordinates: List<double>.from(
+        (json['coordinates'] ?? [0.0, 0.0]).map((e) => e.toDouble()),
+      ),
       address: json['address']?.toString() ?? '',
-      lat: _parseToDouble(json['lat']),
-      lng: _parseToDouble(json['lng']),
     );
-  }
-
-  static double _parseToDouble(dynamic value) {
-    if (value == null) return 0.0;
-    if (value is double) return value;
-    if (value is int) return value.toDouble();
-    if (value is String) return double.tryParse(value) ?? 0.0;
-    return 0.0;
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'type': type,
+      'coordinates': coordinates.map((c) => c.toDouble()).toList(),
       'address': address,
-      'lat': lat,
-      'lng': lng,
     };
   }
 }

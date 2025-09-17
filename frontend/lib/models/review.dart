@@ -1,12 +1,11 @@
+
 class ReviewModel {
   final String id;
   final String vehicleId;
   final String comment;
   final int rating;
-  final int reviewCount;
   final DateTime createdAt;
   final DateTime? updatedAt;
-
   final RenterInfo renter;
 
   ReviewModel({
@@ -14,7 +13,6 @@ class ReviewModel {
     required this.vehicleId,
     required this.comment,
     required this.rating,
-    required this.reviewCount,
     required this.createdAt,
     this.updatedAt,
     required this.renter,
@@ -22,29 +20,24 @@ class ReviewModel {
 
   factory ReviewModel.fromJson(Map<String, dynamic> json) {
     return ReviewModel(
-      id: json['_id'] ?? '',
-      vehicleId: json['vehicleId'] ?? '',
-      comment: json['comment'] ?? '',
-      rating: json['rating'] ?? 0,
-      reviewCount: json['reviewCount'] ?? 0,
-      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      updatedAt:
-          json['updatedAt'] != null
-              ? DateTime.tryParse(json['updatedAt'])
-              : null,
-      renter: RenterInfo.fromJson(json['renterId']),
+      id: json['_id']?.toString() ?? '',
+      vehicleId: json['vehicleId']?['_id']?.toString() ?? '', // Lấy _id từ vehicleId
+      comment: json['comment']?.toString() ?? '',
+      rating: (json['rating'] is int) ? json['rating'] : 0,
+      createdAt: DateTime.tryParse(json['createdAt']?.toString() ?? '') ?? DateTime.now(),
+      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt']?.toString() ?? '') : null,
+      renter: RenterInfo.fromJson(json['renterId'] ?? {}),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       '_id': id,
-      'vehicleId': vehicleId,
+      'vehicleId': {'_id': vehicleId}, // Trả về vehicleId như một đối tượng
       'comment': comment,
       'rating': rating,
-      'reviewCount': reviewCount,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
       'renterId': renter.toJson(),
     };
   }
@@ -52,32 +45,37 @@ class ReviewModel {
 
 class RenterInfo {
   final String id;
-  final String email;
   final String fullName;
-  final String? imageAvatarUrl;
+  final String? userId; // Thêm userId để ánh xạ trường userId trong JSON
+  final String? email; // Làm email tùy chọn
+  final String? imageAvatarUrl; // Làm imageAvatarUrl tùy chọn
 
   RenterInfo({
     required this.id,
-    required this.email,
     required this.fullName,
-    required this.imageAvatarUrl,
+    this.userId,
+    this.email,
+    this.imageAvatarUrl,
   });
 
   factory RenterInfo.fromJson(Map<String, dynamic> json) {
     return RenterInfo(
-      id: json['_id'] ?? '',
-      email: json['email'] ?? '',
-      fullName: json['fullName'] ?? '',
-      imageAvatarUrl: json['imageAvatarUrl']?.toString() ?? '',
+      id: json['_id']?.toString() ?? '',
+      fullName: json['fullName']?.toString() ?? '',
+      userId: json['userId']?.toString(),
+      email: json['email']?.toString(),
+      imageAvatarUrl: json['imageAvatarUrl']?.toString(),
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    final Map<String, dynamic> data = {
       '_id': id,
-      'email': email,
       'fullName': fullName,
-      'imageAvatarUrl': imageAvatarUrl ?? '',
     };
+    if (userId != null) data['userId'] = userId;
+    if (email != null) data['email'] = email;
+    if (imageAvatarUrl != null) data['imageAvatarUrl'] = imageAvatarUrl;
+    return data;
   }
 }

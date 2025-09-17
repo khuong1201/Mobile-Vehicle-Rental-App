@@ -45,7 +45,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
     final bookingVM = Provider.of<BookingViewModel>(context);
     final brands = Provider.of<VehicleViewModel>(context).brands;
     final Brand brand = brands.firstWhere(
-      (b) => b.id == widget.vehicle.brand,
+      (b) => b.brandId == widget.vehicle.brandId,
       orElse:
           () => Brand(
             id: '',
@@ -105,7 +105,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                               Row(
                                 children: [
                                   Text(
-                                    widget.vehicle.rate.toString(),
+                                    widget.vehicle.averageRating.toString(),
                                     style: TextStyle(
                                       color: const Color(0xFF2B2B2C),
                                       fontSize: 10,
@@ -132,7 +132,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                               SizedBox(
                                 width: 28,
                                 height: 28,
-                                child: SvgPicture.network(
+                                child: Image.network(
                                   '${brand.brandImage}',
                                 ),
                               ),
@@ -271,9 +271,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                         Spacer(),
                         CustomTextBodyMsb(
                           title:
-                              bookingVM.taxAmount?.toStringAsFixed(0) ??
-                              '0'
-                                  ' VNĐ',
+                              bookingVM.taxAmount?.toStringAsFixed(0) ?? '0 VNĐ',
                         ),
                       ],
                     ),
@@ -445,112 +443,25 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
             CustomButton(
               width: double.infinity,
               onPressed: () async {
-                final bookingVM = Provider.of<BookingViewModel>(
-                  context,
-                  listen: false,
-                );
+                final bookingVM = Provider.of<BookingViewModel>(context, listen: false);
                 final authService = AuthService(context);
-
-                if (bookingVM.selectedPaymentMethod == 'MoMo wallet') {
-                  final response = await PaymentMomoApi.createMomoPayment(
-                    viewModel: bookingVM,
-                    apiAuthService: authService,
-                    paymentData: {
-                      "bookingId": widget.bookingData['bookingId'],
-                      "amount": bookingVM.totalPrice ?? 0,
-                      "orderInfo": "Thanh toán thuê xe",
-                    },
-                  );
-
-                  if (response.success && response.data != null) {
-                    
-                    final momo = response.data as MomoPayment;
-                    final Uri momoUri = Uri.parse(momo.payUrl);
-
-                    if (await canLaunchUrl(momoUri)) {
-                      await launchUrl(
-                        momoUri,
-                        mode: LaunchMode.externalApplication,
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Không thể mở liên kết thanh toán MoMo',
-                          ),
-                        ),
-                      );
-                    }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          response.message ?? 'Lỗi khi tạo thanh toán',
-                        ),
-                      ),
-                    );
-                  }
-                } else if (bookingVM.selectedPaymentMethod == 'VTB') {
-                  final response = await PaymentViettinApi.createViettinPayment(
-                    viewModel: bookingVM,
-                    apiAuthService: authService,
-                    paymentData: {
-                      "bookingId": widget.bookingData['bookingId'],
-                      "amount": bookingVM.totalPrice ?? 0,
-                      "orderInfo": "Thanh toán thuê xe",
-                    },
-                  );
-                  
-                  if (response.success && response.data != null) {
-                    debugPrint(
-                      'Viettin payment created successfully; response: ${response.data}',
-                    );
-                    final viettin = response.data as ViettinPayment;
-                    final ipnResponse =
-                        await PaymentViettinApiIPN.viettinpayment(
-                          viewModel: bookingVM,
-                          apiAuthService: authService,
-                          paymentData: {
-                            "paymentId": viettin.paymentId,
-                            "resultCode": 0,
-                            "message": "Thanh toán giả định thành công",
-                          },
-                        );
-
-                    if (ipnResponse.success) {
-                      debugPrint(
-                        'IPN processed successfully; response: ${ipnResponse.data}',
-                      );
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) =>
-                                  Confirmationscreen(vehicle: widget.vehicle),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            ipnResponse.message ?? 'Lỗi khi xử lý IPN',
-                          ),
-                        ),
-                      );
-                    }
-                  }
-                } else {
+                final response = await bookingVM.createBooking(authService: authService);
+                debugPrint('Booking response: ${response.success}, ${response.message}, ${response.data}');
+                if (response.success) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:
-                          (context) =>
-                              Confirmationscreen(vehicle: widget.vehicle),
+                      builder: (context) => Confirmationscreen(vehicle: widget.vehicle),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(response.message ?? 'Lỗi khi tạo booking'),
                     ),
                   );
                 }
               },
-
               title: 'Pay Now',
             ),
           ],

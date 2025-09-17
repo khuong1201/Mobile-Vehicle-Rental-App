@@ -20,7 +20,7 @@ class Brand {
       id: json['_id']?.toString() ?? '',
       brandId: json['brandId']?.toString() ?? '',
       brandName: json['brandName']?.toString() ?? '',
-      brandImage: json['brandImage']?.toString(),
+      brandImage: json['brandLogo'] != null ? json['brandLogo']['url']?.toString() : null,
     );
   }
 
@@ -29,7 +29,7 @@ class Brand {
       '_id': id,
       'brandId': brandId,
       'brandName': brandName,
-      'brandImage': brandImage,
+      'brandLogo': brandImage,
     };
   }
 }
