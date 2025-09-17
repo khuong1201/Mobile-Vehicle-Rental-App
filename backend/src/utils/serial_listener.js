@@ -51,7 +51,7 @@ class SerialListener {
       }
     });
   }
-
+  
   sendToArduino(str) {
     // str đã là JSON string
     this.port.write(str + "\n", (err) => {

@@ -7,9 +7,9 @@ export default class DeviceRepositoryMongo extends IDeviceRepository {
     }
 
     async findById(id) {
-        return DeviceModel.findById({id: id, deleted: false});
+        return DeviceModel.findOne({ _id: id, deleted: false });
     }
-
+    
     async find(filter = {}, options = {}) {
         return DeviceModel.find(
             {...filter, deleted: false}, null, options
@@ -31,6 +31,15 @@ export default class DeviceRepositoryMongo extends IDeviceRepository {
             { new: true }
         );
     }
+
+    async updateByImei(imei, data) {
+        return DeviceModel.findOneAndUpdate(
+            { imei, deleted: false },
+            { ...data },
+            { new: true }
+        );
+    }
+    
 
     async delete(id) {
         return DeviceModel.findOneAndUpdate(
