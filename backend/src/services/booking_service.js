@@ -10,7 +10,7 @@ export default class BookingService {
   async createBooking(userId, payload) {
     this.validator.validateCreate(payload);
 
-    const vehicle = await this.vehicleRepo.findById(payload.vehicleId);
+    const vehicle = await this.vehicleRepo.findByVehicleId(payload.vehicleId);
     if (!vehicle) throw new AppError("Vehicle not found", 404);
     if (!vehicle.available) throw new AppError("Vehicle not available", 400);
 

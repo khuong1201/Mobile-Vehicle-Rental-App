@@ -1,5 +1,5 @@
 import AppError from "../utils/app_error.js";
-import { generateDeviceToken } from '../utils/jwt.js';
+import { generateDeviceToken, isTokenExpired } from '../utils/jwt.js';
 
 export default class DeviceService {
     constructor(deviceRepo, vehicleRepo, validator) {
@@ -55,16 +55,18 @@ export default class DeviceService {
     }
 
 
-    async getDevice(filter = {}) {
+    async getDevice(filter) {
         return this.deviceRepo.find(filter);
     }
 
     async updateStatus(deviceId, status) {
-        const vehicle = await this.vehicleRepo.findByVehicleId(payload.vehicleId);
-        if (!vehicle) throw new AppError("vehicle not found", 404);
-        if (status != ["active", "inactive"]) throw new AppError("not active or inactive", 400);
-        return this.deviceRepo.update(deviceId, status);
+        if (!["active", "inactive"].includes(status)) {
+            throw new AppError("Status must be 'active' or 'inactive'", 400);
+        }
+
+        return this.deviceRepo.update(deviceId, { status });
     }
+
 
     async updateDevice(deviceId, payload) {
         this.validator.validateUpdate(payload);

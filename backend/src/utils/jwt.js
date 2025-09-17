@@ -24,3 +24,14 @@ export function generateDeviceToken(device) {
         { expiresIn: env.DEVICE_TOKEN_EXPIRES }
     )
 }
+export function isTokenExpired(token, secret = env.DEVICE_TOKEN_SECRET) {
+    try {
+        jwt.verify(token, secret);
+        return false;
+    } catch (err) {
+        if (err.name === "TokenExpiredError") {
+            return true; 
+        }
+        throw err;
+    }
+}
