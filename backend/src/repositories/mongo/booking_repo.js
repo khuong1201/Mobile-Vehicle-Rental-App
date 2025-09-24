@@ -46,6 +46,14 @@ export default class BookingRepositoryMongo extends IBookingRepository {
     });
   }
 
+  async findExpired(now) {
+    return Booking.find({
+      status: { $in: ["pending", "approved"] },
+      pickupDateTime: { $lt: now },
+      deleted: false,
+    }).lean();
+  }
+
   async updateStatus(bookingId, status) {
     const booking = await Booking.findOneAndUpdate(
       { bookingId, deleted: false },

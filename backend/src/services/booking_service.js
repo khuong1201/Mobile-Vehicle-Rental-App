@@ -1,10 +1,11 @@
 import AppError from "../utils/app_error.js";
-
+import { bookingTransitions } from "../state/booking_transitions.js";
 export default class BookingService {
-  constructor(bookingRepo, vehicleRepo, bookingValidator) {
+  constructor(bookingRepo, vehicleRepo, bookingValidator, notificationService) {
     this.bookingRepo = bookingRepo;
     this.vehicleRepo = vehicleRepo;
     this.validator = bookingValidator;
+    this.notificationService = notificationService;
   }
 
   async createBooking(userId, payload) {
@@ -24,7 +25,7 @@ export default class BookingService {
     const taxAmount = basePrice * taxRate;
     const totalPrice = basePrice + taxAmount;
 
-    return this.bookingRepo.create({
+    const booking = await this.bookingRepo.create({
       ...payload,
       renterId: userId,
       ownerId: vehicle.ownerId,
@@ -34,6 +35,17 @@ export default class BookingService {
       totalPrice,
       status: "pending"
     });
+
+    await this.notificationService.createNotification({
+      userId: vehicle.ownerId,
+      channel: "push",
+      subject: "New booking request",
+      body: `You have a new booking request for your vehicle ${vehicle.name}.`,
+      destination: null,
+      meta: { bookingId: booking._id, vehicleId: vehicle._id }
+    });
+
+    return booking;
   }
 
   async getBookingById(id) {
@@ -47,12 +59,12 @@ export default class BookingService {
   async getVehicleBookings(vehicleId, user) {
     const vehicle = await this.vehicleRepo.findById(vehicleId);
     if (!vehicle) throw new AppError("Vehicle not found", 404);
-  
+
     if (["admin"].includes(user.role) || vehicle.ownerId.toString() === user.userId.toString()) {
       return this.bookingRepo.findByVehicleId(vehicleId);
     }
     throw new AppError("Not authorized", 403);
-  }  
+  }
 
   async getActiveBookings(userId) {
     return this.bookingRepo.findByUserIdWithStatus(userId, ["approved", "active"]);
@@ -68,25 +80,22 @@ export default class BookingService {
     const booking = await this.bookingRepo.findByBookingId(bookingId);
     if (!booking) throw new AppError("Booking not found", 404);
 
-    const validStatuses = ["pending", "approved", "active", "completed", "cancelled", "rejected"];
-    if (!validStatuses.includes(status)) {
-      throw new AppError("Invalid status", 400);
+    const currentStatus = booking.status;
+    const transitions = bookingTransitions[currentStatus] || {};
+    const transitionRule = transitions[status];
+
+    if (!transitionRule) {
+      throw new AppError(
+        `Cannot transition from ${currentStatus} to ${status}`,
+        400
+      );
     }
 
-    if (status === "approved" || status === "rejected") {
-      if (booking.ownerId.toString() !== userId.toString()) throw new AppError("Not authorized", 403);
-      if (booking.status !== "pending") throw new AppError("Booking not pending", 400);
-    } else if (status === "cancelled") {
-      if (booking.renterId.toString() !== userId.toString()) throw new AppError("Not authorized", 403);
-      if (["completed", "active"].includes(booking.status)) {
-        throw new AppError("Cannot cancel an active or completed booking", 400);
-      }
-    } else if (status === "active") {
-      if (booking.ownerId.toString() !== userId.toString()) throw new AppError("Not authorized", 403);
-      if (booking.status !== "approved") throw new AppError("Booking not approved", 400);
-    } else if (status === "completed") {
-      if (booking.ownerId.toString() !== userId.toString()) throw new AppError("Not authorized", 403);
-      if (booking.status !== "active") throw new AppError("Booking not active", 400);
+    if (transitionRule.role === "owner" && booking.ownerId.toString() !== userId.toString()) {
+      throw new AppError("Not authorized", 403);
+    }
+    if (transitionRule.role === "renter" && booking.renterId.toString() !== userId.toString()) {
+      throw new AppError("Not authorized", 403);
     }
 
     const updated = await this.bookingRepo.updateStatus(bookingId, status);
@@ -102,25 +111,103 @@ export default class BookingService {
   }
 
   async approveBooking(bookingId, ownerId) {
-    return this.updateBookingStatus(bookingId, "approved", ownerId);
+    const booking = await this.updateBookingStatus(bookingId, "approved", ownerId);
+    await this.notificationService.createNotification({
+      userId: booking.renterId,
+      channel: "push",
+      subject: "Booking approved",
+      body: `Your booking for vehicle ${booking.vehicleId} has been approved.`,
+      destination: null,
+      meta: { bookingId: booking._id }
+    });
+    return booking;
   }
 
   async rejectBooking(bookingId, ownerId) {
-    return this.updateBookingStatus(bookingId, "rejected", ownerId);
+    const booking = await this.updateBookingStatus(bookingId, "rejected", ownerId);
+
+    await this.notificationService.createNotification({
+      userId: booking.renterId,
+      channel: "push",
+      subject: "Booking rejected",
+      body: `Your booking for vehicle ${booking.vehicleId} has been rejected.`,
+      destination: null,
+      meta: { bookingId: booking._id }
+    });
+
+    return booking;
   }
 
   async cancelBooking(bookingId, renterId) {
-    return this.updateBookingStatus(bookingId, "cancelled", renterId);
+    const booking = await this.updateBookingStatus(bookingId, "cancelled", renterId);
+
+    await this.notificationService.createNotification({
+      userId: booking.ownerId,
+      channel: "push",
+      subject: "Booking cancelled",
+      body: `The booking for your vehicle ${booking.vehicleId} has been cancelled by renter.`,
+      destination: null,
+      meta: { bookingId: booking._id }
+    });
+
+    return booking;
   }
 
   async startBooking(bookingId, ownerId) {
-    return this.updateBookingStatus(bookingId, "active", ownerId);
+    const booking = await this.updateBookingStatus(bookingId, "active", ownerId);
+
+    await this.notificationService.createNotification({
+      userId: booking.renterId,
+      channel: "push",
+      subject: "Trip started",
+      body: `Your trip for vehicle ${booking.vehicleId} has officially started.`,
+      destination: null,
+      meta: { bookingId: booking._id }
+    });
+
+    return booking;
   }
 
   async completeBooking(bookingId, ownerId) {
-    return this.updateBookingStatus(bookingId, "completed", ownerId);
+    const booking = await this.updateBookingStatus(bookingId, "completed", ownerId);
+
+    await this.notificationService.createNotification({
+      userId: booking.renterId,
+      channel: "push",
+      subject: "Booking completed",
+      body: `Your booking for vehicle ${booking.vehicleId} has been marked as completed.`,
+      destination: null,
+      meta: { bookingId: booking._id }
+    });
+
+    return booking;
   }
 
+  async expireBooking(bookingId) {
+    const booking = await this.updateBookingStatus(bookingId, "expired", "system");
+  
+    await this.notificationService.createNotification({
+      userId: booking.renterId,
+      channel: "push",
+      subject: "Booking expired",
+      body: `Your booking for vehicle ${booking.vehicleId} has expired because the pickup time passed.`,
+      destination: null,
+      meta: { bookingId: booking._id }
+    });
+  
+    await this.notificationService.createNotification({
+      userId: booking.ownerId,
+      channel: "push",
+      subject: "Booking expired",
+      body: `The booking for your vehicle ${booking.vehicleId} has expired because the renter did not start in time.`,
+      destination: null,
+      meta: { bookingId: booking._id }
+    });
+  
+    await this.vehicleRepo.update(booking.vehicleId, { available: true });
+    return booking;
+  }
+  
   async deleteBooking(userId, bookingId) {
     const booking = await this.bookingRepo.findByBookingId(bookingId);
     if (!booking) throw new AppError("Booking not found", 404);

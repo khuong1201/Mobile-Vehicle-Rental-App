@@ -19,7 +19,6 @@ class SerialService {
       const data = JSON.parse(line);
       console.log("📡 Received from Arduino:", data);
 
-      // Nếu chỉ có imei => gọi check-imei
       if (data.imei && !data.deviceId) {
         try {
           const res = await axios.get(

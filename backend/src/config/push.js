@@ -23,7 +23,7 @@ export default class PushProvider {
     const message = {
       notification: { title: payload.title, body: payload.body },
       data: payload.data || {},
-      tokens: user.deviceTokens,
+      tokens:  user.deviceTokens.map(d => d.token),
     };
 
     const response = await this.messaging.sendMulticast(message);

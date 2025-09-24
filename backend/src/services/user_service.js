@@ -16,6 +16,10 @@ export default class UserService {
     return this.userRepo.getProfile(userId);
   }
 
+  async getOrtherProfile(ownerId) {
+    return this.userRepo.getOrtherProfile(ownerId);
+  }
+
   async updateProfile(userId, payload) {
     this.userValidator.validateProfile(payload);
     return this.userRepo.updateById(userId, payload);
