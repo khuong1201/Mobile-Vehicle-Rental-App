@@ -648,10 +648,17 @@ class VehicleViewModel extends ChangeNotifier {
     );
 
     if (response.success) {
+      // chỉ xoá nếu tìm thấy trong list
+      final beforeLength = _vehicles.length;
       _vehicles.removeWhere((v) => v.id == vehicleId);
-      notifyListeners();
+
+      if (_vehicles.length != beforeLength) {
+        notifyListeners(); // chỉ notify khi có thay đổi thực sự
+      }
+
       return true;
     } else {
+      // xử lý lỗi (auth hoặc message từ server)
       _handleAuthError(response.message, context);
       return false;
     }

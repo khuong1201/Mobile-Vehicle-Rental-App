@@ -15,7 +15,7 @@ class ApiRegister {
         body: jsonEncode({'email': email, 'password': password, 'fullName': name}),
       ).timeout(const Duration(seconds: 10));
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         return ApiResponse(success: true, data: data, message: data['message']);
       } else {

@@ -74,13 +74,13 @@ class ReviewScreenState extends State<ReviewScreen> {
                           );
 
                           if (success) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Review submitted successfully!')),
-                            );
                             setState(() {
                               _comment.clear();
                             });
                             await fetchData();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Review submitted successfully!')),
+                            );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(

@@ -12,9 +12,12 @@ class BookingViewModel extends ChangeNotifier {
   List<Booking> _bookings = [];
   List<Booking> get bookings => _bookings;
 
+  Booking? _currentBooking;
+  Booking? get currentBooking => _currentBooking;
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-  
+
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
@@ -34,11 +37,14 @@ class BookingViewModel extends ChangeNotifier {
   String? _selectedPaymentMethod;
   String? get selectedPaymentMethod => _selectedPaymentMethod;
   Vehicle? selectedVehicle;
-  Map<String, dynamic>? bookingResult;
 
-  // Dữ liệu tạm thời để lưu trữ
-  Map<String, dynamic>? _tempBookingData;
-  Map<String, dynamic>? get tempBookingData => _tempBookingData;
+  Map<String, dynamic>? bookingResult;
+  String? result;
+
+  final currencyFormatter = NumberFormat.currency(locale: 'vi_VN', symbol: 'VNĐ');
+  String formattedPrice(num? value) {
+    return currencyFormatter.format(value ?? 0);
+  }
 
   void setSelectedVehicle(Vehicle vehicle) {
     selectedVehicle = vehicle;
@@ -50,8 +56,8 @@ class BookingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Hàm lưu dữ liệu tạm thời
-  void saveData({
+  Future<ApiResponse> createBooking({
+    required AuthService authService,
     required String vehicleId,
     required String renterId,
     required String ownerId,
@@ -62,64 +68,43 @@ class BookingViewModel extends ChangeNotifier {
     required String pickUpTime,
     required String dropOffTime,
     required double basePrice,
-  }) {
-    _tempBookingData = {
-      "vehicleId": vehicleId,
-      "renterId": renterId,
-      "ownerId": ownerId,
-      "pickupLocation": pickUpLocation,
-      "dropoffLocation": dropOffLocation,
-      "pickupDate": pickUpDate,
-      "dropoffDate": dropOffDate,
-      "pickupTime": pickUpTime,
-      "dropoffTime": dropOffTime,
-      "basePrice": basePrice,
-    };
-    notifyListeners();
-  }
-
-  Future<ApiResponse> createBooking({
-    required AuthService authService,
   }) async {
-    // Kiểm tra xem có dữ liệu tạm thời hay không
-    if (_tempBookingData == null) {
-      return ApiResponse(
-        success: false,
-        message: 'Không có dữ liệu đặt xe để gửi',
-      );
-    }
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
 
-    // Gán dữ liệu từ tempBookingData
-    vehicleId = _tempBookingData!['vehicleId'];
-    renterId = _tempBookingData!['renterId'];
-    ownerId = _tempBookingData!['ownerId'];
-    pickUpLocation = _tempBookingData!['pickupLocation'];
-    dropOffLocation = _tempBookingData!['dropoffLocation'];
-    pickUpDate = _tempBookingData!['pickupDate'];
-    dropOffDate = _tempBookingData!['dropoffDate'];
-    pickUpTime = _tempBookingData!['pickupTime'];
-    dropOffTime = _tempBookingData!['dropoffTime'];
-    basePrice = _tempBookingData!['basePrice'];
+    this.vehicleId = vehicleId;
+    this.renterId = renterId;
+    this.ownerId = ownerId;
+    this.pickUpLocation = pickUpLocation;
+    this.dropOffLocation = dropOffLocation;
+    this.pickUpDate = pickUpDate;
+    this.dropOffDate = dropOffDate;
+    this.pickUpTime = pickUpTime;
+    this.dropOffTime = dropOffTime;
+    this.basePrice = basePrice;
 
     // Kiểm tra các trường bắt buộc
-    if (vehicleId == null ||
-        renterId == null ||
-        ownerId == null ||
+    if (vehicleId.isEmpty ||
+        renterId.isEmpty ||
+        ownerId.isEmpty ||
         pickUpLocation.isEmpty ||
         dropOffLocation.isEmpty ||
         pickUpDate.isEmpty ||
         dropOffDate.isEmpty ||
         pickUpTime.isEmpty ||
         dropOffTime.isEmpty ||
-        basePrice == null ||
-        basePrice! <= 0) {
+        basePrice <= 0) {
+      _isLoading = false;
+      _errorMessage = 'Vui lòng điền đầy đủ thông tin đặt xe';
+      notifyListeners();
       return ApiResponse(
         success: false,
         message: 'Vui lòng điền đầy đủ thông tin đặt xe',
       );
     }
 
-    // Xử lý ngày giờ trong ViewModel
+    // Xử lý ngày giờ
     try {
       final dateFormatter = DateFormat('dd-MM-yyyy');
       final pickupDate = dateFormatter.parseStrict(pickUpDate);
@@ -147,6 +132,9 @@ class BookingViewModel extends ChangeNotifier {
       // Kiểm tra pickupDateTime không được trong quá khứ
       final now = DateTime.now();
       if (pickupDateTime.isBefore(now)) {
+        _isLoading = false;
+        _errorMessage = 'Thời gian nhận xe không được nằm trong quá khứ';
+        notifyListeners();
         return ApiResponse(
           success: false,
           message: 'Thời gian nhận xe không được nằm trong quá khứ',
@@ -154,24 +142,26 @@ class BookingViewModel extends ChangeNotifier {
       }
 
       // Kiểm tra dropoffDateTime phải sau pickupDateTime
-      if (dropoffDateTime.isBefore(pickupDateTime) || dropoffDateTime.isAtSameMomentAs(pickupDateTime)) {
+      if (dropoffDateTime.isBefore(pickupDateTime) ||
+          dropoffDateTime.isAtSameMomentAs(pickupDateTime)) {
+        _isLoading = false;
+        _errorMessage = 'Thời gian trả xe phải sau thời gian nhận xe';
+        notifyListeners();
         return ApiResponse(
           success: false,
           message: 'Thời gian trả xe phải sau thời gian nhận xe',
         );
       }
 
-      totalRentalDays = dropoffDateTime.difference(pickupDateTime).inDays;
-
       final bookingData = {
-        "vehicleId": vehicleId!,
-        "renterId": renterId!,
-        "ownerId": ownerId!,
+        "vehicleId": vehicleId,
+        "renterId": renterId,
+        "ownerId": ownerId,
         "pickupLocation": pickUpLocation,
         "dropoffLocation": dropOffLocation,
-        "pickupDateTime": pickupDateTime.toUtc().toIso8601String(),
-        "dropoffDateTime": dropoffDateTime.toUtc().toIso8601String(),
-        "basePrice": basePrice!,
+        "pickupDateTime": pickupDateTime.toIso8601String(),
+        "dropoffDateTime": dropoffDateTime.toIso8601String(),
+        "basePrice": basePrice,
       };
 
       final response = await BookingApi.createBooking(
@@ -181,18 +171,25 @@ class BookingViewModel extends ChangeNotifier {
       );
 
       if (response.success && response.data != null) {
-        bookingResult = response.data is Map<String, dynamic> ? response.data : response.data['data'];
-        basePrice = bookingResult?['basePrice']?.toDouble();
-        taxAmount = bookingResult?['taxAmount']?.toDouble();
-        totalPrice = bookingResult?['totalPrice']?.toDouble();
-        // Xóa dữ liệu tạm thời sau khi tạo booking thành công
-        _tempBookingData = null;
-        reset();
-        notifyListeners();
-      }
+      final booking = response.data as Booking;
 
+      _currentBooking = booking;
+
+      debugPrint("✅ BookingId: ${booking.bookingId}");
+
+      _isLoading = false;
+      notifyListeners();
+      return ApiResponse(success: true, data: booking, message: response.message);
+    }
+      
+      _isLoading = false;
+      notifyListeners();
       return response;
+      
     } catch (e) {
+      _isLoading = false;
+      _errorMessage = 'Định dạng ngày hoặc giờ không hợp lệ: $e';
+      notifyListeners();
       return ApiResponse(
         success: false,
         message: 'Định dạng ngày hoặc giờ không hợp lệ: $e',
@@ -200,8 +197,70 @@ class BookingViewModel extends ChangeNotifier {
     }
   }
 
-  String get formattedTotalPrice {
-    return totalPrice != null ? "${totalPrice!.toStringAsFixed(0)} VNĐ" : "0 VNĐ";
+  Future<void> fetchUserBookings(AuthService authService) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    final response = await BookingApi.getUserBookings(
+      viewModel: this,
+      authService: authService,
+    );
+
+    if (response.success && response.data != null) {
+      _bookings = response.data!;
+    } else {
+      _errorMessage = response.message ?? 'Không thể tải danh sách booking';
+      _bookings = [];
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<Booking?> getBookingById(String bookingId, AuthService authService) async {
+    if (bookingId.isEmpty) {
+      _errorMessage = 'bookingId không được để trống';
+      notifyListeners();
+      return null;
+    }
+
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await BookingApi.getBookingById(
+        viewModel: this,
+        authService: authService,
+        bookingId: bookingId,
+      );
+
+      if (response.success && response.data != null) {
+        final res = response.data as Map<String, dynamic>;
+        final data = res['data'] as Map<String, dynamic>;
+
+        final booking = Booking.fromJson(data);
+        // Cập nhật danh sách bookings nếu chưa có
+        if (!_bookings.any((b) => b.bookingId == booking.bookingId)) {
+          _bookings.add(booking);
+        }
+
+        _isLoading = false;
+        notifyListeners();
+        return booking;
+      } else {
+        _errorMessage = response.message ?? 'Lỗi khi lấy thông tin booking';
+        _isLoading = false;
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      _errorMessage = 'Lỗi khi lấy thông tin booking: $e';
+      _isLoading = false;
+      notifyListeners();
+      return null;
+    }
   }
 
   void reset() {
@@ -219,10 +278,9 @@ class BookingViewModel extends ChangeNotifier {
     totalPrice = null;
     totalRentalDays = null;
     _selectedPaymentMethod = null;
-    bookingResult = null;
     selectedVehicle = null;
+    _isLoading = false;
+    _errorMessage = null;
     notifyListeners();
   }
-
-  getUserBookings() {}
 }

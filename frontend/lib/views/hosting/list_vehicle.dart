@@ -121,8 +121,11 @@ class ListVehicleState extends State<ListVehicle> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CustomTextBodyMsb(
-                            title: '${brand.brandName} ${vehicle.vehicleName}',
+                          Padding(
+                            padding: const EdgeInsets.only(right: 20),
+                            child: CustomTextBodyMsb(
+                              title: '${brand.brandName} ${vehicle.vehicleName}',
+                            ),
                           ),
                           const SizedBox(height: 8),
                           // trạng thái
@@ -241,8 +244,8 @@ class ListVehicleState extends State<ListVehicle> {
               ),
             ),
             Positioned(
-              top: 8,
-              right: 8,
+              top: 2 ,
+              right: 2 ,
               child: PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert, color: Colors.black),
                 onSelected: (value) async {
@@ -250,7 +253,7 @@ class ListVehicleState extends State<ListVehicle> {
                     final vm = context.read<VehicleViewModel>();
                     final success = await vm.deleteVehicleById(
                       context,
-                      vehicleId: vehicle.id,
+                      vehicleId: vehicle.vehicleId,
                     );
                     if (!success) {
                       ScaffoldMessenger.of(context).showSnackBar(

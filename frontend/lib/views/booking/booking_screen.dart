@@ -26,10 +26,8 @@ class BookingScreen extends StatefulWidget {
 }
 
 class _BookingScreenState extends State<BookingScreen> {
-  final TextEditingController _pickUpLocationController =
-      TextEditingController();
-  final TextEditingController _dropOffLocationController =
-      TextEditingController();
+  final TextEditingController _pickUpLocationController = TextEditingController();
+  final TextEditingController _dropOffLocationController = TextEditingController();
   final TextEditingController _pickUpDateController = TextEditingController();
   final TextEditingController _dropOffDateController = TextEditingController();
   final TextEditingController _pickUpTimeController = TextEditingController();
@@ -53,13 +51,12 @@ class _BookingScreenState extends State<BookingScreen> {
     final brands = Provider.of<VehicleViewModel>(context).brands;
     final Brand brand = brands.firstWhere(
       (b) => b.brandId == widget.vehicle.brandId,
-      orElse:
-          () => Brand(
-            id: '',
-            brandId: '',
-            brandName: 'unknown',
-            brandImage: null,
-          ),
+      orElse: () => Brand(
+        id: '',
+        brandId: '',
+        brandName: 'unknown',
+        brandImage: null,
+      ),
     );
     return Scaffold(
       body: Container(
@@ -100,8 +97,7 @@ class _BookingScreenState extends State<BookingScreen> {
                           Row(
                             children: [
                               CustomTextBodyL(
-                                title:
-                                    '${brand.brandName} ${widget.vehicle.vehicleName}',
+                                title: '${brand.brandName} ${widget.vehicle.vehicleName}',
                               ),
                               Spacer(),
                               Row(
@@ -163,20 +159,15 @@ class _BookingScreenState extends State<BookingScreen> {
                                   controller: _pickUpLocationController,
                                   suffixIcon: IconButton(
                                     onPressed: () async {
-                                      final result = await Navigator.push<
-                                        LocationForVehicle?
-                                      >(
+                                      final result = await Navigator.push<LocationForVehicle?>(
                                         context,
                                         MaterialPageRoute(
-                                          builder:
-                                              (context) =>
-                                                  const LocationScreen(),
+                                          builder: (context) => const LocationScreen(),
                                         ),
                                       );
                                       if (result != null) {
                                         setState(() {
-                                          _pickUpLocationController.text =
-                                              result.address;
+                                          _pickUpLocationController.text = result.address;
                                         });
                                       }
                                     },
@@ -199,20 +190,15 @@ class _BookingScreenState extends State<BookingScreen> {
                                   controller: _dropOffLocationController,
                                   suffixIcon: IconButton(
                                     onPressed: () async {
-                                      final result = await Navigator.push<
-                                        LocationForVehicle?
-                                      >(
+                                      final result = await Navigator.push<LocationForVehicle?>(
                                         context,
                                         MaterialPageRoute(
-                                          builder:
-                                              (context) =>
-                                                  const LocationScreen(),
+                                          builder: (context) => const LocationScreen(),
                                         ),
                                       );
                                       if (result != null) {
                                         setState(() {
-                                          _dropOffLocationController.text =
-                                              result.address;
+                                          _dropOffLocationController.text = result.address;
                                         });
                                       }
                                     },
@@ -235,8 +221,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                     Expanded(
                                       flex: 1,
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           CustomTextBodyMsb(
                                             title: 'Pick - Up Date',
@@ -245,8 +230,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                           CustomDateFormField(
                                             controller: _pickUpDateController,
                                             validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
+                                              if (value == null || value.isEmpty) {
                                                 return 'Vui lòng chọn ngày';
                                               }
                                               return null;
@@ -259,8 +243,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                     Expanded(
                                       flex: 1,
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           CustomTextBodyMsb(
                                             title: 'Pick - Up Time',
@@ -270,9 +253,21 @@ class _BookingScreenState extends State<BookingScreen> {
                                             controller: _pickUpTimeController,
                                             hintText: 'Select Time',
                                             validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
+                                              if (value == null || value.isEmpty) {
                                                 return 'Vui lòng chọn thời gian';
+                                              }
+                                              if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(value)) {
+                                                return 'Định dạng giờ phải là HH:mm';
+                                              }
+                                              try {
+                                                final parts = value.split(':');
+                                                final hour = int.parse(parts[0]);
+                                                final minute = int.parse(parts[1]);
+                                                if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+                                                  return 'Giờ hoặc phút không hợp lệ';
+                                                }
+                                              } catch (e) {
+                                                return 'Định dạng giờ không hợp lệ';
                                               }
                                               return null;
                                             },
@@ -289,8 +284,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                     Expanded(
                                       flex: 1,
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           CustomTextBodyMsb(
                                             title: 'Drop - Off Date',
@@ -299,27 +293,11 @@ class _BookingScreenState extends State<BookingScreen> {
                                           CustomDateFormField(
                                             controller: _dropOffDateController,
                                             firstDate: _pickUpDateController.text.isNotEmpty
-                                              ? (parseDate(_pickUpDateController.text) ?? DateTime.now())
-                                              : DateTime.now(),
+                                                ? (parseDate(_pickUpDateController.text) ?? DateTime.now())
+                                                : DateTime.now(),
                                             validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
+                                              if (value == null || value.isEmpty) {
                                                 return 'Vui lòng chọn ngày';
-                                              }
-
-                                              final pickUpDate = parseDate(
-                                                _pickUpDateController.text,
-                                              );
-                                              final dropOffDate = parseDate(
-                                                value,
-                                              );
-
-                                              if (pickUpDate == null ||
-                                                  dropOffDate == null) {
-                                                return 'Ngày không hợp lệ';
-                                              }
-                                              if (dropOffDate.difference(pickUpDate).inDays < 1) {
-                                                return 'Ngày trả phải cách ngày nhận ít nhất 1 ngày';
                                               }
                                               return null;
                                             },
@@ -331,8 +309,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                     Expanded(
                                       flex: 1,
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           CustomTextBodyMsb(
                                             title: 'Drop - Off Time',
@@ -342,9 +319,21 @@ class _BookingScreenState extends State<BookingScreen> {
                                             controller: _dropOffTimeController,
                                             hintText: 'Select Time',
                                             validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
+                                              if (value == null || value.isEmpty) {
                                                 return 'Vui lòng chọn thời gian';
+                                              }
+                                              if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(value)) {
+                                                return 'Định dạng giờ phải là HH:mm';
+                                              }
+                                              try {
+                                                final parts = value.split(':');
+                                                final hour = int.parse(parts[0]);
+                                                final minute = int.parse(parts[1]);
+                                                if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+                                                  return 'Giờ hoặc phút không hợp lệ';
+                                                }
+                                              } catch (e) {
+                                                return 'Định dạng giờ không hợp lệ';
                                               }
                                               return null;
                                             },
@@ -435,7 +424,9 @@ class _BookingScreenState extends State<BookingScreen> {
                 final authService = AuthService(context);
                 final userId = await authService.getUserIdFromStorage();
                 if (_formKey.currentState!.validate()) {
-                  bookingVM.saveData(
+                  bookingVM.setSelectedVehicle(widget.vehicle);
+                  final response = await bookingVM.createBooking(
+                    authService: authService,
                     vehicleId: widget.vehicle.vehicleId,
                     renterId: userId!,
                     ownerId: widget.vehicle.ownerId,
@@ -447,25 +438,18 @@ class _BookingScreenState extends State<BookingScreen> {
                     dropOffTime: _dropOffTimeController.text,
                     basePrice: widget.vehicle.price,
                   );
-                  debugPrint('userId: $userId');
-                  debugPrint('vehicleId: ${widget.vehicle.vehicleId}');
-                  debugPrint('ownerId: ${widget.vehicle.ownerId}');
-                  debugPrint('pickUpDate: ${_pickUpDateController.text}');
-                  if (bookingVM.tempBookingData != null) {
-                    bookingVM.setSelectedVehicle(widget.vehicle);
+                  debugPrint('Booking response: ${response.success}, ${response.message}');
+                  if (response.success) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ReviewSummaryScreen(
-                          vehicle: widget.vehicle,
-                          bookingData: bookingVM.tempBookingData!,
-                        ),
+                        builder: (context) => ReviewSummaryScreen(vehicle: widget.vehicle),
                       ),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Lỗi khi lưu dữ liệu đặt xe'),
+                        content: Text(response.message ?? 'Lỗi khi tạo booking'),
                       ),
                     );
                   }

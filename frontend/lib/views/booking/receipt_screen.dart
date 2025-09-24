@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frontend/models/booking.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
 import 'package:frontend/viewmodels/booking/booking_viewmodel.dart';
@@ -18,12 +19,14 @@ class ReceiptScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Booking? booking;
     final bookingVM = Provider.of<BookingViewModel>(context);
+    booking = bookingVM.currentBooking;
     final userVM = Provider.of<UserViewModel>(context);
     final user = userVM.user;
     final brands = Provider.of<VehicleViewModel>(context).brands;
     final Brand brand = brands.firstWhere(
-      (b) => b.id == vehicle.brandId,
+      (b) => b.brandId == vehicle.brandId,
       orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
     );
     return Scaffold(
@@ -94,17 +97,17 @@ class ReceiptScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      _buildInfoRow('Pick - Up Date', bookingVM.pickUpDate),
+                      _buildInfoRow('Pick - Up Date', booking!.pickupDate),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Pick - Up Time', bookingVM.pickUpTime),
+                      _buildInfoRow('Pick - Up Time', booking!.pickupTime),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Drop - Off Date', bookingVM.dropOffDate),
+                      _buildInfoRow('Drop - Off Date',  booking!.dropoffDate),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Drop - Off Time', bookingVM.dropOffTime),
+                      _buildInfoRow('Drop - Off Time', booking!.dropoffTime),
                       const SizedBox(height: 16),
                       _buildInfoRow(
                         'Total Rental Days',
-                          bookingVM.totalRentalDays?.toString() ?? '0'
+                          booking.totalRentalDays.toString()
                       ),
                     ],
                   ),
@@ -121,10 +124,9 @@ class ReceiptScreen extends StatelessWidget {
                     children: [
                       _buildInfoRow('Additional Drive', '0 VNĐ'),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Subtotal', bookingVM.basePrice?.toStringAsFixed(0) ??
-                              '0' ' VNĐ',),
+                      _buildInfoRow('Subtotal', bookingVM.formattedPrice(booking!.totalPrice)),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Tax', '0 VNĐ'),
+                      _buildInfoRow('Tax', bookingVM.formattedPrice(booking.taxRate)),
                     ],
                   ),
                 ),
@@ -134,7 +136,7 @@ class ReceiptScreen extends StatelessWidget {
                   children: [
                     CustomTextBodyL(title: 'Total Rental Price'),
                     Text(
-                      '',
+                      bookingVM.formattedPrice(booking!.totalPrice),
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         color: const Color(0xFF1976D2),

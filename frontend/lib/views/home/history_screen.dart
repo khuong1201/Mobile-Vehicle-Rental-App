@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/viewmodels/auth/auth_service.dart';
 import 'package:frontend/viewmodels/booking/booking_viewmodel.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,17 @@ class HistoryScreen extends StatefulWidget{
   State<HistoryScreen> createState() => _HistoryScreen();
 }
 class _HistoryScreen extends State<HistoryScreen>{
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final bookingVM = Provider.of<BookingViewModel>(context, listen: false);
+      final authService = AuthService(context);
+      bookingVM.fetchUserBookings(authService);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
      final bookingVM = Provider.of<BookingViewModel>(context);

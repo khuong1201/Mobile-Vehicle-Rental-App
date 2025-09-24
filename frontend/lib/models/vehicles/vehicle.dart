@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:frontend/models/bank.dart';
 import 'package:frontend/models/location/location_for_vehicle.dart';
@@ -99,8 +98,6 @@ abstract class Vehicle {
 
   Map<String, dynamic> toApiJson() {
     final json = toJson()
-      ..remove('images')
-      ..remove('imagePublicIds')
       ..remove('_id')
       ..remove('vehicleId')
       ..remove('createdAt')

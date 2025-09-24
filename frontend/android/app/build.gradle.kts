@@ -31,7 +31,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.vehicle.rental"
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

@@ -5,7 +5,7 @@ import 'package:frontend/views/widgets/custom_bottom_button.dart';
 
 class Confirmationscreen extends StatelessWidget {
   final Vehicle vehicle;
-  const Confirmationscreen ({super.key, required this.vehicle});
+  const Confirmationscreen ({super.key, required this.vehicle,});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

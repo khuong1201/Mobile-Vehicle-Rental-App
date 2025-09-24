@@ -6,7 +6,7 @@ import 'package:frontend/api_services/client/api_reponse.dart';
 
 class ApiVerifyOTP {
   static Future<ApiResponse<String>> verifyOTP(String email, String otp) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/api/auth/verify');
+    final url = Uri.parse('${ApiClient.baseUrl}/api/auth/verify-otp');
     debugPrint('🔹 Gửi yêu cầu POST tới: $url');
     debugPrint('🔹 Nội dung yêu cầu: {email: $email, otp: $otp}');
 

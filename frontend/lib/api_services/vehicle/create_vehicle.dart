@@ -23,23 +23,18 @@ class ApiCreateVehicle {
 
       // Kiểm tra các trường bắt buộc
       if (vehicle.brandId.isEmpty) {
-        debugPrint('⚠️ BrandId is empty');
         return ApiResponse(success: false, message: 'BrandId cannot be empty');
       }
       if (vehicle.type.isEmpty) {
-        debugPrint('⚠️ Type is empty');
         return ApiResponse(success: false, message: 'Type cannot be empty');
       }
       if (vehicle.vehicleName.isEmpty) {
-        debugPrint('⚠️ VehicleName is empty');
         return ApiResponse(success: false, message: 'VehicleName cannot be empty');
       }
       if (vehicle.licensePlate.isEmpty) {
-        debugPrint('⚠️ LicensePlate is empty');
         return ApiResponse(success: false, message: 'LicensePlate cannot be empty');
       }
       if (vehicle.ownerId.isEmpty) {
-        debugPrint('⚠️ OwnerId is empty');
         return ApiResponse(success: false, message: 'OwnerId cannot be empty');
       }
       if (vehicle.location == null) {
@@ -51,14 +46,15 @@ class ApiCreateVehicle {
 
       debugPrint('📤 Submitting vehicle data: ${jsonEncode(fields)}');
 
-      // Request 1: Gửi dữ liệu vehicle với JSON
+      // 🚀 Request duy nhất: Gửi cả fields + files
       final vehicleResponse = await callProtectedApi<T>(
         viewModel,
         endpoint: '/api/vehicles/',
         authService: authService,
         method: 'POST',
-        isMultipart: false,
-        body: fields, // Gửi location dưới dạng object
+        isMultipart: true,
+        fields: fields,              // dữ liệu text
+        files: {'images': imageFiles}, // gửi kèm ảnh luôn
       );
 
       if (!vehicleResponse.success ||
@@ -73,30 +69,8 @@ class ApiCreateVehicle {
 
       final data = vehicleResponse.data as Map<String, dynamic>;
       final createdVehicle = Vehicle.fromJson(data['data'] ?? data);
-      final vehicleId = createdVehicle.vehicleId; // Lấy vehicleId
 
       debugPrint('✅ Vehicle created: ${createdVehicle.vehicleName}');
-
-      // Request 2: Gửi hình ảnh nếu có
-      if (imageFiles.isNotEmpty) {
-        debugPrint('📤 Uploading images for vehicleId: $vehicleId');
-        final imageResponse = await callProtectedApi<T>(
-          viewModel,
-          endpoint: '/api/vehicles/$vehicleId/images',
-          authService: authService,
-          method: 'POST',
-          isMultipart: true,
-          fields: {'vehicleId': vehicleId},
-          files: {'images': imageFiles},
-        );
-
-        if (!imageResponse.success) {
-          debugPrint('❌ Image upload failed: ${imageResponse.message}');
-          // Vehicle đã được tạo, nhưng có thể thông báo lỗi upload ảnh
-        } else {
-          debugPrint('✅ Images uploaded successfully');
-        }
-      }
 
       return ApiResponse(
         success: true,
