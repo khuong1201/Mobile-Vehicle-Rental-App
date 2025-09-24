@@ -6,6 +6,7 @@ const env = {
     DB_DRIVER: process.env.DB_DRIVER || "mongo", // "mongo" | "mysql"
     MONGO_URI: process.env.MONGO_URI || "mongodb://localhost:27017/vehiclerental",
     MYSQL_URI: process.env.MYSQL_URI || "mysql://user:pass@localhost:3306/vehiclerental",
+    REDIS_URL: process.env.REDIS_URL || "redis://localhost:6379",
     JWT_SECRET: process.env.JWT_SECRET || "dev_secret",
     JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || "dev_refresh",
     ACCESS_TOKEN_EXPIRES: process.env.ACCESS_TOKEN_EXPIRES || "15m",

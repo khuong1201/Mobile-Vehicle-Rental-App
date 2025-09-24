@@ -14,7 +14,7 @@ import deviceRoutes from './device_routes.js';
 import deviceTokenRoutes from './device_token_routes.js'
 import telemetryActiveRoutes from './telemetry_active_routes.js';
 import telemetryRawRoutes from './telemetry_raw_routes.js';
-import serialRoutes from './serial_routes.js';
+// import serialRoutes from './serial_routes.js';
 // import paymentRoutes from './payment.routes.js';
 
 const router = express.Router();
@@ -33,7 +33,7 @@ router.use('/devices', deviceRoutes);
 router.use('/device-token', deviceTokenRoutes);
 router.use('/telemetry-active', telemetryActiveRoutes);
 router.use('/telemetry-raw', telemetryRawRoutes);
-router.use('/serials', serialRoutes);
+// router.use('/serials', serialRoutes);
 // router.use('/payments', paymentRoutes);
 
 

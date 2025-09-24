@@ -6,17 +6,27 @@ export default class DeviceTokenService {
     this.validator = validator; 
   }
 
-  async registerDeviceToken(userId, token) {
+  async registerDeviceToken(userId, token, platform, deviceId) {
     this.validator.validateRegisterToken(token);
 
     const user = await this.userRepo.findById(userId);
     if (!user) throw new AppError("User not found", 404);
 
-    if (!user.deviceTokens.includes(token)) {
-      user.deviceTokens.push(token);
-      await user.save();
+    const existing = user.deviceTokens.find(t => t.token === token);
+    if (existing) {
+      existing.lastUsedAt = new Date();
+      existing.platform = platform;
+      existing.deviceId = deviceId;
+    } else {
+      user.deviceTokens.push({
+        token,
+        platform,
+        deviceId,
+        lastUsedAt: new Date()
+      });
     }
 
+    await user.save();
     return { message: "Device token registered" };
   }
 
@@ -26,7 +36,7 @@ export default class DeviceTokenService {
     const user = await this.userRepo.findById(userId);
     if (!user) throw new AppError("User not found", 404);
 
-    user.deviceTokens = user.deviceTokens.filter(t => t !== token);
+    user.deviceTokens = user.deviceTokens.filter(t => t.token !== token);
     await user.save();
 
     return { message: "Device token removed" };

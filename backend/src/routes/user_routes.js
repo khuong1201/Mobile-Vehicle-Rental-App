@@ -20,6 +20,12 @@ router.patch(
 );
 
 router.get(
+  '/orther-profile',
+  authenticateJWT,
+  asyncHandler(controller.getOrtherProfile)
+)
+
+router.get(
   '/me',
   authenticateJWT,
   asyncHandler(controller.getProfile)

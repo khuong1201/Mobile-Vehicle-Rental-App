@@ -23,6 +23,12 @@ const AddressSchema = new Schema({
     phoneNumber: { type: String, required: true },
     deleted: { type: Boolean, default: false },
 });
+const DeviceTokenSchema = new Schema({
+    token: { type: String, required: true, index: true },
+    platform: { type: String, enum: ["ios", "android", "web"], required: true },
+    deviceId: { type: String },
+    lastUsedAt: { type: Date, default: Date.now }
+});
 
 const UserSchema = new Schema({
     userId: { type: String, unique: true, default: uuidv4 },
@@ -42,7 +48,7 @@ const UserSchema = new Schema({
     license: [LicenseSchema],
     points: Number,
     deleted: { type: Boolean, default: false },
-    deviceTokens: [{type: String}],
+    deviceTokens: [DeviceTokenSchema], 
 }, { timestamps: true });
 
 const User = model('User', UserSchema);

@@ -4,12 +4,13 @@ import NotificationService from "../services/notification_service.js";
 import NotificationValidator from "../validators/notification_validate.js";
 import getRepositories from "../repositories/index.js";
 import authenticateJWT from "../middlewares/auth_middlerware.js";
-
+import NotificationQueueService from "../services/notification_queue_service.js";
 const router = Router();
 
 const { NotificationRepository } = await getRepositories();
 const validator = new NotificationValidator();
-const service = new NotificationService( NotificationRepository, validator);
+const queueService = new NotificationQueueService();
+const service = new NotificationService( NotificationRepository, queueService, validator);
 const controller = new NotificationController(service);
 
 router.use(authenticateJWT);

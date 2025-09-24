@@ -4,6 +4,7 @@ export default class UserController {
   constructor(userService) {
     this.userService = userService;
 
+    this.getOrtherProfile = asyncHandler(this.getOrtherProfile.bind(this));
     this.getProfile = asyncHandler(this.getProfile.bind(this));
     this.updatePassword = asyncHandler(this.updatePassword.bind(this));
     this.updateProfile = asyncHandler(this.updateProfile.bind(this));
@@ -21,6 +22,12 @@ export default class UserController {
     res.json({ status: 'success', data: user });
   }
   
+  async getOrtherProfile(req, res){
+    const userId = req.body.userId;
+    const profile = await this.userService.getOrtherProfile(userId);
+    res.json({ status: "success", data: profile});
+  }
+
   async getProfile(req, res) {
     const userId = req.user.userId; 
     const profile = await this.userService.getProfile(userId);

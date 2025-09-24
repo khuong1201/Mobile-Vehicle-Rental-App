@@ -3,16 +3,21 @@ import EmailProvider from "../config/email.js";
 import PushProvider from "../config/push.js";
 
 export default class NotificationService {
-  constructor(notificationRepo, validator) {
+  constructor(notificationRepo, queueService, validator) {
     this.notificationRepo = notificationRepo;
     this.validator = validator;
+    this.queueService = queueService;
     this.emailProvider = new EmailProvider();
     this.pushProvider = new PushProvider();
   }
 
   async createNotification(data) {
     this.validator.validateCreate(data);
-    return this.notificationRepo.create({ ...data, status: "pending" });
+    const notification = await this.notificationRepo.create({ ...data, status: "pending" });
+
+    await this.queueService.add("send", { notificationId: notification._id });
+  
+    return notification;
   }
 
   async sendNotification(notification) {

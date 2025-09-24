@@ -15,6 +15,18 @@ export default class UserRepositoryMongo extends IUserRepo {
         return await UserModel.findOne({ email });
     }
 
+    async getOrtherProfile(id) {
+        const user = await UserModel.findOne({ userId: id})
+        if (!user) throw new AppError("User not found", 404);
+        return {
+            userId: user.userId,
+            fullName: user.fullName,
+            avatar: user.avatar,
+            phoneNumber: user.phoneNumber,
+            gender: user.gender,
+            dateOfBirth: user.dateOfBirth,
+        }
+    }
     async getProfile(id) {
         const user = await UserModel.findOne({ userId: id });
         if (!user) throw new AppError("User not found", 404);
