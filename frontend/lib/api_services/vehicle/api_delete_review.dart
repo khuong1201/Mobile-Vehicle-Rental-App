@@ -9,16 +9,29 @@ class ApiDeleteReview {
     required AuthService authService,
     required String reviewId,
   }) async {
+    final endpoint = '/api/reviews/$reviewId';
+
+    debugPrint('🚀 Sending delete review request for reviewId: $reviewId');
+
     final response = await callProtectedApi<T>(
       viewModel,
-      endpoint: '/api/review/$reviewId',
+      endpoint: endpoint,
       authService: authService,
       method: 'DELETE',
     );
 
-    return ApiResponse(
-      success: response.success,
-      message: response.message ?? (response.success ? 'Review deleted' : 'Failed to delete review'),
-    );
+    if (response.success) {
+      debugPrint('✅ Review deleted successfully: $reviewId');
+      return ApiResponse(
+        success: true,
+        message: response.message ?? 'Review deleted successfully.',
+      );
+    } else {
+      debugPrint('❌ Failed to delete review: ${response.message}');
+      return ApiResponse(
+        success: false,
+        message: response.message ?? 'Failed to delete review.',
+      );
+    }
   }
 }

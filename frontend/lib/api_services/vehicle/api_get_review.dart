@@ -18,7 +18,7 @@ class ApiGetReviewByVehicle {
   };
 
   final queryString = Uri(queryParameters: queryParams).query;
-  final endpoint = '/api/reviews/$vehicleId?$queryString';
+  final endpoint = '/api/reviews/vehicle/$vehicleId?$queryString';
 
   final response = await callProtectedApi<T>(
     viewModel,
@@ -45,7 +45,7 @@ class ApiGetReviewByVehicle {
   // }
 
   if (response.success) {
-    final data = response.data is Map<String, dynamic> ? response.data['reviews'] : response.data;
+    final data = response.data is Map<String, dynamic> ? response.data['data'] : response.data;
     if (data is List) {
       final List<ReviewModel> reviewList = data
           .whereType<Map<String, dynamic>>()

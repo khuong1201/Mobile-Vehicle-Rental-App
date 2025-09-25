@@ -14,7 +14,7 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
   required AuthService authService,
   String method = 'GET',
   Map<String, dynamic>? body,
-  Map<String, String>? fields,
+  Map<String, dynamic>? fields,
   Map<String, List<File>>? files,
   bool isMultipart = false,
 }) async {
@@ -44,7 +44,11 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
         case 'PUT':
           return await client.put(uri, headers: headers, body: jsonEncode(body));
         case 'DELETE':
-          return await client.delete(uri, headers: headers, body: jsonEncode(body));
+          if (body != null) {
+            return await client.delete(uri, headers: headers, body: jsonEncode(body));
+          } else {
+            return await client.delete(uri, headers: headers);
+          }
         case 'GET':
         default:
           return await client.get(uri, headers: headers);
@@ -59,7 +63,11 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
   request.headers['Authorization'] = 'Bearer $token';
 
   if (fields != null) {
-    request.fields.addAll(fields);
+    fields.forEach((key, value) {
+      if (value != null) {
+        request.fields[key] = value.toString();  // 👈 ép tất cả sang String
+      }
+    });
   }
 
   if (files != null) {

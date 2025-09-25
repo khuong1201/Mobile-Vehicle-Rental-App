@@ -61,7 +61,7 @@ class _LessorHomeScreen extends State<LessorHomeScreen> {
               crossAxisCount: 2,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              childAspectRatio: 3,
+              childAspectRatio: 2,
               children: navItems
                   .where((item) => item['label'] != 'All')
                   .map(

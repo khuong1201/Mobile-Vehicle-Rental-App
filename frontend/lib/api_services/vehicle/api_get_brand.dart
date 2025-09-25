@@ -11,7 +11,7 @@ class ApiGetAllBrand {
   }) async {
     final response = await callProtectedApi<T>(
       viewModel,
-      endpoint: '/api/brands/get-all-brand',
+      endpoint: '/api/brands/',
       authService: authService,
       method: 'GET',
     );

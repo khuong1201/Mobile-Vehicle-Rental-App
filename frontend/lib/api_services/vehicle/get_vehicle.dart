@@ -31,7 +31,6 @@ class ApiGetAllVehicle {
       authService: authService,
       method: 'GET',
     );
-
     if (!response.success || response.data == null || response.data is! Map<String, dynamic>) {
       return ApiResponse(
         success: false,
@@ -72,6 +71,57 @@ class ApiGetAllVehicle {
       return ApiResponse(
         success: false,
         message: 'Failed to parse vehicle data: $e',
+      );
+    }
+  }
+
+  static Future<ApiResponse<List<Vehicle>>> getVehicleByOwner<T extends ChangeNotifier>(
+    T viewModel, {
+    required AuthService authService,
+    int page = 1,
+    int limit = 10,
+    required String userId,
+  }) async {
+    final response = await callProtectedApi<T>(
+      viewModel,
+      endpoint: '/api/vehicles/$userId',
+      authService: authService,
+      method: 'GET',
+    );
+
+    if (!response.success || response.data == null || response.data is! Map<String, dynamic>) {
+      return ApiResponse(
+        success: false,
+        message: response.message ?? 'Failed to fetch vehicles by owner',
+      );
+    }
+
+    try {
+      final Map<String, dynamic> data = response.data;
+      final items = data['data'];
+
+      if (items is! List) {
+        return ApiResponse(
+          success: false,
+          message: 'Invalid data format: Expected a list of vehicles',
+        );
+      }
+
+      final vehicleList = items
+          .whereType<Map<String, dynamic>>()
+          .map(parseVehicle)
+          .toList();
+
+      return ApiResponse(
+        success: true,
+        data: vehicleList,
+        message: 'Vehicles by owner fetched successfully',
+      );
+    } catch (e, stackTrace) {
+      debugPrint('Vehicle by owner parse error: $e\n$stackTrace');
+      return ApiResponse(
+        success: false,
+        message: 'Failed to parse vehicles by owner: $e',
       );
     }
   }

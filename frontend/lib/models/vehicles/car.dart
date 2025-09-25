@@ -1,70 +1,95 @@
+import 'package:frontend/models/bank.dart';
+import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
 
 class Car extends Vehicle {
   final String fuelType;
   final String transmission;
-  final double numberOfSeats;
+  final int numberOfSeats;
 
   Car({
-    required super.id,
-    required super.vehicleId,
-    required super.vehicleName,
-    required super.licensePlate,
-    required super.brand,
-    required super.yearOfManufacture,
-    required super.images,
-    required super.description,
-    required super.location,
-    required super.model,
-    required super.ownerId,
-    required super.ownerEmail,
-    required super.ownerName,
-    required super.ownerAvatar,
-    required super.price,
-    required super.bankAccount,
-    required super.rate,
-    required super.available,
-    required super.status,
-    required super.type,
+    required String id,
+    required String vehicleId,
+    required String vehicleName,
+    required String licensePlate,
+    required String brandId,
+    required String model,
+    required int yearOfManufacture,
+    required List<String> images,
+    required List<String> imagePublicIds,
+    required String description,
+    LocationForVehicle? location,
+    required String ownerId,
+    required double price,
+    BankAccount? bankAccount,
+    required double averageRating,
+    required int reviewCount,
+    required bool available,
+    required bool deleted,
+    required String status,
     required this.fuelType,
     required this.transmission,
     required this.numberOfSeats,
-  });
+  }) : super(
+          id: id,
+          vehicleId: vehicleId,
+          vehicleName: vehicleName,
+          licensePlate: licensePlate,
+          brandId: brandId,
+          model: model,
+          yearOfManufacture: yearOfManufacture,
+          images: images,
+          imagePublicIds: imagePublicIds,
+          description: description,
+          location: location,
+          ownerId: ownerId,
+          price: price,
+          bankAccount: bankAccount,
+          averageRating: averageRating,
+          reviewCount: reviewCount,
+          available: available,
+          deleted: deleted,
+          status: status,
+          type: 'Car',
+        );
 
   factory Car.fromJson(Map<String, dynamic> json) {
-    final vehicle = Vehicle.fromJson(json);
     return Car(
-      id: vehicle.id,
-      vehicleId: vehicle.vehicleId,
-      vehicleName: vehicle.vehicleName,
-      licensePlate: vehicle.licensePlate,
-      brand: vehicle.brand,
-      yearOfManufacture: vehicle.yearOfManufacture,
-      images: vehicle.images,
-      description: vehicle.description,
-      location: vehicle.location,
-      model: vehicle.model,
-      ownerId: vehicle.ownerId,
-      ownerEmail: vehicle.ownerEmail,
-      ownerName: vehicle.ownerName,
-      ownerAvatar: vehicle.ownerAvatar,
-      price: vehicle.price,
-      bankAccount: vehicle.bankAccount,
-      rate: vehicle.rate,
-      available: vehicle.available,
-      status: vehicle.status,
-      type: vehicle.type,
-      fuelType: json['fuelType'] ?? '',
-      transmission: json['transmission'] ?? '',
-      numberOfSeats: (json['numberOfSeats'] as num?)?.toDouble() ?? 0.0,
+      id: json['_id']?.toString() ?? '',
+      vehicleId: json['vehicleId']?.toString() ?? '',
+      vehicleName: json['vehicleName']?.toString() ?? '',
+      licensePlate: json['licensePlate']?.toString() ?? '',
+      brandId: json['brandId']?.toString() ?? '',
+      model: json['model']?.toString() ?? '',
+      yearOfManufacture: (json['yearOfManufacture'] ?? 0) as int,
+      images: List<String>.from(json['images'] ?? []),
+      imagePublicIds: List<String>.from(json['imagePublicIds'] ?? []),
+      description: json['description']?.toString() ?? '',
+      location: json['location'] != null
+          ? LocationForVehicle.fromJson(json['location'])
+          : null,
+      ownerId: json['ownerId']?.toString() ?? '',
+      price: (json['price'] ?? 0).toDouble(),
+      bankAccount: json['bankAccount'] != null
+          ? BankAccount.fromJson(json['bankAccount'])
+          : null,
+      averageRating: (json['averageRating'] ?? 0).toDouble(),
+      reviewCount: (json['reviewCount'] ?? 0) as int,
+      available: json['available'] ?? true,
+      deleted: json['deleted'] ?? false,
+      status: json['status']?.toString() ?? 'pending',
+      fuelType: json['fuelType']?.toString() ?? '',
+      transmission: json['transmission']?.toString() ?? '',
+      numberOfSeats: (json['numberOfSeats'] ?? 0) as int,
     );
   }
+
   @override
   Map<String, dynamic> toJson() {
     final json = super.toJson();
     json.addAll({
       'fuelType': fuelType,
-      'transmission':transmission,
+      'transmission': transmission,
       'numberOfSeats': numberOfSeats,
     });
     return json;

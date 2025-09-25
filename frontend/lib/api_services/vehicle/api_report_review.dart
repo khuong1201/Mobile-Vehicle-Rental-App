@@ -19,7 +19,7 @@ class ApiReportReview {
 
     final response = await callProtectedApi<T>(
       viewModel,
-      endpoint: '/api/review/report',
+      endpoint: '/api//review-reports',
       authService: authService,
       method: 'POST',
       body: body,

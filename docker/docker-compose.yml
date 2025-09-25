@@ -8,23 +8,29 @@ services:
       - "5000:5000"
     working_dir: /app
     env_file:
-      - ../backend/.env
+      - ../backend/src/.env
     # chay development
     volumes:
-      - ../backend:/app
+      - ../backend/src:/app
+      - /app/node_modules
     # depends_on:
     #   - mongodb
     restart: on-failure
     command: npm run dev
     # command: npm run start
-  frontend:
-    build: ../admin-html
+  # frontend:
+  #   build: ../admin-html
+  #   ports:
+  #     - "5500:80"
+  #   volumes:
+  #     - ../admin-html:/usr/share/nginx/html:ro
+  #   restart: unless-stopped
+  redis:
+    image: redis:7
+    container_name: redis
     ports:
-      - "5500:80"
-    volumes:
-      - ../admin-html:/usr/share/nginx/html:ro
+      - "6379:6379"
     restart: unless-stopped
-
 
   # frontend_flutter:
   #   build:

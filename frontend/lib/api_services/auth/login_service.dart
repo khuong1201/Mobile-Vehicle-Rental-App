@@ -9,7 +9,7 @@ class ApiLogin {
   static final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   static Future<ApiResponse<Map<String, dynamic>>> login(String email, String password) async {
-    final url = Uri.parse('${ApiClient.`6`}/api/auth/login');
+    final url = Uri.parse('${ApiClient.baseUrl}/api/auth/login');
     try {
       // Validate input
       if (email.isEmpty || password.isEmpty) {
@@ -25,8 +25,10 @@ class ApiLogin {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final accessToken = data?['accessToken'] as String?;
-        final userData = data?['user'] as Map<String, dynamic>?;
+        final responseData = data['data'] as Map<String, dynamic>?;
+
+        final accessToken = responseData?['accessToken'] as String?;
+        final userData = responseData?['data'] as Map<String, dynamic>?;
 
         if (accessToken == null || userData == null) {
           debugPrint('Invalid login response: missing accessToken or user');

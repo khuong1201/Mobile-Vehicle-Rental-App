@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:frontend/api_services/payment/momo_api.dart';
 import 'package:frontend/api_services/payment/vietin_api.dart';
 import 'package:frontend/api_services/payment/viettin_api_IPN.dart';
+import 'package:frontend/models/booking.dart';
 import 'package:frontend/models/momo_payment.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/models/vehicles/vehicle.dart';
@@ -21,13 +22,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ReviewSummaryScreen extends StatefulWidget {
   final Vehicle vehicle;
-  final Map<String, dynamic> bookingData;
-  const ReviewSummaryScreen({
-    super.key,
-    required this.vehicle,
-    required this.bookingData,
-  });
-
+  const ReviewSummaryScreen({super.key,required this.vehicle});
+  
   @override
   _ReviewSummaryScreenState createState() => _ReviewSummaryScreenState();
 }
@@ -39,13 +35,26 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
     {'name': 'MoMo wallet', 'image': 'assets/images/booking/momo.png'},
     {'name': 'ZaloPay', 'image': 'assets/images/booking/zalo.png'},
   ];
+  Booking? booking;
+  bool isLoading = true;
+  String? errorMessage;
+  
+  @override
+  void initState() {
+    super.initState();
+    final bookingVM = Provider.of<BookingViewModel>(context, listen: false);
+    setState(() {
+      booking = bookingVM.currentBooking;
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bookingVM = Provider.of<BookingViewModel>(context);
+    final bookingVM = Provider.of<BookingViewModel>(context, listen: false);
     final brands = Provider.of<VehicleViewModel>(context).brands;
     final Brand brand = brands.firstWhere(
-      (b) => b.id == widget.vehicle.brand,
+      (b) => b.brandId == widget.vehicle.brandId,
       orElse:
           () => Brand(
             id: '',
@@ -54,6 +63,24 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
             brandImage: null,
           ),
     );
+
+    // Thêm kiểm tra trạng thái dữ liệu
+    if (isLoading) {
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (errorMessage != null) {
+      return Scaffold(
+        body: Center(child: Text(errorMessage!)),
+      );
+    }
+    if (booking == null) {
+      return Scaffold(
+        body: Center(child: Text('Không tìm thấy thông tin booking')),
+      );
+    }
+
     return Scaffold(
       body: Container(
         height: double.infinity,
@@ -105,7 +132,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                               Row(
                                 children: [
                                   Text(
-                                    widget.vehicle.rate.toString(),
+                                    widget.vehicle.averageRating.toString(),
                                     style: TextStyle(
                                       color: const Color(0xFF2B2B2C),
                                       fontSize: 10,
@@ -132,7 +159,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                               SizedBox(
                                 width: 28,
                                 height: 28,
-                                child: SvgPicture.network(
+                                child: Image.network(
                                   '${brand.brandImage}',
                                 ),
                               ),
@@ -197,7 +224,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                       children: [
                         CustomTextBodySsb(title: 'Pick - Up Date'),
                         Spacer(),
-                        CustomTextBodyMsb(title: bookingVM.pickUpDate),
+                        CustomTextBodyMsb(title: booking!.pickupDate),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -205,7 +232,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                       children: [
                         CustomTextBodySsb(title: 'Pick - Up Time'),
                         Spacer(),
-                        CustomTextBodyMsb(title: bookingVM.pickUpTime),
+                        CustomTextBodyMsb(title: booking!.pickupTime),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -213,7 +240,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                       children: [
                         CustomTextBodySsb(title: 'Drop - Off Date'),
                         Spacer(),
-                        CustomTextBodyMsb(title: bookingVM.dropOffDate),
+                        CustomTextBodyMsb(title: booking!.dropoffDate),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -221,7 +248,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                       children: [
                         CustomTextBodySsb(title: 'Drop - Off Time'),
                         Spacer(),
-                        CustomTextBodyMsb(title: bookingVM.dropOffTime),
+                        CustomTextBodyMsb(title: booking!.dropoffTime),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -230,9 +257,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                       children: [
                         CustomTextBodySsb(title: 'Total Rental Days'),
                         Spacer(),
-                        CustomTextBodyMsb(
-                          title: bookingVM.totalRentalDays?.toString() ?? '0',
-                        ),
+                        CustomTextBodyMsb(title: booking!.totalRentalDays.toString()),
                       ],
                     ),
                   ],
@@ -261,7 +286,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                       children: [
                         CustomTextBodySsb(title: 'Subtotal'),
                         Spacer(),
-                        CustomTextBodyMsb(title: bookingVM.formattedTotalPrice),
+                        CustomTextBodyMsb(title: bookingVM.formattedPrice(booking!.totalPrice)),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -269,11 +294,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                       children: [
                         CustomTextBodySsb(title: 'Tax'),
                         Spacer(),
-                        CustomTextBodyMsb(
-                          title:
-                              bookingVM.taxAmount?.toStringAsFixed(0) ??
-                              '0'
-                                  ' VNĐ',
+                        CustomTextBodyMsb( title: bookingVM.formattedPrice(booking!.taxRate), 
                         ),
                       ],
                     ),
@@ -430,7 +451,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
               children: [
                 CustomTextBodyL(title: 'Total Rental Price'),
                 Text(
-                  bookingVM.formattedTotalPrice,
+                  bookingVM.formattedPrice(booking!.totalPrice),
                   style: TextStyle(
                     color: const Color(0xFF1976D2),
                     fontSize: 20,
@@ -456,7 +477,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                     viewModel: bookingVM,
                     apiAuthService: authService,
                     paymentData: {
-                      "bookingId": widget.bookingData['bookingId'],
+                      "bookingId": booking!.bookingId,
                       "amount": bookingVM.totalPrice ?? 0,
                       "orderInfo": "Thanh toán thuê xe",
                     },
@@ -495,7 +516,7 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                     viewModel: bookingVM,
                     apiAuthService: authService,
                     paymentData: {
-                      "bookingId": widget.bookingData['bookingId'],
+                      "bookingId": booking!.bookingId,
                       "amount": bookingVM.totalPrice ?? 0,
                       "orderInfo": "Thanh toán thuê xe",
                     },
@@ -550,7 +571,6 @@ class _ReviewSummaryScreenState extends State<ReviewSummaryScreen> {
                   );
                 }
               },
-
               title: 'Pay Now',
             ),
           ],

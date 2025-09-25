@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:app_links/app_links.dart';
+import 'package:frontend/views/splash_screen.dart';
+import 'package:frontend/views/welcome_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:frontend/viewmodels/auth/auth_service.dart';
@@ -14,6 +16,7 @@ import 'package:frontend/viewmodels/user/user_license_viewmodel.dart';
 import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle/review_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
+import 'package:frontend/views/Home/home_page.dart';
 import 'package:frontend/views/login/sign_in_screen.dart';
 import 'package:frontend/views/myAcount/driver_license_screen.dart';
 import 'package:frontend/views/booking/confirmation_screen.dart';
@@ -88,25 +91,25 @@ class _RootAppState extends State<RootApp> {
                 Provider.of<AuthService>(context, listen: false),
               ),
         ),
-        ChangeNotifierProvider(create: (_) => BookingViewModel()),
+        
         ChangeNotifierProvider(create: (_) => LocationViewModel()),
         ChangeNotifierProvider(
           create:
               (context) =>
                   RoleViewModel(authService: context.read<AuthService>()),
         ),
+        ChangeNotifierProvider(create:(context) => BookingViewModel()),
       ],
       child: MaterialApp(
         title: 'Vehicle Rental App',
         debugShowCheckedModeBanner: false,
-        home: SignInScreen(),
-        // initialRoute: '/splash',
-        // routes: {
-        //   '/splash': (context) => const SplashScreen(),
-        //   '/welcome': (context) => const WelcomeScreen(),
-        //   '/home': (context) => const HomePage(),
-        //   '/login': (context) => const SignInScreen(),
-        // },
+        initialRoute: '/splash',
+        routes: {
+          '/splash': (context) => const SplashScreen(),
+          '/welcome': (context) => const WelcomeScreen(),
+          '/home': (context) => const HomePage(),
+          '/login': (context) => const SignInScreen(),
+        },
 
         // localizationsDelegates: const [
         //   GlobalMaterialLocalizations.delegate,

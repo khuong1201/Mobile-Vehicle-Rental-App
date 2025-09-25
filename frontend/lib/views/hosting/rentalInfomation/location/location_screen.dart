@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/viewmodels/location/location_viewmodel.dart';
-import 'package:frontend/views/widgets/custom_alert_dialog.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
-import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 
@@ -18,7 +16,6 @@ class LocationScreen extends StatefulWidget {
 class _LocationScreenState extends State<LocationScreen> {
   
   final TextEditingController _searchController = TextEditingController();
-  final TextEditingController _detailLocationController = TextEditingController();
   final PageController _pageController = PageController();
   final ValueNotifier<int> _pageNotifier = ValueNotifier<int>(0);
   String? _currentAddress;
@@ -41,15 +38,6 @@ class _LocationScreenState extends State<LocationScreen> {
     _searchController.dispose();
     _pageController.dispose();
     super.dispose();
-  }
-
-  void _goToNextPage() {
-    if (_pageController.page! < 3) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
   }
 
   @override
@@ -148,9 +136,11 @@ class _LocationScreenState extends State<LocationScreen> {
                         ].where((e) => e != null && e.isNotEmpty).join(', ');
                 
                         final locationForVehicle = LocationForVehicle(
-                          address: addressComponents.isNotEmpty ? addressComponents : locationVM.getFullLocation().toString(),
-                          lat: position.latitude,
-                          lng: position.longitude,
+                          type: "Point",
+                          coordinates: [position.longitude, position.latitude], // GeoJSON: [lng, lat]
+                          address: addressComponents.isNotEmpty
+                              ? addressComponents
+                              : locationVM.getFullLocation().toString(),
                         );
                         Navigator.pop(context, locationForVehicle);
                         setState(() {
@@ -208,166 +198,10 @@ class _LocationScreenState extends State<LocationScreen> {
               }
             ),
             const SizedBox(height: 16),
-            Expanded(
-              child: PageView(
-                controller: _pageController,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  _buildProvinceList(vm),
-
-                  _buildDistrictList(vm),
-
-                  _buildWardList(vm),
-
-                  _buildDetailLocation(vm)
-                ],
-              ),
-            ),
+            
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildProvinceList(LocationViewModel vm) {
-    if (vm.isLoadingProvinces) {
-      return const Center(child: CircularProgressIndicator());
-    } else if (vm.errorMessage != null) {
-      return Center(
-        child: Text(
-          vm.errorMessage!,
-          style: const TextStyle(color: Colors.red),
-        ),
-      );
-    } else {
-      return ListView.builder(
-        itemCount: vm.provinces.length,
-        itemBuilder: (context, index) {
-          final province = vm.provinces[index];
-          return ListTile(
-            title: Text(province.name),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () async {
-              await vm.selectProvince(province);
-              _goToNextPage();
-            },
-          );
-        },
-      );
-    }
-  }
-
-  Widget _buildDistrictList(LocationViewModel vm) {
-    if (vm.isLoadingDistricts) {
-      return const Center(child: CircularProgressIndicator());
-    } else if (vm.districts.isEmpty) {
-      return const Center(child: Text("Không có quận/huyện nào"));
-    } else {
-      return Column(
-        children: [
-          Text(
-            'Quận/Huyện của: ${vm.selectedProvince?.name ?? ''}',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: vm.districts.length,
-              itemBuilder: (context, index) {
-                final district = vm.districts[index];
-                return ListTile(
-                  title: Text(district.name),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () async {
-                    await vm.selectDistrict(district);
-                    _goToNextPage();
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      );
-    }
-  }
-
-  Widget _buildWardList(LocationViewModel vm) {
-    if (vm.isLoadingWards) {
-      return const Center(child: CircularProgressIndicator());
-    } else if (vm.wards.isEmpty) {
-      return const Center(child: Text("Không có phường/xã nào"));
-    } else {
-      return Column(
-        children: [
-          Text(
-            'Phường/Xã của: ${vm.selectedDistrict?.name ?? ''}',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: vm.wards.length,
-              itemBuilder: (context, index) {
-                final ward = vm.wards[index];
-                return ListTile(
-                  title: Text(ward.name),
-                  onTap: () {
-                    vm.selectWard(ward);
-                    _goToNextPage();
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      );
-    }
-  }
-
-  Widget _buildDetailLocation(LocationViewModel vm){
-    final formKey = GlobalKey<FormState>();
-    return Column(
-      children: [
-        Form(
-          key:formKey,
-          child: CustomTextField(
-            controller: _detailLocationController,
-            hintText: 'Enter Floor / Apartment number and street name',
-            validator:(value){
-              if(value == null || value.isEmpty){
-                return "please fill infomation";
-              }
-              return null;
-            }
-          ),
-        ),
-        const SizedBox(height: 40,),
-        CustomButton(title: 'Save',
-          width: double.infinity,
-          onPressed: (){
-            if (formKey.currentState!.validate()){
-              final fullLocation = vm.getFullLocation().toString();
-              final detailAddress = _detailLocationController.text.trim();
-              final combinedAddress = detailAddress.isNotEmpty
-                ? '$detailAddress, $fullLocation'
-                : fullLocation;
-              final locationForVehicle = LocationForVehicle(
-                address: combinedAddress,
-                lat: 0.0,
-                lng: 0.0,
-              );
-              Navigator.pop(context, locationForVehicle);
-            } else{
-              showDialog(
-                context: context,
-                builder: (context) => CustomAlertDialog(
-                  title: 'Error', 
-                  content: 'Please fill all infomation',
-                  buttonText: 'OK',
-                ),
-              );
-            }
-          },
-        )
-      ],
     );
   }
 }
