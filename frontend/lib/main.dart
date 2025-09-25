@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:app_links/app_links.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
@@ -15,11 +14,8 @@ import 'package:frontend/viewmodels/user/user_license_viewmodel.dart';
 import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle/review_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
-import 'package:frontend/views/home/home_page.dart';
 import 'package:frontend/views/login/sign_in_screen.dart';
 import 'package:frontend/views/myAcount/driver_license_screen.dart';
-import 'package:frontend/views/splash_screen.dart';
-import 'package:frontend/views/welcome_screen.dart';
 import 'package:frontend/views/booking/confirmation_screen.dart';
 
 void main() {
