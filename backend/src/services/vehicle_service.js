@@ -65,6 +65,10 @@
       return this.vehicleRepo.find({ ownerId: id});
     }
 
+    async getVehicleById(id){
+      return this.vehicleRepo.findByVehicleId(id);
+    }
+
     async getVehicleByType(type) {
       return this.vehicleRepo.find({ type: type });
     }

@@ -8,6 +8,7 @@ export default class VehicleController {
         this.getUnavailableVehicles = asyncHandler(this.getUnavailableVehicles.bind(this));
         this.getVehicleByType = asyncHandler(this.getVehicleByType.bind(this));
         this.getVehicleByOwner = asyncHandler(this.getVehicleByOwner.bind(this));
+        this.getVehicleById = asyncHandler(this.getVehicleById.bind(this));
         this.createVehicle = asyncHandler(this.createVehicle.bind(this));
         this.updateVehicle = asyncHandler(this.updateVehicle.bind(this));
         this.deleteVehicle = asyncHandler(this.deleteVehicle.bind(this));
@@ -32,6 +33,11 @@ export default class VehicleController {
     async getVehicleByOwner(req, res) {
         const vehicles = await this.service.getVehicleByOwner(req.params.userId);
         res.json({ status: "success", data: vehicles});
+    }
+
+    async getVehicleById(req, res){
+        const vehicle = await this.service.getVehicleById(req.params.vehicleId);
+        res.josn({ status: "success", data: vehicle});
     }
 
     async createVehicle(req, res) {
