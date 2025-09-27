@@ -1,3 +1,5 @@
+import 'package:frontend/models/vehicles/vehicle.dart';
+
 class Booking {
   final String id;
   final String vehicleId;
@@ -27,6 +29,8 @@ class Booking {
   final DateTime updatedAt;
 
   final int totalRentalDays;
+
+  Vehicle? vehicle;
 
   Booking({
     required this.id,

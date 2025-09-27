@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:frontend/views/Home/history_screen.dart';
 import 'package:frontend/views/Home/home/home_screen.dart';
 
-import 'history_screen.dart';
 import 'favorite_screen.dart';
 import 'profile_screen.dart';
 

@@ -99,11 +99,11 @@ class ReceiptScreen extends StatelessWidget {
                     children: [
                       _buildInfoRow('Pick - Up Date', booking!.pickupDate),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Pick - Up Time', booking!.pickupTime),
+                      _buildInfoRow('Pick - Up Time', booking.pickupTime),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Drop - Off Date',  booking!.dropoffDate),
+                      _buildInfoRow('Drop - Off Date',  booking.dropoffDate),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Drop - Off Time', booking!.dropoffTime),
+                      _buildInfoRow('Drop - Off Time', booking.dropoffTime),
                       const SizedBox(height: 16),
                       _buildInfoRow(
                         'Total Rental Days',
@@ -124,7 +124,7 @@ class ReceiptScreen extends StatelessWidget {
                     children: [
                       _buildInfoRow('Additional Drive', '0 VNĐ'),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Subtotal', bookingVM.formattedPrice(booking!.totalPrice)),
+                      _buildInfoRow('Subtotal', bookingVM.formattedPrice(booking.totalPrice)),
                       const SizedBox(height: 16),
                       _buildInfoRow('Tax', bookingVM.formattedPrice(booking.taxRate)),
                     ],
@@ -136,7 +136,7 @@ class ReceiptScreen extends StatelessWidget {
                   children: [
                     CustomTextBodyL(title: 'Total Rental Price'),
                     Text(
-                      bookingVM.formattedPrice(booking!.totalPrice),
+                      bookingVM.formattedPrice(booking.totalPrice),
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         color: const Color(0xFF1976D2),

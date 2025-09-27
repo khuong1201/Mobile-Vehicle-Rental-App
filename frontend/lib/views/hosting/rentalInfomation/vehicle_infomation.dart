@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
 import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
+import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import '../../widgets/custom_text_form_field.dart';
 import '../../widgets/custom_Svg_icon.dart';
 
@@ -10,6 +11,7 @@ class HeaderSection extends StatelessWidget {
   final GAuthViewModel gAuthVM;
   final dynamic user;
   final TextEditingController searchController;
+  final VehicleViewModel vehicleVM;
 
   const HeaderSection({
     super.key,
@@ -17,6 +19,7 @@ class HeaderSection extends StatelessWidget {
     required this.gAuthVM,
     required this.user,
     required this.searchController,
+    required this.vehicleVM,
   });
 
   @override
@@ -101,28 +104,28 @@ class HeaderSection extends StatelessWidget {
                       width: 32,
                       height: 32,
                       label: 'car',
-                      onPressed: () {},
+                      onPressed: () => vehicleVM.changeType("Car", context),
                     ),
                     SvgIconTextButton(
                       assetPath: 'assets/images/homePage/home/coach.svg',
                       width: 32,
                       height: 32,
                       label: 'Coach',
-                      onPressed: () {},
+                      onPressed: () => vehicleVM.changeType("Coach", context),
                     ),
                     SvgIconTextButton(
                       assetPath: 'assets/images/homePage/home/motorbike.svg',
                       width: 32,
                       height: 32,
                       label: 'Motorbike',
-                      onPressed: () {},
+                      onPressed: () => vehicleVM.changeType("Motorbike", context),
                     ),
                     SvgIconTextButton(
                       assetPath: 'assets/images/homePage/home/bike.svg',
                       width: 32,
                       height: 32,
                       label: 'Bike',
-                      onPressed: () {},
+                      onPressed: () => vehicleVM.changeType("Bike", context),
                     ),
                   ],
                 ),

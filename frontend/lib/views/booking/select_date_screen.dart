@@ -24,7 +24,6 @@ class _CalendarDatePickerFieldState extends State<CalendarDatePickerField> {
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
-      locale: const Locale('vi'), // nếu muốn giao diện tiếng Việt
     );
 
     if (pickedDate != null) {

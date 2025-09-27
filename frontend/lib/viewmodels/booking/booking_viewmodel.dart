@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend/api_services/booking/booking_api.dart';
 import 'package:frontend/api_services/client/api_reponse.dart';
@@ -197,7 +198,11 @@ class BookingViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchUserBookings(AuthService authService) async {
+  Future<void> fetchUserBookings(
+    BuildContext context,
+    AuthService authService,{
+    required VehicleViewModel vehicleVM,
+  }) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -209,6 +214,12 @@ class BookingViewModel extends ChangeNotifier {
 
     if (response.success && response.data != null) {
       _bookings = response.data!;
+
+      for (var booking in _bookings) {
+        await vehicleVM.fetchVehicleById(context, vehicleId: booking.vehicleId);
+        booking.vehicle = vehicleVM.currentVehicle;
+      }
+
     } else {
       _errorMessage = response.message ?? 'Không thể tải danh sách booking';
       _bookings = [];

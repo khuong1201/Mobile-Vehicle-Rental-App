@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/api_services/vehicle/api_create_review.dart';
-import 'package:frontend/api_services/vehicle/api_delete_review.dart';
-import 'package:frontend/api_services/vehicle/api_get_review.dart';
+import 'package:frontend/api_services/vehicle/reviews_api.dart';
 import 'package:frontend/api_services/vehicle/api_report_review.dart';
 import 'package:frontend/models/review.dart';
 import 'package:frontend/models/meta.dart';
@@ -35,7 +33,7 @@ class ReviewViewModel extends ChangeNotifier {
     if (clearBefore) _reviews.clear();
     notifyListeners();
 
-    final response = await ApiGetReviewByVehicle.getReviews(
+    final response = await ReviewsApi.getReviews(
       this,
       authService: authService,
       vehicleId: vehicleId,
@@ -62,7 +60,7 @@ class ReviewViewModel extends ChangeNotifier {
     required int rating,
     String? comment,
   }) async {
-    final response = await ApiCreateReview.createReview(
+    final response = await ReviewsApi.createReview(
       this,
       authService: authService,
       vehicleId: vehicleId,
@@ -87,7 +85,7 @@ class ReviewViewModel extends ChangeNotifier {
     BuildContext context, {
     required String reviewId,
   }) async {
-    final response = await ApiDeleteReview.deleteReview(
+    final response = await ReviewsApi.deleteReview(
       this,
       authService: authService,
       reviewId: reviewId,

@@ -89,12 +89,13 @@ class _HomeScreenState extends State<HomeScreen> {
             final vehicleVM = context.read<VehicleViewModel>();
             vehicleVM.refresh(context);
           },
-          child: SingleChildScrollView(
+          child: SingleChildScrollView( 
             controller: _scrollController,
             child: Column(
               children: [
                 
                 HeaderSection(
+                  vehicleVM: vehicleVM,
                   authVM: authVM,
                   gAuthVM: gAuthVM,
                   user: user,

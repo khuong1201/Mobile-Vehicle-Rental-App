@@ -110,13 +110,7 @@ class _RootAppState extends State<RootApp> {
           '/home': (context) => const HomePage(),
           '/login': (context) => const SignInScreen(),
         },
-
-        // localizationsDelegates: const [
-        //   GlobalMaterialLocalizations.delegate,
-        //   GlobalWidgetsLocalizations.delegate,
-        //   GlobalCupertinoLocalizations.delegate,
-        // ],
-        supportedLocales: const [Locale('en'), Locale('vi')],
+        supportedLocales: const [Locale('en')],
       ),
     );
   }

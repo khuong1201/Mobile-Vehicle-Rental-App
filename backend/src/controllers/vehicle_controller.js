@@ -37,7 +37,7 @@ export default class VehicleController {
 
     async getVehicleById(req, res){
         const vehicle = await this.service.getVehicleById(req.params.vehicleId);
-        res.josn({ status: "success", data: vehicle});
+        res.json({ status: "success", data: vehicle});
     }
 
     async createVehicle(req, res) {

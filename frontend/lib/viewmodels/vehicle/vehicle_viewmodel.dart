@@ -1,13 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:frontend/api_services/vehicle/api_get_brand.dart';
-import 'package:frontend/api_services/vehicle/api_get_brand_by_id.dart';
-import 'package:frontend/api_services/vehicle/api_get_vehicle_by_type.dart';
-import 'package:frontend/api_services/vehicle/create_vehicle.dart';
-import 'package:frontend/api_services/vehicle/delete_vehicle.dart';
-import 'package:frontend/api_services/vehicle/get_vehicle.dart';
-import 'package:frontend/api_services/vehicle/update_vehicle.dart';
+import 'package:frontend/api_services/vehicle/brands_api.dart';
+import 'package:frontend/api_services/vehicle/vehicle_api.dart';
 import 'package:frontend/models/bank.dart';
 import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/models/vehicles/bike.dart';
@@ -25,6 +20,9 @@ class VehicleViewModel extends ChangeNotifier {
   bool get hasMore => _currentPage < _totalPages;
   final List<Vehicle> _vehicles = [];
   final List<Brand> _brands = [];
+
+  Vehicle? _currentVehicle;
+  Vehicle? get currentVehicle => _currentVehicle;
 
   bool _isLoadingVehicles = false;
   bool _isLoadingBrands = false;
@@ -68,13 +66,13 @@ class VehicleViewModel extends ChangeNotifier {
     notifyListeners();
 
     final response = type == null || type == 'all'
-        ? await ApiGetAllVehicle.getAllVehicle(
+        ? await VehicleApi.getAllVehicle(
             this,
             authService: authService,
             page: page,
             limit: limit,
           )
-        : await ApiVehicleService.getVehiclesByType(
+        : await VehicleApi.getVehicleByType(
             this,
             authService: authService,
             type: type,
@@ -109,7 +107,7 @@ class VehicleViewModel extends ChangeNotifier {
     if (clearBefore) _vehicles.clear();
     notifyListeners();
 
-    final response = await ApiGetAllVehicle.getVehicleByOwner(
+    final response = await VehicleApi.getVehicleByOwner(
       this,
       authService: authService,
       userId: userId,
@@ -131,6 +129,32 @@ class VehicleViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> fetchVehicleById(
+    BuildContext context, {
+    required String vehicleId,
+    bool clearBefore = false,
+  }) async {
+    if (_isLoadingVehicles) return;
+
+    _isLoadingVehicles = true;
+    if (clearBefore) _vehicles.clear();
+    notifyListeners();
+
+    final response = await VehicleApi.getVehicleById(
+      this,
+      authService: authService,
+      vehicleId: vehicleId,
+    );
+
+    if (response.success) {
+      _currentVehicle = response.data!;
+    } else {
+      _handleAuthError(response.message, context);
+    }
+    _isLoadingVehicles = false;
+    notifyListeners();
+  }
+
   Future<void> fetchBrands(BuildContext context) async {
     if (_isLoadingBrands) return;
 
@@ -138,7 +162,7 @@ class VehicleViewModel extends ChangeNotifier {
     _brands.clear();
     notifyListeners();
 
-    final response = await ApiGetAllBrand.getAllBrand(
+    final response = await BrandsApi.getAllBrand(
       this,
       authService: authService,
     );
@@ -156,7 +180,7 @@ class VehicleViewModel extends ChangeNotifier {
   Future<Brand?> fetchBrandById(BuildContext context, String brandId) async {
     try {
       debugPrint('Fetching brand with ID: $brandId');
-      final response = await ApiGetBrandById.getBrandById(
+      final response = await BrandsApi.getBrandById(
         this,
         authService: authService,
         brandId: brandId,
@@ -395,7 +419,7 @@ class VehicleViewModel extends ChangeNotifier {
           return;
       }
 
-      final response = await ApiCreateVehicle.createVehicle(
+      final response = await VehicleApi.createVehicle(
         this,
         authService: authService,
         vehicle: vehicle,
@@ -602,7 +626,7 @@ class VehicleViewModel extends ChangeNotifier {
           return;
       }
 
-      final response = await ApiVehicleUpdate.updateVehicle(
+      final response = await VehicleApi.updateVehicle(
         this,
         authService: authService,
         vehicleId: vehicleId,
@@ -641,7 +665,7 @@ class VehicleViewModel extends ChangeNotifier {
     BuildContext context, {
     required String vehicleId,
   }) async {
-    final response = await ApiDeleteVehicleService.deleteVehicle(
+    final response = await VehicleApi.deleteVehicle(
       this,
       authService: authService,
       vehicleId: vehicleId,
