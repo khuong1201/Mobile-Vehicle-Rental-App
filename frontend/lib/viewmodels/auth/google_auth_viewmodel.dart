@@ -1,9 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/api_services/auth/auth_api.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:frontend/api_services/auth/google_login_endpoint.dart';
-import 'package:frontend/api_services/auth/token_service.dart';
 import '/models/user.dart';
 import '../user/user_secure_storage.dart';
 
@@ -24,7 +23,7 @@ class GAuthViewModel extends ChangeNotifier {
       final googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return null;
 
-      final response = await ApiLoginWithGoogle.googleLoginEndPoint(
+      final response = await AuthApi.googleLogin(
         googleUser.id,
         googleUser.email,
         googleUser.displayName ?? 'User',

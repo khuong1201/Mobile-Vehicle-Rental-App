@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/viewmodels/location/location_viewmodel.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:provider/provider.dart';
@@ -21,19 +20,6 @@ class _LocationScreenState extends State<LocationScreen> {
   String? _currentAddress;
 
   @override
-  void initState() {
-    super.initState();
-    _pageController.addListener(() {
-      _pageNotifier.value = _pageController.page?.round() ?? 0;
-    });
-    final vm = Provider.of<LocationViewModel>(context, listen: false);
-    vm.fetchProvinces();
-    _searchController.addListener(() {
-      vm.searchProvinces(_searchController.text);
-    });
-  }
-
-  @override
   void dispose() {
     _searchController.dispose();
     _pageController.dispose();
@@ -42,8 +28,6 @@ class _LocationScreenState extends State<LocationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final vm = Provider.of<LocationViewModel>(context);
-
     return Scaffold(
       appBar: CustomAppbar(
         title: 'Select location',
@@ -96,8 +80,6 @@ class _LocationScreenState extends State<LocationScreen> {
                       ? IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
-                          _searchController.clear();
-                          vm.searchProvinces('');
                         },
                       )
                       : null,
@@ -116,38 +98,17 @@ class _LocationScreenState extends State<LocationScreen> {
                       listen: false,
                     );
                     try {
-                      final position = await locationVM.getCurrentLocation();
-                      final placemark = await locationVM.getAddressFromCoordinates(
-                        position.latitude,
-                        position.longitude,
-                      );
-                
-                      if (placemark != null) {
-                        await locationVM.autoSelectLocationFromCoordinates(
-                          position.latitude,
-                          position.longitude,
-                        );
-                
-                        final addressComponents = [
-                          placemark.street, // Tên đường
-                          placemark.subLocality, // Phường/xã
-                          placemark.locality, // Quận/huyện
-                          placemark.administrativeArea, // Tỉnh/thành phố
-                        ].where((e) => e != null && e.isNotEmpty).join(', ');
-                
-                        final locationForVehicle = LocationForVehicle(
-                          type: "Point",
-                          coordinates: [position.longitude, position.latitude], // GeoJSON: [lng, lat]
-                          address: addressComponents.isNotEmpty
-                              ? addressComponents
-                              : locationVM.getFullLocation().toString(),
-                        );
-                        Navigator.pop(context, locationForVehicle);
+                      final locationForVehicle = await locationVM.fetchCurrentLocationForVehicle();
+
+                      if (locationForVehicle != null) {
                         setState(() {
                           _currentAddress = locationForVehicle.address;
                         });
+
+                        // Trả kết quả về màn trước nếu cần
+                        Navigator.pop(context, locationForVehicle);
                       } else {
-                        throw Exception('Không tìm thấy địa chỉ từ tọa độ');
+                        throw Exception('Không lấy được vị trí hiện tại');
                       }
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/api_services/auth/login_service.dart';
-import 'package:frontend/api_services/auth/logout_service.dart';
-import 'package:frontend/api_services/auth/register_service.dart';
-import 'package:frontend/api_services/auth/verify_otp_service.dart';
-import 'package:frontend/api_services/auth/token_service.dart';
+import 'package:frontend/api_services/auth/auth_api.dart';
 import '/models/user.dart';
 import '../user/user_secure_storage.dart';
 
@@ -29,7 +25,7 @@ class AuthViewModel extends ChangeNotifier {
   Future<bool> verifyOTP(String email, String otp) async {
     try {
       await _updateState(loading: true);
-      final response = await ApiVerifyOTP.verifyOTP(email, otp);
+      final response = await AuthApi.verifyOTP(email, otp);
       isOTPVerified = response.success;
       await _updateState(error: response.success ? null : response.message ?? 'OTP verification failed.');
       return response.success;
@@ -42,7 +38,7 @@ class AuthViewModel extends ChangeNotifier {
   Future<bool> login(String email, String password) async {
     try {
       await _updateState(loading: true);
-      final response = await ApiLogin.login(email, password);
+      final response = await AuthApi.login(email, password);
       if (response.success && response.data != null) {
         final userData = response.data!['user'] as Map<String, dynamic>?;
         if (userData == null) {
@@ -65,7 +61,7 @@ class AuthViewModel extends ChangeNotifier {
   Future<bool> register(String email, String password, String name) async {
     try {
       await _updateState(loading: true);
-      final response = await ApiRegister.register(email, password, name);
+      final response = await AuthApi.register(email, password, name);
       if (response.success) {
         user = User(
           id: '',
@@ -91,7 +87,7 @@ class AuthViewModel extends ChangeNotifier {
   Future<bool> logout() async {
     try {
       await _updateState(loading: true);
-      final response = await ApiLogout.logout();
+      final response = await AuthApi.logout();
       if (response.success) {
         user = null;
         await UserSecureStorage.clearAll();
