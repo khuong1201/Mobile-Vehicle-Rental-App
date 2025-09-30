@@ -56,31 +56,39 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
     }
 
     Future<http.Response> sendMultipartRequest(String token) async {
-  debugPrint('📦 Multipart fields: $fields');
-  debugPrint('📦 Multipart files: ${files?.entries.map((e) => '${e.key}: ${e.value.map((f) => f.path).toList()}').join(', ') ?? '[]'}');
+    debugPrint('📦 Multipart fields: $fields');
+    debugPrint('📦 Multipart files: ${files?.entries.map((e) => '${e.key}: ${e.value.map((f) => f.path).toList()}').join(', ') ?? '[]'}');
 
   final request = http.MultipartRequest(method.toUpperCase(), uri);
   request.headers['Authorization'] = 'Bearer $token';
 
   if (fields != null) {
+    final encodedFields = <String, String>{};
+
     fields.forEach((key, value) {
-      if (value != null) {
-        request.fields[key] = value.toString();  // 👈 ép tất cả sang String
+      if (value == null) return;
+      if (value is Map || value is List) {
+        encodedFields[key] = jsonEncode(value);
+      } else {
+        encodedFields[key] = value.toString();
       }
     });
+
+    debugPrint('📦 Encoded multipart fields: $encodedFields');
+    request.fields.addAll(encodedFields);
   }
 
+  // ✅ Add files
   if (files != null) {
     for (final entry in files.entries) {
       final fieldName = entry.key;
-      final fileList = entry.value;
-
-      for (final file in fileList) {
+      for (final file in entry.value) {
         if (await file.exists()) {
           final fileName = path.basename(file.path).toLowerCase();
-          final normalizedFileName = fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png')
-              ? fileName
-              : '${fileName.split('.').first}.jpg';
+          final normalizedFileName =
+              fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png')
+                  ? fileName
+                  : '${fileName.split('.').first}.jpg';
 
           debugPrint('📎 Adding file: ${file.path}, field: $fieldName');
 
@@ -101,6 +109,7 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
 
   final streamed = await request.send();
   final response = await http.Response.fromStream(streamed);
+
   debugPrint('📥 Response status: ${response.statusCode}');
   debugPrint('📥 Response body: ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}');
   return response;

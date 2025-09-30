@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:frontend/models/bank.dart';
 import 'package:frontend/models/location/location_for_vehicle.dart';
 import 'package:frontend/models/vehicles/bike.dart';
@@ -97,18 +99,27 @@ abstract class Vehicle {
   }
 
   Map<String, dynamic> toApiJson() {
-    final json = toJson()
-      ..remove('_id')
-      ..remove('vehicleId')
-      ..remove('createdAt')
-      ..remove('__v');
-    final result = <String, dynamic>{};
-    json.forEach((key, value) {
-      if (value != null) {
-        result[key] = value;
-      }
-    });
-    return result;
-  }
+  final json = toJson()
+    ..remove('_id')
+    ..remove('vehicleId')
+    ..remove('createdAt')
+    ..remove('__v');
+
+  final result = <String, dynamic>{};
+
+  json.forEach((key, value) {
+    if (value == null) return;
+
+    if (value is Map || value is List) {
+      // Encode các object phức tạp
+      result[key] = jsonEncode(value);
+    } else {
+      result[key] = value.toString();
+    }
+  });
+
+  return result;
+}
+
   String get formattedPrice => currencyFormatter.format(price);
 }

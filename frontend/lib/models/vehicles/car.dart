@@ -85,8 +85,8 @@ class Car extends Vehicle {
   }
 
   @override
-  Map<String, dynamic> toJson() {
-    final json = super.toJson();
+  Map<String, dynamic> toApiJson() {
+    final json = super.toApiJson();
     json.addAll({
       'fuelType': fuelType,
       'transmission': transmission,

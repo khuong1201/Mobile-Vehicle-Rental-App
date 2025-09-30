@@ -264,6 +264,7 @@ class _VehicleInfomationScreenState extends State<VehicleInfomationScreen> {
                       _saveData();
                     });
                   }
+                  debugPrint('✅ Lấy được vị trí thành công: ${result!.toJson()}');
                 },
                 icon: const Icon(Icons.arrow_forward_ios, size: 18),
               ),
