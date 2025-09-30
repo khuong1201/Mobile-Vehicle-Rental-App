@@ -40,7 +40,9 @@ class _ProfileScreen extends State<ProfileScreen> {
                     children: [
                       ClipOval(
                         child: Image.network(
-                          '${user?.imageAvatarUrl}',
+                          '${user?.imageAvatarUrl.isNotEmpty == true
+                            ? Image.network(user!.imageAvatarUrl)
+                            : Image.asset('assets/images/error/avatar.png')}',
                           fit: BoxFit.contain,
                           width: 130,
                           height: 130,
@@ -55,9 +57,7 @@ class _ProfileScreen extends State<ProfileScreen> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        user?.fullName.isNotEmpty == true
-                            ? user!.fullName
-                            : 'Bro',
+                        user?.fullName ?? 'Bro',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -238,6 +238,8 @@ Widget _buildInkwellButton(
   Widget? destination,
 }) {
   return InkWell(
+    borderRadius: BorderRadius.circular(8),
+    splashColor: Colors.blue.withValues(alpha: 0.1),
     onTap:
         onTap ??
         () {

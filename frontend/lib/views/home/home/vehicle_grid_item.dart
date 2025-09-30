@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:frontend/models/vehicles/brand.dart';
-import 'package:frontend/views/empty_screen.dart';
 import 'package:frontend/views/vehicle_detail/detail_screen.dart';
 
 class VehicleGrid extends StatelessWidget {
@@ -34,9 +33,7 @@ class VehicleGrid extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-          vehicles.isEmpty
-              ? SizedBox(child: Center(child: EmptyListScreen()))
-              : MasonryGridView.count(
+          MasonryGridView.count(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   crossAxisCount: 2,

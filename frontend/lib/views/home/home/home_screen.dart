@@ -19,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+
   final List<String> banners = [
     'assets/images/banners/banner1.png',
     'assets/images/banners/banner2.png',
@@ -34,7 +35,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
     _bannerController = PageController();
+
+    // Auto-scroll banners
     _bannerTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       if (_bannerController.hasClients) {
         int nextPage = (_currentBanner + 1) % banners.length;
@@ -45,21 +49,21 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }
     });
+
+    // Infinite scroll: load more when reaching bottom
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent - -100) {
-        // Gần cuối -> load thêm
-        final vehicleVM = Provider.of<VehicleViewModel>(context, listen: false);
-        vehicleVM.loadMoreVehicles(context);
+          _scrollController.position.maxScrollExtent - 100) {
+        context.read<VehicleViewModel>().loadMoreVehicles(context);
       }
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        final vehicleVM = Provider.of<VehicleViewModel>(context, listen: false);
-        vehicleVM.fetchBrands(context).then((_) {
-          vehicleVM.fetchVehicles(context);
-        });
-      }
+
+    // Initial data load
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final vehicleVM = context.read<VehicleViewModel>();
+      await vehicleVM.fetchBrands(context);
+      await vehicleVM.fetchVehicles(context);
     });
   }
 
@@ -68,34 +72,29 @@ class _HomeScreenState extends State<HomeScreen> {
     _bannerController.dispose();
     _bannerTimer?.cancel();
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final authVM = Provider.of<AuthViewModel>(context);
-    final gAuthVM = Provider.of<GAuthViewModel>(context);
-    final vehicleVM = Provider.of<VehicleViewModel>(context);
-    final userVM = Provider.of<UserViewModel>(context);
+    final authVM = context.read<AuthViewModel>();
+    final gAuthVM = context.read<GAuthViewModel>();
+    final userVM = context.watch<UserViewModel>();
     final user = userVM.user;
-    final rentalVehicles = vehicleVM.vehicles;
+
     return Scaffold(
       body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        color: Color(0xffFDFDFD),
+        color: const Color(0xffFDFDFD),
         child: RefreshIndicator(
-          onRefresh: () async {
-            final vehicleVM = context.read<VehicleViewModel>();
-            vehicleVM.refresh(context);
-          },
-          child: SingleChildScrollView( 
+          onRefresh: () async => context.read<VehicleViewModel>().refresh(context),
+          child: SingleChildScrollView(
             controller: _scrollController,
             child: Column(
               children: [
-                
+                // Header
                 HeaderSection(
-                  vehicleVM: vehicleVM,
+                  vehicleVM: context.read<VehicleViewModel>(),
                   authVM: authVM,
                   gAuthVM: gAuthVM,
                   user: user,
@@ -109,11 +108,42 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPageChanged: (index) => setState(() => _currentBanner = index),
                 ),
 
-                VehicleGrid(
-                  vehicles: rentalVehicles,
-                  hasMore: vehicleVM.hasMore,
-                  brands: vehicleVM.brands,
-                  scrollController: _scrollController,
+                Consumer<VehicleViewModel>(
+                  builder: (context, vm, _) {
+                    
+                    if (vm.isLoading && vm.vehicles.isEmpty) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (vm.errorMessage != null) {
+                      return Center(
+                        child: Text(
+                          'Error: ${vm.errorMessage}',
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      );
+                    }
+
+                    if (vm.vehicles.isEmpty) {
+                      return const Center(child: Text('No vehicles found 😢'));
+                    }
+
+                    return Column(
+                      children: [
+                        VehicleGrid(
+                          vehicles: vm.vehicles,
+                          hasMore: vm.hasMore,
+                          brands: vm.brands,
+                          scrollController: _scrollController,
+                        ),
+                        if (vm.isLoading && vm.vehicles.isNotEmpty)
+                          const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: CircularProgressIndicator(),
+                          ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),

@@ -54,13 +54,15 @@ class _HistoryScreen extends State<HistoryScreen>{
               ? const Center(child: CircularProgressIndicator())
               : bookingVM.errorMessage != null
                   ? Center(child: Text(bookingVM.errorMessage!))
+                  : bookingVM.bookings.isEmpty
+                  ? Center(child: Text('No bookings found 😢'))
                   : ListView.builder(
                       itemCount: bookingVM.bookings.length,
                       itemBuilder: (context, index) {
                         final booking = bookingVM.bookings[index];
                         final brands = Provider.of<VehicleViewModel>(context).brands;
                         final Brand brand = brands.firstWhere(
-                          (b) => b.brandId == booking.vehicle!.vehicleId,
+                          (b) => b.brandId == booking.vehicle!.brandId,
                           orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
                         );
                         return GestureDetector(
@@ -77,7 +79,9 @@ class _HistoryScreen extends State<HistoryScreen>{
                                 borderRadius: BorderRadius.circular(4),
                                 border: Border.all(color: Color(0xffE6E7E9))
                               ),
-                              child: Image.network(booking.vehicle!.images.toString(),
+                              child: Image.network(vehicle!.images.isNotEmpty
+                                      ? vehicle!.images[0]
+                                      : 'https://www.kia.com/content/dam/kwcms/gt/en/images/discover-kia/voice-search/parts-80-1.jpg',
                                 fit: BoxFit.cover,
                               ),
                             ),
