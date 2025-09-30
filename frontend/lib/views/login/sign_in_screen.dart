@@ -179,6 +179,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             bool isSuccess = await viewmodel.login(
                               _emailController.text.trim().toString(),
                               _passwordController.text.trim().toString(),
+                              rememberMe: _isCheckedRemember,
                             );
                             if (!context.mounted) return;
                             if (isSuccess) {

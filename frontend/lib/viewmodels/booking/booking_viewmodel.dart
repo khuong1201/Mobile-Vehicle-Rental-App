@@ -13,6 +13,9 @@ class BookingViewModel extends ChangeNotifier {
   List<Booking> _bookings = [];
   List<Booking> get bookings => _bookings;
 
+  List<Booking> _filteredBookings = [];
+  List<Booking> get filteredBookings => _filteredBookings;
+  
   Booking? _currentBooking;
   Booking? get currentBooking => _currentBooking;
 
@@ -226,6 +229,15 @@ class BookingViewModel extends ChangeNotifier {
     }
 
     _isLoading = false;
+    notifyListeners();                                          
+  }
+
+  void filterBookingsByStatus(String status) {
+    if (status.isEmpty ||status == 'All') {
+      _filteredBookings = List.from(_bookings);
+    } else {
+      _filteredBookings = _bookings.where((b) => b.status == status).toList();
+    }
     notifyListeners();
   }
 

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/auth/auth_api.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '/models/user.dart';
 import '../user/user_secure_storage.dart';
 
@@ -64,9 +65,14 @@ class GAuthViewModel extends ChangeNotifier {
 
   Future<void> signOut() async {
     try {
+      await UserSecureStorage.clearAll();
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('rememberMe', false);
+
       await _googleSignIn.signOut();
       await _googleSignIn.disconnect();
-      await UserSecureStorage.clearAll();
+      
       user = null;
       notifyListeners();
     } catch (e) {

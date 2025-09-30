@@ -35,21 +35,35 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> login(String email, String password) async {
+  Future<bool> login(String email, String password, {bool rememberMe = false}) async {
     try {
       await _updateState(loading: true);
       final response = await AuthApi.login(email, password);
+
       if (response.success && response.data != null) {
         final userData = response.data!['user'] as Map<String, dynamic>?;
+        final accessToken = response.data!['accessToken'] as String?;
+        final refreshToken = response.data!['refreshToken'] as String?;
+
         if (userData == null) {
           await _updateState(error: 'Invalid user data.');
           return false;
         }
         user = User.fromJson(userData);
-        await UserSecureStorage.saveUser(user!);
+        
+        if (rememberMe) {
+          // ✅ chỉ lưu khi checkbox được chọn
+          await UserSecureStorage.saveUser(user!);
+          await UserSecureStorage.saveAccessToken(accessToken!);
+          if (refreshToken != null) {
+            await UserSecureStorage.saveRefreshToken(refreshToken);
+          }
+        }
+
         await _updateState();
         return true;
       }
+
       await _updateState(error: response.message ?? 'Incorrect login information.');
       return false;
     } catch (e) {
