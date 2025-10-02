@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:app_links/app_links.dart';
+import 'package:frontend/views/home/home_page.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
@@ -10,7 +11,7 @@ import 'package:frontend/api_services/notification_service.dart';
 import 'package:frontend/viewmodels/fcm_viewmodel.dart';
 import 'package:frontend/views/splash_screen.dart';
 import 'package:frontend/views/welcome_screen.dart';
-import 'package:frontend/views/Home/home_page.dart';
+
 import 'package:frontend/views/login/sign_in_screen.dart';
 import 'package:frontend/views/booking/confirmation_screen.dart';
 import 'package:frontend/views/hosting/booking_info.dart';

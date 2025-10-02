@@ -4,9 +4,9 @@ import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
 import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
 import 'package:frontend/viewmodels/user/user_provider_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
-import 'package:frontend/views/Home/home/banner_slider.dart';
-import 'package:frontend/views/Home/home/header_section.dart';
-import 'package:frontend/views/Home/home/vehicle_grid_item.dart';
+import 'package:frontend/views/home/home/banner_slider.dart';
+import 'package:frontend/views/home/home/header_section.dart';
+import 'package:frontend/views/home/home/vehicle_grid_item.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {

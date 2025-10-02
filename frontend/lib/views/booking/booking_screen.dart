@@ -6,7 +6,7 @@ import 'package:frontend/models/vehicles/vehicle.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 import 'package:frontend/viewmodels/booking/booking_viewmodel.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
-import 'package:frontend/views/Home/home_page.dart';
+import 'package:frontend/views/home/home_page.dart';
 import 'package:frontend/views/hosting/rentalInfomation/location/location_screen.dart';
 import 'package:frontend/views/widgets/custom_appbar.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';

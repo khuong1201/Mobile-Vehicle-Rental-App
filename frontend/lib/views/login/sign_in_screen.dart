@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:frontend/views/widgets/custom_text_form_field.dart';
 import 'package:frontend/views/widgets/custom_bottom_button.dart';
 import 'package:frontend/views/widgets/custom_alert_dialog.dart';
-import '../Home/home_page.dart';
+import '../home/home_page.dart';
 import 'sign_up_screen.dart';
 import 'forgot_password_screen.dart';
 
