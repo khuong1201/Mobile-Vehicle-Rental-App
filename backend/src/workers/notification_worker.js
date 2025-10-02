@@ -8,8 +8,10 @@ import NotificationQueueService from "../services/notification_queue_service.js"
 import connectDB from "../config/db.js";
 
 await connectDB();
+
 const connection = new IORedis(env.REDIS_URL, {
-  maxRetriesPerRequest: null, 
+  maxRetriesPerRequest: null,
+  enableOfflineQueue: true,
 });
 
 const worker = new Worker(
@@ -18,7 +20,7 @@ const worker = new Worker(
     const { notificationId } = job.data;
     const { NotificationRepository } = await getRepositories();
     const validator = new NotificationValidator();
-    const notificationQueue = new NotificationQueueService();
+    const notificationQueue = new NotificationQueueService(connection);
     const service = new NotificationService(NotificationRepository, notificationQueue, validator);
 
     const notification = await NotificationRepository.findById(notificationId);
@@ -29,10 +31,5 @@ const worker = new Worker(
   { connection }
 );
 
-worker.on("completed", job => {
-  console.log(`✅ Job ${job.id} completed`);
-});
-
-worker.on("failed", (job, err) => {
-  console.error(`❌ Job ${job.id} failed:`, err);
-});
+worker.on("completed", job => console.log(`✅ Notification job ${job.id} completed`));
+worker.on("failed", (job, err) => console.error(`❌ Notification job ${job.id} failed:`, err));

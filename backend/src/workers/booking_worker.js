@@ -9,17 +9,18 @@ import NotificationQueueService from "../services/notification_queue_service.js"
 import connectDB from "../config/db.js";
 
 await connectDB();
+
 const connection = new IORedis(env.REDIS_URL, {
   maxRetriesPerRequest: null,
+  enableOfflineQueue: true,
 });
 
 const worker = new Worker(
   "booking-cron",
   async job => {
-
     const { BookingRepository, VehicleRepository, NotificationRepository } = getRepositories();
     const validator = new NotificationValidator();
-    const notificationQueue = new NotificationQueueService();
+    const notificationQueue = new NotificationQueueService(connection); // truyền connection Redis
     const notificationService = new NotificationService(NotificationRepository, notificationQueue, validator);
     const bookingService = new BookingService(
       BookingRepository,
@@ -56,10 +57,5 @@ const worker = new Worker(
   { connection }
 );
 
-worker.on("completed", job => {
-  console.log(`✅ Booking expiration job ${job.id} completed`);
-});
-
-worker.on("failed", (job, err) => {
-  console.error(`❌ Booking expiration job ${job.id} failed:`, err);
-});
+worker.on("completed", job => console.log(`✅ Booking cron job ${job.id} completed`));
+worker.on("failed", (job, err) => console.error(`❌ Booking cron job ${job.id} failed:`, err));
