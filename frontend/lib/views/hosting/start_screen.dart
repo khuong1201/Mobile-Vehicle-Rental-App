@@ -72,6 +72,7 @@ class _StartScreen extends State<StartScreen> {
         child: CustomButton(
           width: double.infinity,
           onPressed: () {
+            
             Navigator.push(
               context,
               MaterialPageRoute(

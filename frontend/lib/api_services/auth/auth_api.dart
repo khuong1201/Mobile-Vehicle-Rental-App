@@ -78,9 +78,10 @@ class AuthApi {
         );
       } else {
         debugPrint('Login failed: ${response.statusCode} - ${response.body}');
+        final data = jsonDecode(response.body);
         return ApiResponse(
           success: false,
-          message: 'Đăng nhập thất bại: ${response.statusCode}',
+          message: data['message'] ?? 'Log in failed',
         );
       }
     } catch (e, stackTrace) {

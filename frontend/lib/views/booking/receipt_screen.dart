@@ -27,7 +27,13 @@ class ReceiptScreen extends StatelessWidget {
     final brands = Provider.of<VehicleViewModel>(context).brands;
     final Brand brand = brands.firstWhere(
       (b) => b.brandId == vehicle.brandId,
-      orElse: () => Brand(id: '', brandId: '', brandName: 'unknown', brandImage: null),
+      orElse:
+          () => Brand(
+            id: '',
+            brandId: '',
+            brandName: 'unknown',
+            brandImage: null,
+          ),
     );
     return Scaffold(
       appBar: CustomAppbar(title: 'E - Receipt'),
@@ -39,27 +45,27 @@ class ReceiptScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: SingleChildScrollView(
             child: Column(
-              mainAxisSize:MainAxisSize.min,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   width: double.infinity,
-                  alignment:Alignment.center,
+                  alignment: Alignment.center,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SvgPicture.asset('assets/images/booking/Vector (1).svg'),
-                      const SizedBox(width: 8,),
+                      const SizedBox(width: 8),
                       SvgPicture.asset('assets/images/booking/Vector (1).svg'),
-                      const SizedBox(width: 8,),
+                      const SizedBox(width: 8),
                       SvgPicture.asset('assets/images/booking/Vector (1).svg'),
-                      const SizedBox(width: 8,),
+                      const SizedBox(width: 8),
                       SvgPicture.asset('assets/images/booking/Vector (1).svg'),
-                      const SizedBox(width: 8,),
+                      const SizedBox(width: 8),
                       SvgPicture.asset('assets/images/booking/Vector (1).svg'),
-                      const SizedBox(width: 8,),
+                      const SizedBox(width: 8),
                       SvgPicture.asset('assets/images/booking/Vector (1).svg'),
                     ],
-                  )
+                  ),
                 ),
                 const SizedBox(height: 24),
                 Container(
@@ -101,13 +107,13 @@ class ReceiptScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       _buildInfoRow('Pick - Up Time', booking.pickupTime),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Drop - Off Date',  booking.dropoffDate),
+                      _buildInfoRow('Drop - Off Date', booking.dropoffDate),
                       const SizedBox(height: 16),
                       _buildInfoRow('Drop - Off Time', booking.dropoffTime),
                       const SizedBox(height: 16),
                       _buildInfoRow(
                         'Total Rental Days',
-                          booking.totalRentalDays.toString()
+                        booking.totalRentalDays.toString(),
                       ),
                     ],
                   ),
@@ -124,9 +130,15 @@ class ReceiptScreen extends StatelessWidget {
                     children: [
                       _buildInfoRow('Additional Drive', '0 VNĐ'),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Subtotal', bookingVM.formattedPrice(booking.totalPrice)),
+                      _buildInfoRow(
+                        'Subtotal',
+                        bookingVM.formattedPrice(booking.totalPrice),
+                      ),
                       const SizedBox(height: 16),
-                      _buildInfoRow('Tax', bookingVM.formattedPrice(booking.taxRate)),
+                      _buildInfoRow(
+                        'Tax',
+                        bookingVM.formattedPrice(booking.taxRate),
+                      ),
                     ],
                   ),
                 ),
@@ -158,18 +170,21 @@ class ReceiptScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CustomButton(title: 'Download', width: double.infinity,),
+            CustomButton(title: 'Download', width: double.infinity),
             const SizedBox(height: 16),
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Color(0xFFFFFFFF),
-                border:Border.all(width: 2, color: Color(0xff1976D2)),
-                borderRadius:BorderRadius.circular(8),
+                border: Border.all(width: 2, color: Color(0xff1976D2)),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: TextButton(
-                onPressed: (){
-                  Navigator.popUntil(context, ModalRoute.withName('/home'));
+                onPressed: () {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/home',
+                    (Route<dynamic> route) => false,
+                  );
                 },
                 child: Text(
                   'Go to Home',

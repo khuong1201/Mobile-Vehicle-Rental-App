@@ -1,15 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/client/api_reponse.dart';
-import 'package:frontend/api_services/user/create_license.dart';
-import 'package:frontend/api_services/user/delete_license.dart';
 import 'package:frontend/api_services/user/get_user_profile.dart';
-import 'package:frontend/api_services/user/update_license.dart';
+import 'package:frontend/api_services/user/license_api.dart';
 import 'package:frontend/models/user/userLicense.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 
 class UserLicenseViewModel extends ChangeNotifier {
   final AuthService authService;
+
   UserLicense? userLicense;
   List<UserLicense> licenses = [];
   bool isLoading = false;
@@ -18,6 +17,13 @@ class UserLicenseViewModel extends ChangeNotifier {
 
   UserLicenseViewModel({required this.authService});
 
+  void _setLoading(bool value) {
+    if (isLoading != value) {
+      isLoading = value;
+      notifyListeners();
+    }
+  }
+
   Future<bool> createDriverLicense({
     required String typeOfDriverLicense,
     required String classLicense,
@@ -25,56 +31,11 @@ class UserLicenseViewModel extends ChangeNotifier {
     required File frontImage,
     required File backImage,
   }) async {
-    isLoading = true;
+    _setLoading(true);
     errorMessage = null;
-    notifyListeners();
 
     try {
-      final response = await createDriverLicenseApi(
-        viewModel: this,
-        authService: authService,
-        typeOfDriverLicense: typeOfDriverLicense,
-        classLicense: classLicense,
-        licenseNumber: licenseNumber,
-        frontImage: File(frontImage.path),
-        backImage: File(backImage.path),
-      );
-
-      lastResponse = response;
-
-      if (response.success) {
-        await loadUserLicenseFromProfile();
-        isLoading = false;
-        notifyListeners();
-        return true;
-      } else {
-        errorMessage = response.message;
-        isLoading = false;
-        notifyListeners();
-        return false;
-      }
-    } catch (e) {
-      errorMessage = 'Unexpected error: $e';
-      isLoading = false;
-      notifyListeners();
-      return false;
-    }
-  }
-
-
-  Future<bool> updateDriverLicense({
-    required String typeOfDriverLicense,
-    required String classLicense,
-    required String licenseNumber,
-    File? frontImage,
-    File? backImage,
-  }) async {
-    isLoading = true;
-    errorMessage = null;
-    notifyListeners();
-
-    try {
-      final response = await updateDriverLicenseApi(
+      final response = await DriverLicenseApi.create(
         viewModel: this,
         authService: authService,
         typeOfDriverLicense: typeOfDriverLicense,
@@ -87,32 +48,64 @@ class UserLicenseViewModel extends ChangeNotifier {
       lastResponse = response;
 
       if (response.success) {
-        isLoading = false;
-        notifyListeners();
+        await loadUserLicenseFromProfile();
         return true;
       } else {
-        errorMessage = response.message;
-        isLoading = false;
-        notifyListeners();
+        errorMessage = response.message ?? 'Failed to create license';
         return false;
       }
     } catch (e) {
       errorMessage = 'Unexpected error: $e';
-      isLoading = false;
-      notifyListeners();
       return false;
+    } finally {
+      _setLoading(false);
     }
   }
-  
-  Future<bool> deleteDriverLicense({
-    required String licenseId,
+
+  Future<bool> updateDriverLicense({
+    required String typeOfDriverLicense,
+    required String classLicense,
+    required String licenseNumber,
+    File? frontImage,
+    File? backImage,
   }) async {
-    isLoading = true;
+    _setLoading(true);
     errorMessage = null;
-    notifyListeners();
 
     try {
-      final response = await deleteDriverLicenseApi(
+      final response = await DriverLicenseApi.update(
+        viewModel: this,
+        authService: authService,
+        typeOfDriverLicense: typeOfDriverLicense,
+        classLicense: classLicense,
+        licenseNumber: licenseNumber,
+        frontImage: frontImage,
+        backImage: backImage,
+      );
+
+      lastResponse = response;
+
+      if (response.success) {
+        await loadUserLicenseFromProfile();
+        return true;
+      } else {
+        errorMessage = response.message ?? 'Failed to update license';
+        return false;
+      }
+    } catch (e) {
+      errorMessage = 'Unexpected error: $e';
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> deleteDriverLicense({required String licenseId}) async {
+    _setLoading(true);
+    errorMessage = null;
+
+    try {
+      final response = await DriverLicenseApi.delete(
         viewModel: this,
         authService: authService,
         licenseId: licenseId,
@@ -121,27 +114,23 @@ class UserLicenseViewModel extends ChangeNotifier {
       lastResponse = response;
 
       if (response.success) {
-        await loadUserLicenseFromProfile(); // Cập nhật danh sách mới
-        isLoading = false;
-        notifyListeners();
+        await loadUserLicenseFromProfile();
         return true;
       } else {
-        errorMessage = response.message;
-        isLoading = false;
-        notifyListeners();
+        errorMessage = response.message ?? 'Failed to delete license';
         return false;
       }
     } catch (e) {
       errorMessage = 'Unexpected error: $e';
-      isLoading = false;
-      notifyListeners();
       return false;
+    } finally {
+      _setLoading(false);
     }
   }
 
   Future<void> loadUserLicenseFromProfile() async {
-    isLoading = true;
-    notifyListeners();
+    _setLoading(true);
+    errorMessage = null;
 
     try {
       final response = await getUserProfileApi(
@@ -149,36 +138,30 @@ class UserLicenseViewModel extends ChangeNotifier {
         authService: authService,
       );
 
+      lastResponse = response;
+
       if (response.success && response.data != null) {
         final userData = response.data;
         final licenseList = userData['license'] as List?;
-        debugPrint("📋 License data: $licenseList");
+
         if (licenseList != null && licenseList.isNotEmpty) {
-          // ✅ Gán danh sách
           licenses = licenseList.map((json) => UserLicense.fromJson(json)).toList();
-
-          // ✅ Gán bằng lái đầu tiên nếu cần
           userLicense = licenses.first;
-
-          debugPrint("✅ License loaded: ${userLicense?.licenseNumber}");
-          debugPrint("📋 Tổng số license: ${licenses.length}");
         } else {
-          debugPrint("⚠️ No license found in response");
-          userLicense = null;
           licenses = [];
+          userLicense = null;
         }
       } else {
-        errorMessage = response.message;
-        userLicense = null;
+        errorMessage = response.message ?? 'Failed to load user data';
         licenses = [];
+        userLicense = null;
       }
     } catch (e) {
       errorMessage = 'Unexpected error: $e';
-      userLicense = null;
       licenses = [];
+      userLicense = null;
     } finally {
-      isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
 }

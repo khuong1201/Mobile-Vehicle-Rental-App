@@ -6,10 +6,19 @@ const notificationSchema = new Schema(
     notificationId: { type: String, default: uuidv4, unique: true },
     userId: { type: String, required: true, index: true, ref: "User" },
     channel: { type: String, enum: ["sms", "email", "push"], required: true },
-    destination: { type: String, required: true },
+    destination: {
+      type: String,
+      required: function () {
+        return this.channel === "email" || this.channel === "sms";
+      },
+    },
     subject: { type: String },
     body: { type: String, required: true },
-    status: { type: String, enum: ["pending", "sent", "failed"], default: "pending" },
+    status: {
+      type: String,
+      enum: ["pending", "sent", "failed"],
+      default: "pending",
+    },
     errorMessage: { type: String },
     providerMessageId: { type: String },
     pushPayload: { type: Schema.Types.Mixed },

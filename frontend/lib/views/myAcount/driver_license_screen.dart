@@ -230,11 +230,10 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                           title: 'Success',
                           content: "Driver's license created successfully.",
                           buttonText: 'OK',
-                          onPressed:
-                              () => Navigator.popUntil(
-                                context,
-                                (route) => route.isFirst,
-                              ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          },
                         ),
                   );
                 } else {
@@ -249,7 +248,6 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                   );
                 }
               }
-              // Nếu là cập nhật
               else {
                 final result = await userLincenseVM.updateDriverLicense(
                   typeOfDriverLicense: type,
@@ -273,11 +271,10 @@ class _DriverLicenseScreen extends State<DriverLicenseScreen> {
                           title: 'Success',
                           content: "Driver's license updated successfully.",
                           buttonText: 'OK',
-                          onPressed:
-                              () => Navigator.popUntil(
-                                context,
-                                (route) => route.isFirst,
-                              ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          },
                         ),
                   );
                 } else {

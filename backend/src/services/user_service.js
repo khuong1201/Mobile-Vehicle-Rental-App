@@ -1,9 +1,23 @@
 import { hash } from "../utils/hash.js";
 
 export default class UserService {
-  constructor(userRepo, userValidator) {
+  constructor(userRepo, userValidator, storageAdapter) {
     this.userRepo = userRepo;
     this.userValidator = userValidator;
+    this.storageAdapter = storageAdapter;
+  }
+
+  async uploadImages(userId, files = []) {
+    if (!files.length) return { urls: [], publicIds: [] };
+    const uploaded = await Promise.all(
+      files.map((file) =>
+        this.storageAdapter.upload(file, { folder: `driverLicences/${userId}` })
+      )
+    );
+    return {
+      urls: uploaded.map((u) => u.url),
+      publicIds: uploaded.map((u) => u.publicId),
+    };
   }
 
   async updatePassword(userId, newPassword) {
@@ -32,14 +46,61 @@ export default class UserService {
 
   async addLicense(userId, licenseData) {
     this.userValidator.validateLicense(licenseData);
-    const newLicenseData = { ...licenseData, status: "pending" };
+
+    const files = [];
+    if (licenseData.frontFile) files.push(licenseData.frontFile);
+    if (licenseData.backFile) files.push(licenseData.backFile);
+
+    const uploaded = await this.uploadImages(userId, files);
+
+    const newLicenseData = {
+      typeOfDriverLicense: licenseData.typeOfDriverLicense,
+      classLicense: licenseData.classLicense,
+      licenseNumber: licenseData.licenseNumber,
+      driverLicenseFront: uploaded.urls[0] ?? "",
+      driverLicenseBack: uploaded.urls[1] ?? "",
+      driverLicenseFrontPublicId: uploaded.publicIds[0] ?? "",
+      driverLicenseBackPublicId: uploaded.publicIds[1] ?? "",
+      status: "approved",
+    };
+
     return this.userRepo.addLicense(userId, newLicenseData);
   }
 
-  async updateLicense(userId, licenseId, payload) {
-    this.userValidator.validateLicense(payload);
-    const newPayload = { ...payload, status: "pending" };
-    return this.userRepo.updateLicense(userId, licenseId, newPayload);
+  async updateLicense(userId, licenseId, licenseData) {
+    this.userValidator.validateLicense(licenseData);
+
+    const user = await this.userRepo.findById(userId);
+    if (!user) throw new AppError("User not found");
+
+    const license = user.license.find(
+      (l) => l.licenseId.toString() === licenseId
+    );
+    if (!license) throw new AppError("License not found");
+
+    if (licenseData.frontFile) {
+      const uploadedFront = await this.uploadImages(userId, [
+        licenseData.frontFile,
+      ]);
+      license.driverLicenseFront = uploadedFront.urls[0];
+      license.driverLicenseFrontPublicId = uploadedFront.publicIds[0];
+    }
+
+    if (licenseData.backFile) {
+      const uploadedBack = await this.uploadImages(userId, [licenseData.backFile]);
+      license.driverLicenseBack = uploadedBack.urls[0];
+      license.driverLicenseBackPublicId = uploadedBack.publicIds[0];
+    }
+
+    license.typeOfDriverLicense =
+      licenseData.typeOfDriverLicense ?? license.typeOfDriverLicense;
+    license.classLicense = licenseData.classLicense ?? license.classLicense;
+    license.licenseNumber = licenseData.licenseNumber ?? license.licenseNumber;
+
+    license.status = "approved"; 
+
+    await user.save();
+    return user.license;
   }
 
   async deleteLicense(userId, licenseId) {

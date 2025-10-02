@@ -8,6 +8,7 @@ import OtpService from '../services/otp_service.js';
 import NotificationService from '../services/notification_service.js';
 import OtpValidator from '../validators/otp_validate.js';
 import NoticationValidator from '../validators/notification_validate.js';
+import NotificationQueueService from '../services/notification_queue_service.js';
 
 const router = Router();
 
@@ -15,7 +16,8 @@ const { UserRepository, NotificationRepository, OtpRepository } = await getRepos
 const otpValidator = new OtpValidator();
 const otpService = new OtpService(OtpRepository, otpValidator);
 const notificationValidator = new NoticationValidator();
-const notificationService = new NotificationService(NotificationRepository, notificationValidator);
+const notificationQueueService = new NotificationQueueService();
+const notificationService = new NotificationService(NotificationRepository, notificationQueueService, notificationValidator);
 const authValidator = new AuthValidator();
 const authService = new UserAuthService(UserRepository, otpService, notificationService, authValidator);
 const controller = new AuthController(authService);

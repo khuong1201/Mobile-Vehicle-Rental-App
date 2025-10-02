@@ -99,27 +99,29 @@ abstract class Vehicle {
   }
 
   Map<String, dynamic> toApiJson() {
-  final json = toJson()
-    ..remove('_id')
-    ..remove('vehicleId')
-    ..remove('createdAt')
-    ..remove('__v');
+    final json = toJson()
+      ..remove('_id')
+      ..remove('vehicleId')
+      ..remove('createdAt')
+      ..remove('__v');
 
-  final result = <String, dynamic>{};
+    final result = <String, dynamic>{};
 
-  json.forEach((key, value) {
-    if (value == null) return;
+    json.forEach((key, value) {
+      if (value == null) return;
 
-    if (value is Map || value is List) {
-      // Encode các object phức tạp
-      result[key] = jsonEncode(value);
-    } else {
-      result[key] = value.toString();
-    }
-  });
+      if (key == 'location' && key == 'bankAccount') {
+        result[key] = value;
+      } else if (value is Map || value is List) {
+        result[key] = jsonEncode(value);
+      } else {
+        result[key] = value.toString();
+      }
+    });
 
-  return result;
-}
+    return result;
+  }
+
 
   String get formattedPrice => currencyFormatter.format(price);
 }

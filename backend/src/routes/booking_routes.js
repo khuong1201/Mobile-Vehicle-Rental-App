@@ -4,17 +4,21 @@ import BookingService from "../services/booking_service.js";
 import getRepositories from "../repositories/index.js";
 import BookingValidator from "../validators/booking_validate.js";
 import NotificationService from "../services/notification_service.js";
+import NotificationValidator from "../validators/notification_validate.js";
+import NotificationQueueService from "../services/notification_queue_service.js";
 import authenticateJWT from "../middlewares/auth_middlerware.js";
 import { authorizeRoles } from '../middlewares/role_middlerware.js';
 const router = Router();
 
-const { VehicleRepository, BookingRepository } = await getRepositories();
-const validator = new BookingValidator();
-const notificationService = new NotificationService();
+const { VehicleRepository, BookingRepository, NotificationRepository } = await getRepositories();
+const bookingValidator = new BookingValidator();
+const validatorNotifi = new NotificationValidator();
+const notificationQueueService = new NotificationQueueService();
+const notificationService = new NotificationService(NotificationRepository, notificationQueueService, validatorNotifi);
 const bookingService = new BookingService(
   BookingRepository,
   VehicleRepository,
-  validator,
+  bookingValidator,
   notificationService,
 );
 const bookingController = new BookingController(bookingService);

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/auth/auth_api.dart';
+import 'package:frontend/viewmodels/fcm_viewmodel.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '/models/user.dart';
@@ -10,6 +11,7 @@ import '../user/user_secure_storage.dart';
 class GAuthViewModel extends ChangeNotifier {
   final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
   final TokenService _tokenService = TokenService();
+  final FCMViewModel _fcmViewModel = FCMViewModel();
   User? user;
 
   Future<bool> isLoggedIn() async {
@@ -48,6 +50,10 @@ class GAuthViewModel extends ChangeNotifier {
         );
         debugPrint('🧪 User ID: ${user?.id}');
         await UserSecureStorage.saveAccessToken(accessToken);
+        await _fcmViewModel.initFCM(
+          userId: user!.id,
+          authToken: accessToken,
+        );
         notifyListeners();
         return user;
       }
@@ -65,6 +71,15 @@ class GAuthViewModel extends ChangeNotifier {
 
   Future<void> signOut() async {
     try {
+      final userId = user?.id ?? await UserSecureStorage.getUserId();
+      final authToken = await UserSecureStorage.getAccessToken();
+
+      if (userId != null) {
+        await _fcmViewModel.removeToken(
+          userId: userId,
+          authToken: authToken,
+        );
+      }
       await UserSecureStorage.clearAll();
 
       final prefs = await SharedPreferences.getInstance();

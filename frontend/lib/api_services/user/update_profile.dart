@@ -10,19 +10,19 @@ Future<ApiResponse<dynamic>> updatePersonalInfoApi<T extends ChangeNotifier>({
   required String dateOfBirth,
   required String phoneNumber,
   required String gender,
-  required List<String> IDs,
+  required List<String> nationalIdNumber,
 }) async {
   final response = await callProtectedApi(
     viewModel,
     authService: authService,
-    endpoint: '/api/user/update-personal-info',
-    method: 'PUT',
+    endpoint: '/api/users/profile',
+    method: 'PATCH',
     body: {
       'fullName': fullName,
       'dateOfBirth': dateOfBirth,
       'phoneNumber': phoneNumber,
       'gender': gender,
-      'IDs': IDs,
+      'nationalIdNumber': nationalIdNumber,
     },
   );
 

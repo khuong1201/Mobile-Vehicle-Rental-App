@@ -13,10 +13,9 @@ Future<ApiResponse<dynamic>> getUserProfileApi<T extends ChangeNotifier>({
     endpoint: '/api/users/me',
     method: 'GET',
   );
-
   return ApiResponse(
     success: response.success,
-    data: response.data?['user'], 
+    data: response.data?['data'], 
     message: response.message ?? (response.success
         ? 'Lấy thông tin người dùng thành công'
         : 'Lấy thông tin thất bại'),

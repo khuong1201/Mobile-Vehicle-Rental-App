@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:frontend/models/vehicles/brand.dart';
 import 'package:frontend/viewmodels/auth/auth_service.dart';
 import 'package:frontend/viewmodels/vehicle/vehicle_viewmodel.dart';
+// import 'package:frontend/views/hosting/booking_info.dart';
 import 'package:frontend/views/hosting/empty_screen.dart';
 import 'package:frontend/views/widgets/custom_text_body_m_sb.dart';
 import 'package:provider/provider.dart';
@@ -80,6 +81,11 @@ class ListVehicleState extends State<ListVehicle> {
         return Stack(
           children: [
             GestureDetector(
+              onTap:() {
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => BookingInfomation(bookingId: booking.bookingId, vehicle: vehicle)));
+              },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                 margin: const EdgeInsets.only(bottom: 16),

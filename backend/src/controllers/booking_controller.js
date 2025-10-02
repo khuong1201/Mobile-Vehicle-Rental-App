@@ -13,7 +13,9 @@ export default class BookingController {
     this.getVehicleBookings = asyncHandler(this.getVehicleBookings.bind(this));
     this.getActiveBookings = asyncHandler(this.getActiveBookings.bind(this));
     this.getPastBookings = asyncHandler(this.getPastBookings.bind(this));
-    this.updateBookingStatus = asyncHandler(this.updateBookingStatus.bind(this));
+    this.updateBookingStatus = asyncHandler(
+      this.updateBookingStatus.bind(this)
+    );
     this.approveBooking = asyncHandler(this.approveBooking.bind(this));
     this.rejectBooking = asyncHandler(this.rejectBooking.bind(this));
     this.cancelBooking = asyncHandler(this.cancelBooking.bind(this));
@@ -29,23 +31,51 @@ export default class BookingController {
   }
 
   async getBookingById(req, res) {
-    const booking = await this.bookingService.getBookingById(req.params.bookingId);
+    const booking = await this.bookingService.getBookingById(
+      req.params.bookingId
+    );
     if (!booking) throw new AppError("Booking not found", 404);
     res.json({ status: "success", data: booking });
   }
 
   async getUserBookings(req, res) {
-    const bookings = await this.bookingService.getUserBookings(req.user.userId);
-    res.json({ status: "success", results: bookings.length, data: bookings });
+    try {
+      const userId = req.user.userId;
+      const { status, page = 1, limit = 10 } = req.query;
+
+      const bookingsData = await this.bookingService.getUserBookings(
+        userId,
+        status,
+        parseInt(page),
+        parseInt(limit)
+      );
+
+      res.json({
+        status: "success",
+        results: bookingsData.results.length,
+        data: bookingsData.results,
+        page: bookingsData.page,
+        limit: bookingsData.limit,
+        total: bookingsData.total,
+        totalPages: bookingsData.totalPages,
+      });
+    } catch (err) {
+      res.status(500).json({ status: "error", message: err.message });
+    }
   }
 
   async getVehicleBookings(req, res) {
-    const bookings = await this.bookingService.getVehicleBookings(req.params.vehicleId, req.user);
+    const bookings = await this.bookingService.getVehicleBookings(
+      req.params.vehicleId,
+      req.user
+    );
     res.json({ status: "success", results: bookings.length, data: bookings });
   }
 
   async getActiveBookings(req, res) {
-    const bookings = await this.bookingService.getActiveBookings(req.user.userId);
+    const bookings = await this.bookingService.getActiveBookings(
+      req.user.userId
+    );
     res.json({ status: "success", results: bookings.length, data: bookings });
   }
 
@@ -57,7 +87,7 @@ export default class BookingController {
   async updateBookingStatus(req, res) {
     const updated = await this.bookingService.updateBookingStatus(
       req.params.bookingId,
-      req.body.status, 
+      req.body.status,
       req.user.userId
     );
     res.json({ status: "success", data: updated });
@@ -104,7 +134,10 @@ export default class BookingController {
   }
 
   async deleteBooking(req, res) {
-    await this.bookingService.deleteBooking(req.user.userId, req.params.bookingId);
+    await this.bookingService.deleteBooking(
+      req.user.userId,
+      req.params.bookingId
+    );
     res.json({ status: "success", message: "Booking deleted successfully" });
   }
 }

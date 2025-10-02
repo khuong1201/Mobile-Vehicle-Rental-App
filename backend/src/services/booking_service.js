@@ -17,7 +17,8 @@ export default class BookingService {
 
     const pickup = new Date(payload.pickupDateTime);
     const dropoff = new Date(payload.dropoffDateTime);
-    if (dropoff <= pickup) throw new AppError("Dropoff must be after pickup", 400);
+    if (dropoff <= pickup)
+      throw new AppError("Dropoff must be after pickup", 400);
 
     const days = Math.ceil((dropoff - pickup) / (1000 * 60 * 60 * 24));
     const basePrice = vehicle.price * days;
@@ -33,16 +34,21 @@ export default class BookingService {
       taxRate,
       taxAmount,
       totalPrice,
-      status: "pending"
+      status: "pending",
     });
 
     await this.notificationService.createNotification({
       userId: vehicle.ownerId,
       channel: "push",
       subject: "New booking request",
-      body: `You have a new booking request for your vehicle ${vehicle.name}.`,
+      body: `You have a new booking request for your vehicle ${vehicle.vehicleName}.`,
       destination: null,
-      meta: { bookingId: booking._id, vehicleId: vehicle._id }
+      meta: { bookingId: booking.bookingId, vehicleId: vehicle.vehicleId },
+      pushPayload: {
+        type: "bookingByRental",
+        bookingId: booking.bookingId,
+        vehicleId: vehicle.vehicleId,
+      },
     });
 
     return booking;
@@ -52,27 +58,37 @@ export default class BookingService {
     return this.bookingRepo.findByBookingId(id);
   }
 
-  async getUserBookings(userId) {
-    return this.bookingRepo.findByUserId(userId);
+
+  async getUserBookings(userId, status, page = 1, limit = 10) {
+    return this.bookingRepo.findByUserId(userId, status, page, limit);
   }
 
   async getVehicleBookings(vehicleId, user) {
     const vehicle = await this.vehicleRepo.findById(vehicleId);
     if (!vehicle) throw new AppError("Vehicle not found", 404);
 
-    if (["admin"].includes(user.role) || vehicle.ownerId.toString() === user.userId.toString()) {
+    if (
+      ["admin"].includes(user.role) ||
+      vehicle.ownerId.toString() === user.userId.toString()
+    ) {
       return this.bookingRepo.findByVehicleId(vehicleId);
     }
     throw new AppError("Not authorized", 403);
   }
 
   async getActiveBookings(userId) {
-    return this.bookingRepo.findByUserIdWithStatus(userId, ["approved", "active"]);
+    return this.bookingRepo.findByUserIdWithStatus(userId, [
+      "approved",
+      "active",
+    ]);
   }
 
   async getPastBookings(userId) {
     return this.bookingRepo.findByUserIdWithStatus(userId, [
-      "completed", "rejected", "cancelled", "expired"
+      "completed",
+      "rejected",
+      "cancelled",
+      "expired",
     ]);
   }
 
@@ -91,10 +107,16 @@ export default class BookingService {
       );
     }
 
-    if (transitionRule.role === "owner" && booking.ownerId.toString() !== userId.toString()) {
+    if (
+      transitionRule.role === "owner" &&
+      booking.ownerId.toString() !== userId.toString()
+    ) {
       throw new AppError("Not authorized", 403);
     }
-    if (transitionRule.role === "renter" && booking.renterId.toString() !== userId.toString()) {
+    if (
+      transitionRule.role === "renter" &&
+      booking.renterId.toString() !== userId.toString()
+    ) {
       throw new AppError("Not authorized", 403);
     }
 
@@ -111,20 +133,28 @@ export default class BookingService {
   }
 
   async approveBooking(bookingId, ownerId) {
-    const booking = await this.updateBookingStatus(bookingId, "approved", ownerId);
+    const booking = await this.updateBookingStatus(
+      bookingId,
+      "approved",
+      ownerId
+    );
     await this.notificationService.createNotification({
       userId: booking.renterId,
       channel: "push",
       subject: "Booking approved",
       body: `Your booking for vehicle ${booking.vehicleId} has been approved.`,
       destination: null,
-      meta: { bookingId: booking._id }
+      meta: { bookingId: booking._id },
     });
     return booking;
   }
 
   async rejectBooking(bookingId, ownerId) {
-    const booking = await this.updateBookingStatus(bookingId, "rejected", ownerId);
+    const booking = await this.updateBookingStatus(
+      bookingId,
+      "rejected",
+      ownerId
+    );
 
     await this.notificationService.createNotification({
       userId: booking.renterId,
@@ -132,14 +162,18 @@ export default class BookingService {
       subject: "Booking rejected",
       body: `Your booking for vehicle ${booking.vehicleId} has been rejected.`,
       destination: null,
-      meta: { bookingId: booking._id }
+      meta: { bookingId: booking._id },
     });
 
     return booking;
   }
 
   async cancelBooking(bookingId, renterId) {
-    const booking = await this.updateBookingStatus(bookingId, "cancelled", renterId);
+    const booking = await this.updateBookingStatus(
+      bookingId,
+      "cancelled",
+      renterId
+    );
 
     await this.notificationService.createNotification({
       userId: booking.ownerId,
@@ -147,14 +181,18 @@ export default class BookingService {
       subject: "Booking cancelled",
       body: `The booking for your vehicle ${booking.vehicleId} has been cancelled by renter.`,
       destination: null,
-      meta: { bookingId: booking._id }
+      meta: { bookingId: booking._id },
     });
 
     return booking;
   }
 
   async startBooking(bookingId, ownerId) {
-    const booking = await this.updateBookingStatus(bookingId, "active", ownerId);
+    const booking = await this.updateBookingStatus(
+      bookingId,
+      "active",
+      ownerId
+    );
 
     await this.notificationService.createNotification({
       userId: booking.renterId,
@@ -162,14 +200,18 @@ export default class BookingService {
       subject: "Trip started",
       body: `Your trip for vehicle ${booking.vehicleId} has officially started.`,
       destination: null,
-      meta: { bookingId: booking._id }
+      meta: { bookingId: booking._id },
     });
 
     return booking;
   }
 
   async completeBooking(bookingId, ownerId) {
-    const booking = await this.updateBookingStatus(bookingId, "completed", ownerId);
+    const booking = await this.updateBookingStatus(
+      bookingId,
+      "completed",
+      ownerId
+    );
 
     await this.notificationService.createNotification({
       userId: booking.renterId,
@@ -177,42 +219,49 @@ export default class BookingService {
       subject: "Booking completed",
       body: `Your booking for vehicle ${booking.vehicleId} has been marked as completed.`,
       destination: null,
-      meta: { bookingId: booking._id }
+      meta: { bookingId: booking._id },
     });
 
     return booking;
   }
 
   async expireBooking(bookingId) {
-    const booking = await this.updateBookingStatus(bookingId, "expired", "system");
-  
+    const booking = await this.updateBookingStatus(
+      bookingId,
+      "expired",
+      "system"
+    );
+
     await this.notificationService.createNotification({
       userId: booking.renterId,
       channel: "push",
       subject: "Booking expired",
       body: `Your booking for vehicle ${booking.vehicleId} has expired because the pickup time passed.`,
       destination: null,
-      meta: { bookingId: booking._id }
+      meta: { bookingId: booking._id },
     });
-  
+
     await this.notificationService.createNotification({
       userId: booking.ownerId,
       channel: "push",
       subject: "Booking expired",
       body: `The booking for your vehicle ${booking.vehicleId} has expired because the renter did not start in time.`,
       destination: null,
-      meta: { bookingId: booking._id }
+      meta: { bookingId: booking._id },
     });
-  
+
     await this.vehicleRepo.update(booking.vehicleId, { available: true });
     return booking;
   }
-  
+
   async deleteBooking(userId, bookingId) {
     const booking = await this.bookingRepo.findByBookingId(bookingId);
     if (!booking) throw new AppError("Booking not found", 404);
 
-    if (booking.renterId.toString() !== userId && booking.ownerId.toString() !== userId) {
+    if (
+      booking.renterId.toString() !== userId &&
+      booking.ownerId.toString() !== userId
+    ) {
       throw new AppError("Not authorized to delete this booking", 403);
     }
 

@@ -17,6 +17,10 @@
       #   - mongodb
       restart: on-failure
       command: npm run dev
+      networks:
+        - app-network
+      depends_on:
+        - redis
       # command: npm run start
     # frontend:
     #   build: ../admin-html
@@ -31,7 +35,23 @@
       ports:
         - "6379:6379"
       restart: unless-stopped
-
+      networks:
+        - app-network
+    worker:
+      build:
+        context: ../backend
+        dockerfile: Dockerfile.worker
+      env_file:
+        - ../backend/src/.env
+      restart: on-failure
+      networks:
+        - app-network
+      depends_on:
+        - redis
+      
+  networks:
+    app-network:
+      driver: bridge
     # frontend_flutter:
     #   build:
     #     context: ../frontend

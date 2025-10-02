@@ -4,19 +4,27 @@ import env from "../config/env.js";
 import getRepositories from "../repositories/index.js";
 import BookingService from "../services/booking_service.js";
 import NotificationService from "../services/notification_service.js";
+import NotificationValidator from "../validators/notification_validate.js";
+import NotificationQueueService from "../services/notification_queue_service.js";
+import connectDB from "../config/db.js";
 
-const connection = new IORedis(env.REDIS_URL);
+await connectDB();
+const connection = new IORedis(env.REDIS_URL, {
+  maxRetriesPerRequest: null,
+});
 
 const worker = new Worker(
   "booking-cron",
   async job => {
 
-    const { BookingRepository, VehicleRepository, Validator, NotificationRepository } = getRepositories();
-    const notificationService = new NotificationService(NotificationRepository, Validator);
+    const { BookingRepository, VehicleRepository, NotificationRepository } = getRepositories();
+    const validator = new NotificationValidator();
+    const notificationQueue = new NotificationQueueService();
+    const notificationService = new NotificationService(NotificationRepository, notificationQueue, validator);
     const bookingService = new BookingService(
       BookingRepository,
       VehicleRepository,
-      Validator,
+      validator,
       notificationService
     );
 

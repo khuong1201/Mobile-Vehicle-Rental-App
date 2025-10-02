@@ -27,6 +27,7 @@ const DeviceTokenSchema = new Schema({
     token: { type: String, required: true, index: true },
     platform: { type: String, enum: ["ios", "android", "web"], required: true },
     deviceId: { type: String },
+    deleted: { type: Boolean, default: false },
     lastUsedAt: { type: Date, default: Date.now }
 });
 
@@ -40,8 +41,8 @@ const UserSchema = new Schema({
     addresses: [AddressSchema],
     avatar: String,
     phoneNumber: String,
-    dateOfBirth: Date,
-    nationalIdNumber: String,
+    dateOfBirth: Date,  
+    nationalIdNumber: [String],
     passwordHash: String,
     verified: { type: Boolean, default: false },
     refreshToken: String,

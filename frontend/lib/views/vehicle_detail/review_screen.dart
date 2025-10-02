@@ -9,10 +9,7 @@ import 'package:provider/provider.dart';
 class ReviewScreen extends StatefulWidget {
   final Vehicle vehicle;
 
-  const ReviewScreen({
-    super.key,
-    required this.vehicle,
-  });
+  const ReviewScreen({super.key, required this.vehicle});
 
   @override
   State<ReviewScreen> createState() => ReviewScreenState();
@@ -22,20 +19,26 @@ class ReviewScreenState extends State<ReviewScreen> {
   final TextEditingController _comment = TextEditingController();
 
   Future<void> fetchData() async {
-    final reviewViewModel = context.read<ReviewViewModel>();
-    await reviewViewModel.fetchReviews(
-      context,
-      vehicleId: widget.vehicle.vehicleId,
-      page: 1,
-      limit: 10,
-      clearBefore: true,
-    );
+    try {
+      final reviewViewModel = context.read<ReviewViewModel>();
+      await reviewViewModel.fetchReviews(
+        context,
+        vehicleId: widget.vehicle.vehicleId,
+        page: 1,
+        limit: 10,
+        clearBefore: true,
+      );
+    } catch (e) {
+      debugPrint("Error fetching reviews: $e");
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchData();
+    });
   }
 
   @override
@@ -62,8 +65,10 @@ class ReviewScreenState extends State<ReviewScreen> {
                       if (_comment.text.trim().isNotEmpty) {
                         int? selectedRating = await showRatingDialog(context);
                         if (selectedRating != null) {
-                          final reviewViewModel =
-                              Provider.of<ReviewViewModel>(context, listen: false);
+                          final reviewViewModel = Provider.of<ReviewViewModel>(
+                            context,
+                            listen: false,
+                          );
 
                           final commentText = _comment.text.trim();
                           bool success = await reviewViewModel.createReview(
@@ -79,13 +84,16 @@ class ReviewScreenState extends State<ReviewScreen> {
                             });
                             await fetchData();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Review submitted successfully!')),
+                              const SnackBar(
+                                content: Text('Review submitted successfully!'),
+                              ),
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                    'Error: ${reviewViewModel.errorMessage ?? 'Unable to submit review'}'),
+                                  'Error: ${reviewViewModel.errorMessage ?? 'Unable to submit review'}',
+                                ),
                               ),
                             );
                           }
@@ -93,7 +101,9 @@ class ReviewScreenState extends State<ReviewScreen> {
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Please enter comment before submitting!'),
+                            content: Text(
+                              'Please enter comment before submitting!',
+                            ),
                           ),
                         );
                       }
@@ -110,110 +120,115 @@ class ReviewScreenState extends State<ReviewScreen> {
               reviewViewModel.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : reviewViewModel.reviews.isEmpty
-                      ? const Center(child: Text('There are no reviews yet.'))
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: reviewViewModel.reviews.length,
-                          itemBuilder: (context, index) {
-                            final review = reviewViewModel.reviews[index];
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 8),
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: Color(0xFFE5E5E5),
-                                    width: 1,
-                                  ),
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          ClipOval(
-                                            child: Image.network(
-                                              review.renter.imageAvatarUrl ?? '',
+                  ? const Center(child: Text('There are no reviews yet.'))
+                  : ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: reviewViewModel.reviews.length,
+                    itemBuilder: (context, index) {
+                      final review = reviewViewModel.reviews[index];
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Color(0xFFE5E5E5),
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    ClipOval(
+                                      child: Image.network(
+                                        review.renter.imageAvatarUrl ?? '',
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (
+                                              context,
+                                              error,
+                                              stackTrace,
+                                            ) => Image.asset(
+                                              'assets/images/error/avatar.png',
                                               width: 50,
                                               height: 50,
                                               fit: BoxFit.cover,
-                                              errorBuilder: (context, error, stackTrace) =>
-                                                  Image.asset(
-                                                'assets/images/error/avatar.png',
-                                                width: 50,
-                                                height: 50,
-                                                fit: BoxFit.cover,
-                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Text(
-                                            review.renter.fullName,
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 14,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w700,
-                                              height: 1.29,
-                                            ),
-                                          ),
-                                        ],
                                       ),
-                                      Row(
-                                        children: [
-                                          SvgPicture.asset(
-                                            'assets/images/vehicle_detail/time.svg',
-                                            width: 20,
-                                            height: 20,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            "${review.createdAt.day}/${review.createdAt.month}/${review.createdAt.year}",
-                                            style: const TextStyle(
-                                              color: Color(0xFF808183),
-                                              fontSize: 14,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w400,
-                                              height: 1.29,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    review.comment,
-                                    style: const TextStyle(
-                                      color: Color(0xFF808183),
-                                      fontSize: 14,
-                                      fontFamily: 'Inter',
-                                      fontWeight: FontWeight.w500,
-                                      height: 1.29,
                                     ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: List.generate(5, (starIndex) {
-                                      return Icon(
-                                        Icons.star,
-                                        color: starIndex < review.rating
-                                            ? Colors.amber
-                                            : Colors.grey,
-                                        size: 20,
-                                      );
-                                    }),
-                                  ),
-                                  const SizedBox(height: 8),
-                                ],
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      review.renter.fullName,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w700,
+                                        height: 1.29,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                      'assets/images/vehicle_detail/time.svg',
+                                      width: 20,
+                                      height: 20,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      "${review.createdAt.day}/${review.createdAt.month}/${review.createdAt.year}",
+                                      style: const TextStyle(
+                                        color: Color(0xFF808183),
+                                        fontSize: 14,
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w400,
+                                        height: 1.29,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              review.comment,
+                              style: const TextStyle(
+                                color: Color(0xFF808183),
+                                fontSize: 14,
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w500,
+                                height: 1.29,
                               ),
-                            );
-                          },
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: List.generate(5, (starIndex) {
+                                return Icon(
+                                  Icons.star,
+                                  color:
+                                      starIndex < review.rating
+                                          ? Colors.amber
+                                          : Colors.grey,
+                                  size: 20,
+                                );
+                              }),
+                            ),
+                            const SizedBox(height: 8),
+                          ],
                         ),
+                      );
+                    },
+                  ),
             ],
           ),
         );
@@ -227,7 +242,10 @@ class ReviewScreenState extends State<ReviewScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
           title: const Text(
             'Reviews',
             textAlign: TextAlign.center,
@@ -265,10 +283,7 @@ class ReviewScreenState extends State<ReviewScreen> {
               },
               child: const Text(
                 'Cancel',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  color: Color(0xff1976D2),
-                ),
+                style: TextStyle(fontFamily: 'Inter', color: Color(0xff1976D2)),
               ),
             ),
             TextButton(
@@ -279,10 +294,7 @@ class ReviewScreenState extends State<ReviewScreen> {
               },
               child: const Text(
                 'Confirm',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  color: Color(0xff1976D2),
-                ),
+                style: TextStyle(fontFamily: 'Inter', color: Color(0xff1976D2)),
               ),
             ),
           ],

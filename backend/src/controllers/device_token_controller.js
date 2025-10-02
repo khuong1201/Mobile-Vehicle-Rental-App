@@ -9,10 +9,15 @@ export default class DeviceController {
   }
 
   async register(req, res) {
-    const { token } = req.body;
+    const { token, platform, deviceId } = req.body;
     const userId = req.user.userId;
 
-    const data = await this.service.registerDeviceToken(userId, token);
+    const data = await this.service.registerDeviceToken(
+      userId,
+      token,
+      platform,
+      deviceId
+    );
     res.json({ status: "success", data });
   }
 

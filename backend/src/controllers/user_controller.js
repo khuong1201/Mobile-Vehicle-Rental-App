@@ -1,4 +1,4 @@
-import asyncHandler from '../middlewares/async_handler.js';
+import asyncHandler from "../middlewares/async_handler.js";
 
 export default class UserController {
   constructor(userService) {
@@ -18,44 +18,91 @@ export default class UserController {
   }
 
   async updatePassword(req, res) {
-    const user = await this.userService.updatePassword(req.user.userId, req.body.newPassword);
-    res.json({ status: 'success', data: user });
+    const user = await this.userService.updatePassword(
+      req.user.userId,
+      req.body.newPassword
+    );
+    res.json({ status: "success", data: user });
   }
-  
-  async getOrtherProfile(req, res){
+
+  async getOrtherProfile(req, res) {
     const userId = req.body.userId;
     const profile = await this.userService.getOrtherProfile(userId);
-    res.json({ status: "success", data: profile});
+    res.json({ status: "success", data: profile });
   }
 
   async getProfile(req, res) {
-    const userId = req.user.userId; 
+    const userId = req.user.userId;
     const profile = await this.userService.getProfile(userId);
     res.json({ status: "success", data: profile });
   }
 
   async updateProfile(req, res) {
-    const user = await this.userService.updateProfile(req.user.userId, req.body);
-    res.json({ status: 'success', data: user });
+    const user = await this.userService.updateProfile(
+      req.user.userId,
+      req.body
+    );
+    res.json({ status: "success", data: user });
   }
 
   async updateRole(req, res) {
-    const user = await this.userService.updateRole(req.params.userId, req.body.role);
-    res.json({ status: 'success', data: user });
+    const user = await this.userService.updateRole(
+      req.params.userId,
+      req.body.role
+    );
+    res.json({ status: "success", data: user });
   }
 
   async addLicense(req, res) {
-    const licenses = await this.userService.addLicense(req.params.userId, req.body);
-    res.json({ status: 'success', data: licenses });
+    try {
+      const { typeOfDriverLicense, classLicense, licenseNumber } = req.body;
+      const frontFile = req.files.driverLicenseFront?.[0];
+      const backFile = req.files.driverLicenseBack?.[0];
+
+      if (!frontFile || !backFile)
+        return res
+          .status(400)
+          .json({ status: "error", message: "Missing files" });
+
+      const licenseData = {
+        typeOfDriverLicense,
+        classLicense,
+        licenseNumber,
+        frontFile,
+        backFile,
+      };
+      const licenses = await this.userService.addLicense(
+        req.params.userId,
+        licenseData
+      );
+
+      res.json({ status: "success", data: licenses });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ status: "error", message: err.message });
+    }
   }
 
   async updateLicense(req, res) {
-    const licenses = await this.userService.updateLicense(
-      req.params.userId,
-      req.params.licenseId,
-      req.body
-    );
-    res.json({ status: 'success', data: licenses });
+    try {
+      const { typeOfDriverLicense, classLicense, licenseNumber } = req.body;
+      const frontFile = req.files?.driverLicenseFront?.[0];
+      const backFile = req.files?.driverLicenseBack?.[0];
+
+      const licenseData = { typeOfDriverLicense, classLicense, licenseNumber };
+      if (frontFile) licenseData.frontFile = frontFile;
+      if (backFile) licenseData.backFile = backFile;
+
+      const licenses = await this.userService.updateLicense(
+        req.params.userId,
+        req.params.licenseId,
+        licenseData
+      );
+      res.json({ status: "success", data: licenses });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ status: "error", message: err.message });
+    }
   }
 
   async deleteLicense(req, res) {
@@ -63,12 +110,15 @@ export default class UserController {
       req.params.userId,
       req.params.licenseId
     );
-    res.json({ status: 'success', data: licenses });
+    res.json({ status: "success", data: licenses });
   }
 
   async addAddress(req, res) {
-    const addresses = await this.userService.addAddress(req.params.userId, req.body);
-    res.json({ status: 'success', data: addresses });
+    const addresses = await this.userService.addAddress(
+      req.params.userId,
+      req.body
+    );
+    res.json({ status: "success", data: addresses });
   }
 
   async updateAddress(req, res) {
@@ -77,7 +127,7 @@ export default class UserController {
       req.params.addressId,
       req.body
     );
-    res.json({ status: 'success', data: addresses });
+    res.json({ status: "success", data: addresses });
   }
 
   async deleteAddress(req, res) {
@@ -85,6 +135,6 @@ export default class UserController {
       req.params.userId,
       req.params.addressId
     );
-    res.json({ status: 'success', data: addresses });
+    res.json({ status: "success", data: addresses });
   }
 }

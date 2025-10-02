@@ -6,11 +6,13 @@ import asyncHandler from '../middlewares/async_handler.js';
 import UserService from '../services/user_service.js';
 import getRepositories from '../repositories/index.js';
 import UserValidator from '../validators/user_validate.js';
-
+import uploadLicense from'../middlewares/upload_driverLicense.js';
+import CloudinaryAdapter from '../adapters/storage/cloudinary_adapter.js';
 const router = Router();
 const { UserRepository } = await getRepositories();
 const userValidator = new UserValidator();
-const service = new UserService(UserRepository, userValidator);
+const storageAdapter = new CloudinaryAdapter('driverLicences');
+const service = new UserService(UserRepository, userValidator, storageAdapter);
 const controller = new UserController(service);
 
 router.patch(
@@ -47,6 +49,7 @@ router.post(
   '/:userId/license',
   authenticateJWT,
   authorizeRoles('renter', 'owner'),
+  uploadLicense,
   asyncHandler(controller.addLicense)
 );
 
@@ -54,6 +57,7 @@ router.patch(
   '/:userId/license/:licenseId',
   authenticateJWT,
   authorizeRoles('renter', 'owner'),
+  uploadLicense,
   asyncHandler(controller.updateLicense)
 );
 
@@ -61,7 +65,7 @@ router.delete(
   '/:userId/license/:licenseId',
   authenticateJWT,
   authorizeRoles('renter', 'owner'),
-  asyncHandler(controller.deletedLicense)
+  asyncHandler(controller.deleteLicense)
 );
 
 router.post(

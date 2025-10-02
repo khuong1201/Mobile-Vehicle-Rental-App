@@ -24,7 +24,8 @@ export default class UserValidator {
 
     validateLicense(licenseData) {
         if (!licenseData.licenseNumber) throw new AppError("License number is required");
-        if (!licenseData.type) throw new AppError("License type is required");
+        if (!licenseData.typeOfDriverLicense) throw new AppError("typeOfDriverLicense is required");
+        if (!licenseData.classLicense) throw new AppError("classLicense is required");
     }
 
     validateAddress(addressData) {

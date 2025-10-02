@@ -52,10 +52,12 @@ class HeaderSection extends StatelessWidget {
                 ),
                 SizedBox(width: 10),
                 Column(
+                  
                   children: [
                     SizedBox(
                       width: 205,
                       child: Text(
+                        
                         'Welcome, ${user?.fullName.isNotEmpty == true ? user!.fullName : 'Bro'}',
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(

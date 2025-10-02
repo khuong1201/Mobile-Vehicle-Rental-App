@@ -2,36 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/user.dart';
 import 'package:frontend/viewmodels/auth/auth_viewmodel.dart';
 import 'package:frontend/viewmodels/auth/google_auth_viewmodel.dart';
+import 'package:frontend/viewmodels/user/user_secure_storage.dart';
 import 'package:provider/provider.dart';
-import '../user/user_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class AuthService {
+class AuthService extends ChangeNotifier {
   final BuildContext context;
-  User? user;
+
+  User? _user;
+  User? get user => _user;
+
   AuthService(this.context);
 
-  Future<String?> getAccessToken() async {
-    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-    final gAuthViewModel = Provider.of<GAuthViewModel>(context, listen: false);
+  void setUser(User user) {
+    _user = user;
+    notifyListeners();
+  }
 
-    if (await authViewModel.isLoggedIn()) {
-      return await UserSecureStorage.getAccessToken();
-    } else if (await gAuthViewModel.isLoggedIn()) {
-      return await UserSecureStorage.getAccessToken();
-    }
-    return null;
+  void clearUser() {
+    _user = null;
+    notifyListeners();
   }
 
   Future<String?> getUserIdFromStorage() async {
-    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-    final gAuthViewModel = Provider.of<GAuthViewModel>(context, listen: false);
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userId');
+  }
+  
+  Future<void> loadUser() async {
+    final storedUser = await UserSecureStorage.getUser();
+    _user = storedUser;
+    notifyListeners();
+  }
 
-    if (await authViewModel.isLoggedIn()) {
-      return await UserSecureStorage.getUserId();
-    } else if (await gAuthViewModel.isLoggedIn()) {
-      return await UserSecureStorage.getUserId();
-    }
-    return null;
+  Future<String?> getAccessToken() async {
+    return await UserSecureStorage.getAccessToken();
+  }
+
+  Future<String?> getUserId() async {
+    return _user?.userId ?? await UserSecureStorage.getUserId();
   }
 
   Future<bool> checkRoleOwner() async {
@@ -57,12 +66,12 @@ class AuthService {
 
     try {
       if (await authViewModel.isLoggedIn()) {
-        return await authViewModel.logout();
+        await authViewModel.logout();
       } else if (await gAuthViewModel.isLoggedIn()) {
         await gAuthViewModel.signOut();
-        return true;
       }
-      return false;
+      clearUser();
+      return true;
     } catch (e) {
       return false;
     }

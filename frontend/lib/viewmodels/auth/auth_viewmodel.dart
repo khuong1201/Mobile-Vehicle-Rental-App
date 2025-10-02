@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_services/auth/auth_api.dart';
+import 'package:frontend/main.dart';
+import 'package:frontend/viewmodels/auth/auth_service.dart';
+import 'package:frontend/viewmodels/fcm_viewmodel.dart';
+import 'package:provider/provider.dart';
 import '/models/user.dart';
 import '../user/user_secure_storage.dart';
 
@@ -9,6 +13,7 @@ class AuthViewModel extends ChangeNotifier {
   String? errorMessage;
   bool isOTPVerified = false;
   final TokenService _tokenService = TokenService();
+  final FCMViewModel _fcmViewModel = FCMViewModel();
 
   Future<bool> isLoggedIn() async {
     final accessToken = await UserSecureStorage.getAccessToken();
@@ -16,7 +21,11 @@ class AuthViewModel extends ChangeNotifier {
     return accessToken != null && user != null;
   }
 
-  Future<void> _updateState({bool loading = false, String? error, bool notify = true}) async {
+  Future<void> _updateState({
+    bool loading = false,
+    String? error,
+    bool notify = true,
+  }) async {
     isLoading = loading;
     errorMessage = error;
     if (notify) notifyListeners();
@@ -27,7 +36,12 @@ class AuthViewModel extends ChangeNotifier {
       await _updateState(loading: true);
       final response = await AuthApi.verifyOTP(email, otp);
       isOTPVerified = response.success;
-      await _updateState(error: response.success ? null : response.message ?? 'OTP verification failed.');
+      await _updateState(
+        error:
+            response.success
+                ? null
+                : response.message ?? 'OTP verification failed.',
+      );
       return response.success;
     } catch (e) {
       await _updateState(error: 'An error occurred: $e');
@@ -35,7 +49,11 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> login(String email, String password, {bool rememberMe = false}) async {
+  Future<bool> login(
+    String email,
+    String password, {
+    bool rememberMe = false,
+  }) async {
     try {
       await _updateState(loading: true);
       final response = await AuthApi.login(email, password);
@@ -50,21 +68,27 @@ class AuthViewModel extends ChangeNotifier {
           return false;
         }
         user = User.fromJson(userData);
-        
+        final authService = Provider.of<AuthService>(
+          navigatorKey.currentContext!,
+          listen: false,
+        );
+        authService.setUser(user!);
         if (rememberMe) {
-          // ✅ chỉ lưu khi checkbox được chọn
           await UserSecureStorage.saveUser(user!);
           await UserSecureStorage.saveAccessToken(accessToken!);
           if (refreshToken != null) {
             await UserSecureStorage.saveRefreshToken(refreshToken);
           }
         }
-
+        await UserSecureStorage.saveUser(user!);
+        await _fcmViewModel.initFCM(userId: user!.id, authToken: accessToken);
         await _updateState();
         return true;
       }
 
-      await _updateState(error: response.message ?? 'Incorrect login information.');
+      await _updateState(
+        error: response.message ?? 'Incorrect login information.',
+      );
       return false;
     } catch (e) {
       await _updateState(error: 'An error occurred: $e');
@@ -103,6 +127,11 @@ class AuthViewModel extends ChangeNotifier {
       await _updateState(loading: true);
       final response = await AuthApi.logout();
       if (response.success) {
+        final userId = user?.id ?? await UserSecureStorage.getUserId();
+        final authToken = await UserSecureStorage.getAccessToken();
+        if (userId != null) {
+          await _fcmViewModel.removeToken(userId: userId, authToken: authToken);
+        }
         user = null;
         await UserSecureStorage.clearAll();
         await _updateState();

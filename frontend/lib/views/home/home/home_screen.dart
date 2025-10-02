@@ -35,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-
     _bannerController = PageController();
 
     // Auto-scroll banners
@@ -58,12 +57,18 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
 
-    // Initial data load
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final vehicleVM = context.read<VehicleViewModel>();
+      if (vehicleVM.vehicles.isEmpty) {
+        await vehicleVM.fetchBrands(context);
+        await vehicleVM.fetchVehicles(context);
+      }
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      final vehicleVM = context.read<VehicleViewModel>();
-      await vehicleVM.fetchBrands(context);
-      await vehicleVM.fetchVehicles(context);
+      final userVM = context.read<UserViewModel>();
+      await userVM.loadUser();
     });
   }
 
@@ -82,12 +87,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final gAuthVM = context.read<GAuthViewModel>();
     final userVM = context.watch<UserViewModel>();
     final user = userVM.user;
-
     return Scaffold(
       body: Container(
         color: const Color(0xffFDFDFD),
         child: RefreshIndicator(
-          onRefresh: () async => context.read<VehicleViewModel>().refresh(context),
+          onRefresh:
+              () async => context.read<VehicleViewModel>().refresh(context),
           child: SingleChildScrollView(
             controller: _scrollController,
             child: Column(
@@ -105,12 +110,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   banners: banners,
                   controller: _bannerController,
                   currentIndex: _currentBanner,
-                  onPageChanged: (index) => setState(() => _currentBanner = index),
+                  onPageChanged:
+                      (index) => setState(() => _currentBanner = index),
                 ),
 
                 Consumer<VehicleViewModel>(
                   builder: (context, vm, _) {
-                    
                     if (vm.isLoading && vm.vehicles.isEmpty) {
                       return const Center(child: CircularProgressIndicator());
                     }

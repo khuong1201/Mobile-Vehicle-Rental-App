@@ -36,7 +36,7 @@ class RoleViewModel extends ChangeNotifier {
 
       // ✅ Cập nhật lại User
       final updatedUser = User.fromJson(data['updatedUser']);
-      authService.user = updatedUser;
+      authService.setUser(updatedUser);
       await UserSecureStorage.saveUser(updatedUser);
     } else {
       errorMessage = response.message;

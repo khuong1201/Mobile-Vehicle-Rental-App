@@ -10,21 +10,30 @@ import 'package:frontend/viewmodels/auth/auth_service.dart';
 class BookingViewModel extends ChangeNotifier {
   BookingViewModel();
 
+  // Danh sách booking
   List<Booking> _bookings = [];
   List<Booking> get bookings => _bookings;
 
   List<Booking> _filteredBookings = [];
   List<Booking> get filteredBookings => _filteredBookings;
-  
+
+  // Booking hiện tại
   Booking? _currentBooking;
   Booking? get currentBooking => _currentBooking;
 
+  // Trạng thái loading và lỗi
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  // Phân trang
+  int _currentPage = 1;
+  bool _hasMore = true;
+  bool get hasMore => _hasMore;
+
+  // Thông tin booking
   String? vehicleId;
   String? renterId;
   String? ownerId;
@@ -42,14 +51,15 @@ class BookingViewModel extends ChangeNotifier {
   String? get selectedPaymentMethod => _selectedPaymentMethod;
   Vehicle? selectedVehicle;
 
-  Map<String, dynamic>? bookingResult;
-  String? result;
+  // Định dạng tiền tệ
+  final currencyFormatter = NumberFormat.currency(
+    locale: 'vi_VN',
+    symbol: 'VNĐ',
+  );
 
-  final currencyFormatter = NumberFormat.currency(locale: 'vi_VN', symbol: 'VNĐ');
-  String formattedPrice(num? value) {
-    return currencyFormatter.format(value ?? 0);
-  }
+  String formattedPrice(num? value) => currencyFormatter.format(value ?? 0);
 
+  // Set vehicle và phương thức thanh toán
   void setSelectedVehicle(Vehicle vehicle) {
     selectedVehicle = vehicle;
     notifyListeners();
@@ -60,6 +70,7 @@ class BookingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Tạo booking
   Future<ApiResponse> createBooking({
     required AuthService authService,
     required String vehicleId,
@@ -77,6 +88,7 @@ class BookingViewModel extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
+    // Lưu dữ liệu tạm thời
     this.vehicleId = vehicleId;
     this.renterId = renterId;
     this.ownerId = ownerId;
@@ -88,7 +100,7 @@ class BookingViewModel extends ChangeNotifier {
     this.dropOffTime = dropOffTime;
     this.basePrice = basePrice;
 
-    // Kiểm tra các trường bắt buộc
+    // Kiểm tra dữ liệu bắt buộc
     if (vehicleId.isEmpty ||
         renterId.isEmpty ||
         ownerId.isEmpty ||
@@ -102,13 +114,9 @@ class BookingViewModel extends ChangeNotifier {
       _isLoading = false;
       _errorMessage = 'Vui lòng điền đầy đủ thông tin đặt xe';
       notifyListeners();
-      return ApiResponse(
-        success: false,
-        message: 'Vui lòng điền đầy đủ thông tin đặt xe',
-      );
+      return ApiResponse(success: false, message: _errorMessage);
     }
 
-    // Xử lý ngày giờ
     try {
       final dateFormatter = DateFormat('dd-MM-yyyy');
       final pickupDate = dateFormatter.parseStrict(pickUpDate);
@@ -133,28 +141,20 @@ class BookingViewModel extends ChangeNotifier {
         int.parse(dropoffTimeParts[1]),
       );
 
-      // Kiểm tra pickupDateTime không được trong quá khứ
+      // Kiểm tra thời gian hợp lệ
       final now = DateTime.now();
       if (pickupDateTime.isBefore(now)) {
         _isLoading = false;
         _errorMessage = 'Thời gian nhận xe không được nằm trong quá khứ';
         notifyListeners();
-        return ApiResponse(
-          success: false,
-          message: 'Thời gian nhận xe không được nằm trong quá khứ',
-        );
+        return ApiResponse(success: false, message: _errorMessage);
       }
 
-      // Kiểm tra dropoffDateTime phải sau pickupDateTime
-      if (dropoffDateTime.isBefore(pickupDateTime) ||
-          dropoffDateTime.isAtSameMomentAs(pickupDateTime)) {
+      if (!dropoffDateTime.isAfter(pickupDateTime)) {
         _isLoading = false;
         _errorMessage = 'Thời gian trả xe phải sau thời gian nhận xe';
         notifyListeners();
-        return ApiResponse(
-          success: false,
-          message: 'Thời gian trả xe phải sau thời gian nhận xe',
-        );
+        return ApiResponse(success: false, message: _errorMessage);
       }
 
       final bookingData = {
@@ -175,37 +175,42 @@ class BookingViewModel extends ChangeNotifier {
       );
 
       if (response.success && response.data != null) {
-      final booking = response.data as Booking;
+        _currentBooking = response.data as Booking;
+        _isLoading = false;
+        notifyListeners();
+        return response;
+      }
 
-      _currentBooking = booking;
-
-      debugPrint("✅ BookingId: ${booking.bookingId}");
-
-      _isLoading = false;
-      notifyListeners();
-      return ApiResponse(success: true, data: booking, message: response.message);
-    }
-      
       _isLoading = false;
       notifyListeners();
       return response;
-      
     } catch (e) {
       _isLoading = false;
       _errorMessage = 'Định dạng ngày hoặc giờ không hợp lệ: $e';
       notifyListeners();
-      return ApiResponse(
-        success: false,
-        message: 'Định dạng ngày hoặc giờ không hợp lệ: $e',
-      );
+      return ApiResponse(success: false, message: _errorMessage);
     }
   }
 
+  /// Lấy danh sách booking của user
   Future<void> fetchUserBookings(
     BuildContext context,
-    AuthService authService,{
+    AuthService authService, {
     required VehicleViewModel vehicleVM,
+    String? status,
+    bool isRefresh = false,
+    int limit = 10,
+    required int page,
+    required bool append,
   }) async {
+    if (_isLoading) return;
+
+    if (isRefresh) {
+      resetPagination();
+    }
+
+    if (!_hasMore) return;
+
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -213,34 +218,41 @@ class BookingViewModel extends ChangeNotifier {
     final response = await BookingApi.getUserBookings(
       viewModel: this,
       authService: authService,
+      status: status,
+      page: _currentPage,
+      limit: limit,
     );
 
     if (response.success && response.data != null) {
-      _bookings = response.data!;
+      final newBookings = response.data!;
+      _bookings.addAll(newBookings);
 
-      for (var booking in _bookings) {
-        await vehicleVM.fetchVehicleById(context, vehicleId: booking.vehicleId);
-        booking.vehicle = vehicleVM.currentVehicle;
+      // Gán vehicle cho mỗi booking
+      for (var booking in newBookings) {
+        if (booking.vehicleId.isNotEmpty) {
+          await vehicleVM.fetchVehicleById(context, vehicleId: booking.vehicleId);
+          booking.vehicle = vehicleVM.currentVehicle;
+        }
       }
 
+      // Lọc theo trạng thái nếu cần
+      if (status != null && status.isNotEmpty && status != 'All') {
+        _filteredBookings = _bookings.where((b) => b.status == status).toList();
+      } else {
+        _filteredBookings = List.from(_bookings);
+      }
+
+      _hasMore = newBookings.length == limit;
+      _currentPage++;
     } else {
       _errorMessage = response.message ?? 'Không thể tải danh sách booking';
-      _bookings = [];
     }
 
     _isLoading = false;
-    notifyListeners();                                          
-  }
-
-  void filterBookingsByStatus(String status) {
-    if (status.isEmpty ||status == 'All') {
-      _filteredBookings = List.from(_bookings);
-    } else {
-      _filteredBookings = _bookings.where((b) => b.status == status).toList();
-    }
     notifyListeners();
   }
 
+  /// Lấy booking theo ID
   Future<Booking?> getBookingById(String bookingId, AuthService authService) async {
     if (bookingId.isEmpty) {
       _errorMessage = 'bookingId không được để trống';
@@ -262,9 +274,8 @@ class BookingViewModel extends ChangeNotifier {
       if (response.success && response.data != null) {
         final res = response.data as Map<String, dynamic>;
         final data = res['data'] as Map<String, dynamic>;
-
         final booking = Booking.fromJson(data);
-        // Cập nhật danh sách bookings nếu chưa có
+
         if (!_bookings.any((b) => b.bookingId == booking.bookingId)) {
           _bookings.add(booking);
         }
@@ -286,6 +297,15 @@ class BookingViewModel extends ChangeNotifier {
     }
   }
 
+  void resetPagination() {
+    _currentPage = 1;
+    _hasMore = true;
+    _bookings = [];
+    _filteredBookings = [];
+    notifyListeners();
+  }
+
+  /// Reset toàn bộ state
   void reset() {
     vehicleId = null;
     renterId = null;

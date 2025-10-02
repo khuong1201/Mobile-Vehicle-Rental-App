@@ -39,6 +39,7 @@ export default class UserRepositoryMongo extends IUserRepo {
             phoneNumber: user.phoneNumber,
             gender: user.gender,
             dateOfBirth: user.dateOfBirth,
+            nationalIdNumber: user.nationalIdNumber,
             role: user.role,
             points: user.points,
             addresses: user.addresses.filter(a => !a.deleted),

@@ -16,11 +16,9 @@ export default class BookingRepositoryMongo extends IBookingRepository {
   }
 
   async update(id, data) {
-    return Booking.findOneAndUpdate(
-      { bookingId: id, deleted: false },
-      data,
-      { new: true }
-    );
+    return Booking.findOneAndUpdate({ bookingId: id, deleted: false }, data, {
+      new: true,
+    });
   }
 
   async delete(id) {
@@ -31,8 +29,25 @@ export default class BookingRepositoryMongo extends IBookingRepository {
     );
   }
 
-  async findByUserId(userId) {
-    return this.find({ renterId: userId });
+  async findByUserId(userId, status, page = 1, limit = 10) {
+    const query = { renterId: userId };
+    if (status) query.status = status;
+
+    const allResults = await this.find(query); 
+
+    const total = allResults.length;
+    const totalPages = Math.ceil(total / limit);
+    const skip = (page - 1) * limit;
+
+    const results = allResults.slice(skip, skip + limit);
+
+    return {
+      results,
+      total,
+      page,
+      limit,
+      totalPages,
+    };
   }
 
   async findByVehicleId(vehicleId) {

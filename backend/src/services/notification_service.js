@@ -13,10 +13,13 @@ export default class NotificationService {
 
   async createNotification(data) {
     this.validator.validateCreate(data);
-    const notification = await this.notificationRepo.create({ ...data, status: "pending" });
+    const notification = await this.notificationRepo.create({
+      ...data,
+      status: "pending",
+    });
 
-    await this.queueService.add("send", { notificationId: notification._id });
-  
+    await this.queueService.enqueueNotification(notification.notificationId);
+
     return notification;
   }
 
@@ -34,14 +37,20 @@ export default class NotificationService {
           );
           break;
         case "push":
-          providerMessageId = await this.pushProvider.send(notification.userId, {
-            title: notification.subject,
-            body: notification.body,
-            data: notification.meta
-          });
+          providerMessageId = await this.pushProvider.send(
+            notification.userId,
+            {
+              title: notification.subject,
+              body: notification.body,
+              data: notification.pushPayload || notification.meta,
+            }
+          );
           break;
         default:
-          throw new AppError(`Unsupported channel: ${notification.channel}`, 400);
+          throw new AppError(
+            `Unsupported channel: ${notification.channel}`,
+            400
+          );
       }
 
       return this.markAsSent(notification.notificationId, providerMessageId);

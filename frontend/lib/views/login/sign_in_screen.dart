@@ -194,7 +194,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 context: context,
                                 builder:
                                     (context) => CustomAlertDialog(
-                                      title: 'Error',
+                                      title: 'Log in Failed',
                                       content:
                                           viewmodel.errorMessage ??
                                           'Invalid email or password.',

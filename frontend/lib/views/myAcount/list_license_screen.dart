@@ -15,11 +15,23 @@ class DriverLicenseListScreen extends StatefulWidget {
 }
 
 class _DriverLicenseListScreenState extends State<DriverLicenseListScreen> {
+  late final UserLicenseViewModel _vm;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // ✅ Lưu reference context an toàn tại đây
+    _vm = Provider.of<UserLicenseViewModel>(context, listen: false);
+  }
+
   @override
   void initState() {
     super.initState();
-    final vm = Provider.of<UserLicenseViewModel>(context, listen: false);
-    vm.loadUserLicenseFromProfile();
+    // ✅ Dời load dữ liệu vào postFrameCallback
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await _vm.loadUserLicenseFromProfile();
+    });
   }
 
   @override
@@ -28,11 +40,11 @@ class _DriverLicenseListScreenState extends State<DriverLicenseListScreen> {
       appBar: CustomAppbar(
         backgroundColor: const Color(0xff1976D2),
         title: 'All Driver Licenses',
-        textColor: const Color(0xffFFFFFF),
+        textColor: Colors.white,
         height: 80,
       ),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Consumer<UserLicenseViewModel>(
           builder: (context, vm, _) {
             if (vm.isLoading) {
@@ -43,177 +55,179 @@ class _DriverLicenseListScreenState extends State<DriverLicenseListScreen> {
               return const Center(child: Text("No licenses found."));
             }
 
-            return ListView.builder(
-              itemCount: vm.licenses.length,
-              itemBuilder: (context, index) {
-                final license = vm.licenses[index];
-                return Stack(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) =>
-                                    DriverLicenseScreen(license: license),
+            return RefreshIndicator(
+              onRefresh: () async {
+                await vm.loadUserLicenseFromProfile();
+              },
+              child: ListView.builder(
+                itemCount: vm.licenses.length,
+                itemBuilder: (context, index) {
+                  final license = vm.licenses[index];
+                  return Stack(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if (!context.mounted) return;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  DriverLicenseScreen(license: license),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x33000000),
+                                blurRadius: 9,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 10,
-                        ),
-                        margin: EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0x33000000),
-                              blurRadius: 9,
-                              offset: Offset(0, 3),
-                              spreadRadius: 0,
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 190,
-                              height: 125,
-                              decoration: ShapeDecoration(
-                                image: DecorationImage(
-                                  image: NetworkImage(
-                                    license.frontImage.isNotEmpty
-                                        ? license.frontImage
-                                        : 'https://via.placeholder.com/150',
-                                  ),
-                                  fit: BoxFit.cover,
-                                ),
-                                shape: RoundedRectangleBorder(
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 140,
+                                height: 100,
+                                decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
+                                  image: DecorationImage(
+                                    image: NetworkImage(
+                                      license.frontImage.isNotEmpty
+                                          ? license.frontImage
+                                          : 'https://via.placeholder.com/150',
+                                    ),
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomTextBodyMsb(
-                                    title: license.classLicense,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 12,
-                                        height: 12,
-                                        decoration: ShapeDecoration(
-                                          color:
-                                              license.status.toLowerCase() ==
-                                                      'approved'
-                                                  ? const Color(0xFF4CAF50)
-                                                  : license.status
-                                                          .toLowerCase() ==
-                                                      'pending'
-                                                  ? const Color(0xFFFFC107)
-                                                  : Colors.red,
-                                          shape: OvalBorder(),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        license.status,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 14,
-                                          fontFamily: 'Inter',
-                                          fontWeight: FontWeight.w400,
-                                          height: 1.29,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Type: ${license.typeDriverLicense}',
-                                    style: TextStyle(
-                                      color: const Color(0xFF2B2B2C),
-                                      fontSize: 14,
-                                      fontFamily: 'Inter',
-                                      fontWeight: FontWeight.w400,
-                                      height: 1.20,
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomTextBodyMsb(
+                                      title: 'Class: ${license.classLicense}',
                                     ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'License Number: ${license.licenseNumber}',
-                                    style: TextStyle(
-                                      color: const Color(0xFF2B2B2C),
-                                      fontSize: 14,
-                                      fontFamily: 'Inter',
-                                      fontWeight: FontWeight.w400,
-                                      height: 1.20,
+                                    const SizedBox(height: 8),
+                                    Text('Type: ${license.typeDriverLicense}'),
+                                    Text('Number: ${license.licenseNumber}'),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 10,
+                                          height: 10,
+                                          decoration: BoxDecoration(
+                                            color: license.status == 'approved'
+                                                ? Colors.green
+                                                : license.status == 'pending'
+                                                    ? Colors.amber
+                                                    : Colors.red,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          license.status,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: PopupMenuButton<String>(
-                        icon: Icon(Icons.more_vert, color: Colors.grey),
-                        onSelected: (value) async {
-                          if (value == 'delete') {
-                            final vm = Provider.of<UserLicenseViewModel>(
-                              context,
-                              listen: false,
-                            );
-                            final success = await vm.deleteDriverLicense(licenseId: license.licenseId);
-
-                            if (!success) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    vm.errorMessage ?? 'Delete failed',
-                                  ),
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: PopupMenuButton<String>(
+                          icon: const Icon(Icons.more_vert, color: Colors.grey),
+                          onSelected: (value) async {
+                            if (value == 'delete') {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Confirm delete'),
+                                  content: const Text(
+                                      'Are you sure you want to delete this license?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(ctx, false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(ctx, true),
+                                      child: const Text(
+                                        'Delete',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               );
+
+                              if (confirm == true) {
+                                final success = await _vm.deleteDriverLicense(
+                                  licenseId: license.licenseId,
+                                );
+
+                                if (!context.mounted) return;
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: success
+                                        ? Colors.green
+                                        : Colors.redAccent,
+                                    content: Text(
+                                      success
+                                          ? 'License deleted successfully'
+                                          : (_vm.errorMessage ??
+                                              'Delete failed'),
+                                    ),
+                                  ),
+                                );
+                              }
                             }
-                          }
-                        },
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'delete',
-                            child: Text('Delete'),
-                          ),
-                        ],
+                          },
+                          itemBuilder: (context) => const [
+                            PopupMenuItem(
+                              value: 'delete',
+                              child: Text('Delete'),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                );
-              },
+                    ],
+                  );
+                },
+              ),
             );
           },
         ),
       ),
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        margin: const EdgeInsets.all(16),
         child: CustomButton(
           title: 'Create',
           onPressed: () {
+            if (!context.mounted) return;
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => DriverLicenseScreen()),
+              MaterialPageRoute(builder: (_) => const DriverLicenseScreen()),
             );
           },
         ),

@@ -19,7 +19,9 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
   bool isMultipart = false,
 }) async {
   try {
-    debugPrint('🚀 Calling API: $endpoint, Method: $method, Multipart: $isMultipart');
+    debugPrint(
+      '🚀 Calling API: $endpoint, Method: $method, Multipart: $isMultipart',
+    );
     final accessToken = await authService.getAccessToken();
     if (accessToken == null) {
       debugPrint('❌ No access token found');
@@ -40,12 +42,30 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
 
       switch (method.toUpperCase()) {
         case 'POST':
-          return await client.post(uri, headers: headers, body: jsonEncode(body));
+          return await client.post(
+            uri,
+            headers: headers,
+            body: jsonEncode(body),
+          );
         case 'PUT':
-          return await client.put(uri, headers: headers, body: jsonEncode(body));
+          return await client.put(
+            uri,
+            headers: headers,
+            body: jsonEncode(body),
+          );
+        case 'PATCH':
+          return await client.patch(
+            uri,
+            headers: headers,
+            body: jsonEncode(body),
+          );
         case 'DELETE':
           if (body != null) {
-            return await client.delete(uri, headers: headers, body: jsonEncode(body));
+            return await client.delete(
+              uri,
+              headers: headers,
+              body: jsonEncode(body),
+            );
           } else {
             return await client.delete(uri, headers: headers);
           }
@@ -56,97 +76,111 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
     }
 
     Future<http.Response> sendMultipartRequest(String token) async {
-    debugPrint('📦 Multipart fields: $fields');
-    debugPrint('📦 Multipart files: ${files?.entries.map((e) => '${e.key}: ${e.value.map((f) => f.path).toList()}').join(', ') ?? '[]'}');
+      debugPrint('📦 Multipart fields: $fields');
+      debugPrint(
+        '📦 Multipart files: ${files?.entries.map((e) => '${e.key}: ${e.value.map((f) => f.path).toList()}').join(', ') ?? '[]'}',
+      );
 
-  final request = http.MultipartRequest(method.toUpperCase(), uri);
-  request.headers['Authorization'] = 'Bearer $token';
+      final effectiveMethod =
+          (method.toUpperCase() == 'POST' || method.toUpperCase() == 'PUT')
+              ? method.toUpperCase()
+              : 'POST';
 
-  if (fields != null) {
-    final encodedFields = <String, String>{};
+      final request = http.MultipartRequest(effectiveMethod, uri);
+      request.headers.addAll({
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'multipart/form-data',
+      });
 
-    fields.forEach((key, value) {
-      if (value == null) return;
-      if (value is Map || value is List) {
-        encodedFields[key] = jsonEncode(value);
-      } else {
-        encodedFields[key] = value.toString();
+      if (fields != null) {
+        final encodedFields = <String, String>{};
+        fields.forEach((key, value) {
+          if (value == null) return;
+          if (value is Map || value is List) {
+            encodedFields[key] = jsonEncode(value);
+          } else {
+            encodedFields[key] = value.toString();
+          }
+        });
+        debugPrint('📦 Encoded multipart fields: $encodedFields');
+        request.fields.addAll(encodedFields);
       }
-    });
 
-    debugPrint('📦 Encoded multipart fields: $encodedFields');
-    request.fields.addAll(encodedFields);
-  }
+      if (files != null) {
+        for (final entry in files.entries) {
+          final fieldName = entry.key;
+          for (final file in entry.value) {
+            if (await file.exists()) {
+              final fileName = path.basename(file.path).toLowerCase();
+              final extension = path
+                  .extension(fileName)
+                  .toLowerCase()
+                  .replaceAll('.', '');
+              final contentType = MediaType(
+                'image',
+                extension == 'png' ? 'png' : 'jpeg',
+              );
 
-  // ✅ Add files
-  if (files != null) {
-    for (final entry in files.entries) {
-      final fieldName = entry.key;
-      for (final file in entry.value) {
-        if (await file.exists()) {
-          final fileName = path.basename(file.path).toLowerCase();
-          final normalizedFileName =
-              fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png')
-                  ? fileName
-                  : '${fileName.split('.').first}.jpg';
+              debugPrint('📎 Adding file: ${file.path}, field: $fieldName');
 
-          debugPrint('📎 Adding file: ${file.path}, field: $fieldName');
-
-          request.files.add(await http.MultipartFile.fromPath(
-            fieldName,
-            file.path,
-            contentType: MediaType('image', 'jpeg'),
-            filename: normalizedFileName,
-          ));
-        } else {
-          debugPrint('❌ File not found: ${file.path}');
+              request.files.add(
+                await http.MultipartFile.fromPath(
+                  fieldName,
+                  file.path,
+                  contentType: contentType,
+                  filename: fileName,
+                ),
+              );
+            } else {
+              debugPrint('❌ File not found: ${file.path}');
+            }
+          }
         }
+      } else {
+        debugPrint('⚠️ No files provided for multipart request');
       }
+
+      final streamed = await request.send();
+      final response = await http.Response.fromStream(streamed);
+
+      debugPrint('📥 Response status: ${response.statusCode}');
+      debugPrint(
+        '📥 Response body: ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}',
+      );
+      return response;
     }
-  } else {
-    debugPrint('⚠️ No files provided for multipart request');
-  }
-
-  final streamed = await request.send();
-  final response = await http.Response.fromStream(streamed);
-
-  debugPrint('📥 Response status: ${response.statusCode}');
-  debugPrint('📥 Response body: ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}');
-  return response;
-}
-
 
     Future<http.Response> makeRequest(String token) async {
-      return isMultipart ? await sendMultipartRequest(token) : await sendJsonRequest(token);
+      return isMultipart
+          ? await sendMultipartRequest(token)
+          : await sendJsonRequest(token);
     }
 
     Future<ApiResponse> handleResponse(http.Response response) async {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         if (response.body.isEmpty) {
-          return ApiResponse(
-            success: true,
-            message: 'Phản hồi rỗng từ server',
-          );
+          return ApiResponse(success: true, message: 'Phản hồi rỗng từ server');
         }
         try {
           final body = jsonDecode(response.body);
           return ApiResponse(
             success: true,
             data: body,
-            message: body is Map<String, dynamic> ? body['message'] ?? 'Thành công' : 'Thành công',
+            message:
+                body is Map<String, dynamic>
+                    ? body['message'] ?? 'Thành công'
+                    : 'Thành công',
           );
         } catch (e) {
           debugPrint('❌ JSON parse error: $e');
-          return ApiResponse(
-            success: false,
-            message: 'Lỗi phân tích JSON: $e',
-          );
+          return ApiResponse(success: false, message: 'Lỗi phân tích JSON: $e');
         }
       } else {
         debugPrint('❌ Server error: ${response.statusCode}');
         return ApiResponse(
           success: false,
-          message: 'Lỗi server: ${response.statusCode} - ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}',
+          message:
+              'Lỗi server: ${response.statusCode} - ${response.body.length > 500 ? response.body.substring(0, 500) : response.body}',
         );
       }
     }
@@ -161,14 +195,20 @@ Future<ApiResponse<dynamic>> callProtectedApi<T extends ChangeNotifier>(
       if (!refreshed) {
         debugPrint('❌ Token refresh failed');
         await authService.logout();
-        return ApiResponse(success: false, message: 'Token hết hạn, vui lòng đăng nhập lại');
+        return ApiResponse(
+          success: false,
+          message: 'Token hết hạn, vui lòng đăng nhập lại',
+        );
       }
 
       final newAccessToken = await authService.getAccessToken();
       if (newAccessToken == null) {
         debugPrint('❌ Failed to get new token');
         await authService.logout();
-        return ApiResponse(success: false, message: 'Không thể lấy lại token mới');
+        return ApiResponse(
+          success: false,
+          message: 'Không thể lấy lại token mới',
+        );
       }
       debugPrint('🔑 New access token: $newAccessToken');
       response = await makeRequest(newAccessToken);

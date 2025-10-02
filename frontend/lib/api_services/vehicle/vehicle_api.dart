@@ -87,7 +87,7 @@ class VehicleApi {
   }) async {
     final response = await callProtectedApi<T>(
       viewModel,
-      endpoint: '/api/vehicles/$userId',
+      endpoint: '/api/vehicles/owner/$userId?page=$page&limit=$limit',
       authService: authService,
       method: 'GET',
     );
@@ -198,8 +198,6 @@ class VehicleApi {
   static Future<ApiResponse<Vehicle>> getVehicleById<T extends ChangeNotifier>(
     T viewModel, {
     required AuthService authService,
-    int page = 1,
-    int limit = 10,
     required String vehicleId,
   }) async {
     final response = await callProtectedApi<T>(
@@ -245,10 +243,8 @@ class VehicleApi {
       debugPrint('🚀 Creating vehicle: ${vehicle.toJson()}');
       debugPrint('📎 Image files: ${imageFiles.map((f) => f.path).toList()}');
 
-      // Sử dụng toApiJson để chuẩn bị dữ liệu
       final fields = vehicle.toApiJson();
 
-      // Kiểm tra các trường bắt buộc
       if (vehicle.brandId.isEmpty) {
         return ApiResponse(success: false, message: 'BrandId cannot be empty');
       }
@@ -273,15 +269,14 @@ class VehicleApi {
 
       debugPrint('📤 Submitting vehicle data: ${jsonEncode(fields)}');
 
-      // 🚀 Request duy nhất: Gửi cả fields + files
       final vehicleResponse = await callProtectedApi<T>(
         viewModel,
         endpoint: '/api/vehicles/',
         authService: authService,
         method: 'POST',
         isMultipart: true,
-        fields: fields,              // dữ liệu text
-        files: {'images': imageFiles}, // gửi kèm ảnh luôn
+        fields: fields,          
+        files: {'images': imageFiles},
       );
 
       if (!vehicleResponse.success || vehicleResponse.data == null || vehicleResponse.data is! Map<String, dynamic>) {

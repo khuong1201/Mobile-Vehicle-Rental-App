@@ -8,11 +8,12 @@ Future<ApiResponse<dynamic>> updateUserRoleApi<T extends ChangeNotifier>({
   required AuthService authService,
   required String newRole,
 }) async {
+  final userId = authService.user?.userId;
   final response = await callProtectedApi(
     viewModel,
     authService: authService,
-    endpoint: '/api/user/update-role',
-    method: 'PUT',
+    endpoint: '/api/users/$userId/role',
+    method: 'PATCH',
     body: {
       'newRole': newRole,
     },

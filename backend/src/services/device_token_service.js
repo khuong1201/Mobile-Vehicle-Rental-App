@@ -3,7 +3,7 @@ import AppError from "../utils/app_error.js";
 export default class DeviceTokenService {
   constructor(userRepo, validator) {
     this.userRepo = userRepo;
-    this.validator = validator; 
+    this.validator = validator;
   }
 
   async registerDeviceToken(userId, token, platform, deviceId) {
@@ -13,16 +13,19 @@ export default class DeviceTokenService {
     if (!user) throw new AppError("User not found", 404);
 
     const existing = user.deviceTokens.find(t => t.token === token);
+
     if (existing) {
       existing.lastUsedAt = new Date();
       existing.platform = platform;
       existing.deviceId = deviceId;
+      existing.deleted = false;
     } else {
       user.deviceTokens.push({
         token,
         platform,
         deviceId,
-        lastUsedAt: new Date()
+        lastUsedAt: new Date(),
+        deleted: false
       });
     }
 
@@ -36,9 +39,22 @@ export default class DeviceTokenService {
     const user = await this.userRepo.findById(userId);
     if (!user) throw new AppError("User not found", 404);
 
-    user.deviceTokens = user.deviceTokens.filter(t => t.token !== token);
-    await user.save();
+    let found = false;
+    user.deviceTokens = user.deviceTokens.map(t => {
+      if (t.token === token) {
+        found = true;
+        return { ...t, deleted: true };
+      }
+      return t;
+    });
 
-    return { message: "Device token removed" };
+    if (!found) throw new AppError("Device token not found", 404);
+
+    await user.save();
+    return { message: "Device token soft deleted" };
+  }
+
+  getActiveTokens(user) {
+    return user.deviceTokens.filter(t => !t.deleted);
   }
 }
